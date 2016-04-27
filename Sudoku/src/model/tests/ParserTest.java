@@ -1,6 +1,7 @@
 package model.tests;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -8,6 +9,7 @@ import java.io.StringReader;
 import org.junit.Test;
 
 import model.Parser;
+import model.util.Pair;
 
 public class ParserTest {
 	
@@ -22,7 +24,7 @@ public class ParserTest {
 				"3;4;1;2" + "\n" +
 				"4;1;2;3" + "\n" ;
 		
-		int[] grid = Parser.parseGrid(new StringReader(input));
+		Pair<int[], Integer> parsed = Parser.parseGrid(new StringReader(input));
 		
 		int[] expected =
 				{1,2, 3,4,
@@ -31,7 +33,8 @@ public class ParserTest {
 				 3,4, 1,2,
 				 4,1, 2,3};
 		
-		assertArrayEquals(grid, expected);
+		assertArrayEquals(parsed.fst, expected);
+		assertEquals(parsed.snd.intValue(), 2);
 	}
 	
 	@Test
@@ -48,7 +51,7 @@ public class ParserTest {
 				".;.;.;4;2;.;5;1;6" + "\n" +
 				".;5;2;.;8;.;.;4;." ;
 		
-		int[] grid = Parser.parseGrid(new StringReader(input));
+		Pair<int[], Integer> parsed = Parser.parseGrid(new StringReader(input));
 		
 		int[] expected =
 				{0,1,0, 3,0,0, 8,0,0,
@@ -63,7 +66,8 @@ public class ParserTest {
 				 0,0,0, 4,2,0, 5,1,6,
 				 0,5,2, 0,8,0, 0,4,0};
 		
-		assertArrayEquals(grid, expected);
+		assertArrayEquals(parsed.fst, expected);
+		assertEquals(parsed.snd.intValue(), 3);
 	}
 
 }

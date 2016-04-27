@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 
+import model.util.Pair;
+
 public class Parser {
 
 	public static final String SEPARATOR = ";";
@@ -11,7 +13,7 @@ public class Parser {
 	
 	// TODO: throw exceptions for wrong input
 
-	public static int[] parseGrid(Reader input) throws IOException {
+	public static Pair<int[], Integer> parseGrid(Reader input) throws IOException {
 
 		BufferedReader in = new BufferedReader(input);
 
@@ -45,7 +47,7 @@ public class Parser {
 			}
 		}
 
-		return grid;
+		return new Pair<int[], Integer>(grid, k);
 	}
 
 }
