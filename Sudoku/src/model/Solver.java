@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayDeque;
+import java.util.function.BiFunction;
 
 import model.util.IntLinkedList;
 import model.util.IntPriorityQueue;
@@ -11,12 +12,43 @@ public class Solver {
 
 	private Grid grid;
 	private IntPriorityQueue pq;
-	private ArrayDeque<Pair<Integer, Integer>> changed = new ArrayDeque<Pair<Integer, Integer>>();
+	private ArrayDeque<Pair<Integer, Integer>> changed;
 	private PossibleValues[] pvs;
 
+	// TODO: this can probably be static
+	private ArrayDeque<Integer>[] buckets;
+	private ArrayDeque<Integer>[] rows;
+	private ArrayDeque<Integer>[] cols;
+	private ArrayDeque<Integer>[] boxes;
+	
+	private final int n;
+	private final int k;
+
+	@SuppressWarnings("unchecked")
 	public Solver(Grid grid) {
 		this.grid = grid;
+		
+		this.n = grid.size();
+		this.k = grid.k();
+		
 		this.pq = new IntPriorityQueue(grid.numberOfFields(), grid.size());
+		this.changed = new ArrayDeque<Pair<Integer, Integer>>();
+
+		this.buckets = new ArrayDeque[grid.numberOfFields()];
+
+		for (int i = 0; i < buckets.length; i++) {
+			buckets[i] = new ArrayDeque<Integer>();
+		}
+
+		this.rows = new ArrayDeque[grid.size()];
+		this.cols = new ArrayDeque[grid.size()];
+		this.boxes = new ArrayDeque[grid.size()];
+
+		for (int i = 0; i < grid.size(); i++) {
+			rows[i] = new ArrayDeque<Integer>();
+			cols[i] = new ArrayDeque<Integer>();
+			boxes[i] = new ArrayDeque<Integer>();
+		}
 	}
 
 	public Grid solve() {
@@ -30,137 +62,137 @@ public class Solver {
 
 		return solve_helper(new Grid(grid));
 	}
-	
-	@SuppressWarnings("unchecked")
+
 	private int twins(Grid g) {
-		// TODO: persist this
-		ArrayDeque<Integer>[] buckets = new ArrayDeque[g.numberOfFields()];
-		
 		for (int i = 0; i < buckets.length; i++) {
-			buckets[i] = new ArrayDeque<Integer>();
+			buckets[i].clear();
 		}
-		
+
 		IntLinkedList prio2s = pq.valuesWithPrio(2);
-		
+
 		Node head = prio2s.peek();
-		
+
 		while (head != null) {
 			int field = head.getValue();
-			
+
 			PossibleValues pv = pvs[field];
-			
+
 			int x = pv.nextAfter(0);
 			int y = pv.nextAfter(x);
-			
-			if (x > y) {
-				int t = x;
-				x = y;
-				y = t;
-			}
-			
+
 			x--;
 			y--;
-			
-			buckets[x*g.size() + y].push(field);
-			
+
+			buckets[x * n + y].push(field);
+
 			head = head.getNext();
 		}
-		
-		ArrayDeque<Integer>[] rows = new ArrayDeque[g.size()];
-		ArrayDeque<Integer>[] cols = new ArrayDeque[g.size()];
-		ArrayDeque<Integer>[] boxes = new ArrayDeque[g.size()];
-		
-		for (int i = 0; i < g.size(); i++) {
-			rows[i] = new ArrayDeque<Integer>();
-			cols[i] = new ArrayDeque<Integer>();
-			boxes[i] = new ArrayDeque<Integer>();
-		}
-		
+
+		int numberChanged = 0;
+
 		for (int i = 0; i < buckets.length; i++) {
+			for (int j = 0; j < rows.length; j++) {
+				rows[j].clear();
+				cols[j].clear();
+				boxes[j].clear();
+			}
+
 			for (int field : buckets[i]) {
-				final int row = field / g.size();
-				final int col = field % g.size();
-				final int box = (row / g.k()) * g.k() + col / g.k();
-				
+				final int row = field / n;
+				final int col = field % n;
+				final int box = (row / k) * k + col / k;
+
 				rows[row].add(field);
 				cols[col].add(field);
 				boxes[box].add(field);
 			}
+
+			int changedRows = updateBucket(rows, (field, x) -> setRowImpossible(field, x));
+			if (changedRows == -1) {
+				revert(numberChanged);
+				return -1;
+			}
+
+			numberChanged += changedRows;
+
+			int changedCols = updateBucket(cols, (field, x) -> setColImpossible(field, x));
+			if (changedCols == -1) {
+				revert(numberChanged);
+				return -1;
+			}
+
+			numberChanged += changedCols;
+
+			int changedBoxes = updateBucket(boxes, (field, x) -> setBoxImpossible(field, x));
+			if (changedBoxes == -1) {
+				revert(numberChanged);
+				return -1;
+			}
+
+			numberChanged += changedBoxes;
 		}
-		
-		int changedRows = updateBucket(rows);
-		
-		if (changedRows == -1) {
-			return -1;
-		}
-		
-		int changedCols = updateBucket(cols);
-		
-		if (changedCols == -1) {
-			return -1;
-		}
-		
-		int changedBoxes = updateBucket(boxes);
-		if (changedBoxes == -1) {
-			return -1;
-		}
-			
-		return changedRows + changedCols + changedBoxes;
+
+		return numberChanged;
 	}
-	
-	private int updateBucket(ArrayDeque<Integer>[] bucket) {
+
+	private int updateBucket(ArrayDeque<Integer>[] bucket, BiFunction<Integer, Integer, Integer> setImpossible) {
 		int numberChanged = 0;
-		
+
 		for (int i = 0; i < bucket.length; i++) {
 			if (bucket[i].size() < 2) {
 				continue;
 			} else if (bucket[i].size() > 2) {
+				revert(numberChanged);
 				return -1;
 			} else {
 				int f1 = bucket[i].pop();
 				int f2 = bucket[i].pop();
-				
+
 				PossibleValues pv1 = pvs[f1];
 				PossibleValues pv2 = pvs[f2];
-				
+
 				int x = pv1.nextAfter(0);
 				int y = pv2.nextAfter(x);
-				
+
 				// don't update these
 				pvs[f1] = null;
 				pvs[f2] = null;
-				
-				
-				// There is some overlap in updating the row here
-				numberChanged += setConnectedImpossible(f1, x);
-				numberChanged += setConnectedImpossible(f1, y);
-				
-				numberChanged += setConnectedImpossible(f2, x);
-				numberChanged += setConnectedImpossible(f2, y);
-				
-				// revert them
+
+//				numberChanged += setImpossible.apply(f1, x);
+//				numberChanged += setImpossible.apply(f1, y);
+
 				pvs[f1] = pv1;
 				pvs[f2] = pv2;
 			}
 		}
-		
+
 		return numberChanged;
 	}
-	
-	private int setConnectedImpossible(int field, int x) {
-		final int n = grid.size();
-		final int k = grid.k();
 
+	private int setRowImpossible(int field, int x) {
 		final int row = field / n;
-		final int col = field % n;
-		
-		final int rown = row * n;
+		final int startField = row * n;
 
-		final int boxRow = (row / k) * k;
-		final int boxCol = (col / k) * k;
-		
 		int numberChanged = 0;
-		
+
+		for (int c = 0; c < n; c++) {
+			int i = startField + c;
+
+			if (pvs[i] != null && pvs[i].set(x, false)) {
+				changed.push(new Pair<Integer, Integer>(i, x));
+				numberChanged++;
+				pq.changePrio(i, pvs[i].possible());
+			}
+		}
+
+		return numberChanged;
+	}
+
+	private int setColImpossible(int field, int x) {
+		final int col = field % n;
+
+		int numberChanged = 0;
+
 		for (int r = 0; r < n; r++) {
 			int i = r * n + col;
 
@@ -171,20 +203,22 @@ public class Solver {
 			}
 		}
 
-		for (int c = 0; c < n; c++) {
-			int i = rown + c;
+		return numberChanged;
+	}
 
-			if (pvs[i] != null && pvs[i].set(x, false)) {
-				changed.push(new Pair<Integer, Integer>(i, x));
-				numberChanged++;
-				pq.changePrio(i, pvs[i].possible());
-			}
-		}
+	private int setBoxImpossible(int field, int x) {
+		final int row = field / n;
+		final int col = field % n;
 
-		for (int r = boxRow; r < boxRow+k; r++) {
+		final int boxRow = (row / k) * k;
+		final int boxCol = (col / k) * k;
+
+		int numberChanged = 0;
+
+		for (int r = boxRow; r < boxRow + k; r++) {
 			int rn = r * n;
-			
-			for (int c = boxCol; c < boxCol+k; c++) {
+
+			for (int c = boxCol; c < boxCol + k; c++) {
 				int i = rn + c;
 
 				if (pvs[i] != null && pvs[i].set(x, false)) {
@@ -194,10 +228,14 @@ public class Solver {
 				}
 			}
 		}
-		
+
 		return numberChanged;
 	}
-	
+
+	private int setConnectedImpossible(int field, int x) {
+		return setRowImpossible(field, x) + setColImpossible(field, x) + setBoxImpossible(field, x);
+	}
+
 	private void revert(int count) {
 		while (count-- > 0) {
 			Pair<Integer, Integer> p = changed.pop();
@@ -213,23 +251,25 @@ public class Solver {
 			return g;
 		}
 		
-//		int twinsChanged = twins(g);
-//		
-//		if (twinsChanged == -1) {
-//			return null;
-//		}
+		// TODO: peek in pq before running twins
+
+		int twinsChanged = twins(g);
+
+		if (twinsChanged == -1) {
+			return null;
+		}
 
 		int field = pq.extractMin();
-		
+
 		PossibleValues pv = pvs[field];
-		
+
 		if (pv.possible() == 0) {
 			pq.insert(field, 0);
 			return null;
 		}
-		
+
 		pvs[field] = null;
-		
+
 		int x = 0;
 
 		while (pv.nextAfter(x) != 0) {
@@ -238,7 +278,7 @@ public class Solver {
 			// UPDATE
 
 			g.set(field, x);
-			
+
 			int numberChanged = setConnectedImpossible(field, x);
 
 			Grid sol = solve_helper(g);
@@ -250,11 +290,11 @@ public class Solver {
 			revert(numberChanged);
 		}
 
-		g.set(field, 0);		
+		g.set(field, 0);
 		pvs[field] = pv;
 		pq.insert(field, pv.possible());
-		
-//		revert(twinsChanged);
+
+		revert(twinsChanged);
 
 		return null;
 	}

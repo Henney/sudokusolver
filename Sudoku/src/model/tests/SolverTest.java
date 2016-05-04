@@ -85,6 +85,7 @@ public class SolverTest {
 		
 		Grid solved = solver.solve();
 		
+		assertFalse(solved == null);
 		assertTrue(solved.isSolved());
 	}
 	
@@ -191,7 +192,7 @@ public class SolverTest {
 		solveSudoku("tetradoku2");
 	}
 	
-	@Test
+//	@Test
 	public void solveTetradoku3() throws IOException {
 		solveSudoku("tetradoku3");
 	}
