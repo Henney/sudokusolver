@@ -1,14 +1,15 @@
-package view;
+package controller;
 
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
+import view.View;
 
 public class numberFieldController<T> implements EventHandler<MouseEvent> {
 
-	Main view;
+	View view;
 	int number;
 	
-	public numberFieldController(Main main, int number) {
+	public numberFieldController(View main, int number) {
 		this.view = main;
 		this.number = number;
 	}

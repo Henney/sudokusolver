@@ -3,14 +3,14 @@ package controller;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
-import view.Main;
+import view.View;
 
 public class SudokuFieldController<T> implements EventHandler<MouseEvent> {
 	
-	Main view;
+	View view;
 	Button field;
 
-	public SudokuFieldController(Main main, Button b) {
+	public SudokuFieldController(View main, Button b) {
 		this.view = main;
 		this.field = b;
 	}

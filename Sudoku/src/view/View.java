@@ -3,13 +3,20 @@ package view;
 import java.io.IOException;
 
 import controller.LoadHandler;
+import controller.SolveHandler;
 import controller.SudokuFieldController;
+import controller.WindowResizeListener;
+import controller.numberFieldController;
 import javafx.application.Application;
+import javafx.beans.InvalidationListener;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import model.Grid;
+import model.Solver;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -17,22 +24,26 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.shape.Line;
 
 
-public class Main extends Application {
+public class View extends Application {
 
     private Stage primaryStage;
     private AnchorPane rootLayout;
-    private GridPane gridLayout;
+    private AnchorPane gameLayout;
     
     private Grid grid;
     
     private Button selectedField;
     
-    private final int SIZE = 3; // TODO move to model
+    private final int DEFAULT_K = 3; // TODO move to model
     
-    private final int MIN_SIZE = 600;
+    private final int MIN_WINDOW_SIZE = 600;
+    private WindowResizeListener widthListener;
+    private WindowResizeListener heightListener;
     
     // css strings
     private final String BUTTON_CLASS = "fieldButton";
@@ -45,9 +56,9 @@ public class Main extends Application {
 			this.primaryStage = primaryStage;
 			this.primaryStage.setTitle("Sudoku");
 			primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("Smiley_icon.png")));
-			this.primaryStage.setMinWidth(MIN_SIZE);
-			this.primaryStage.setMinHeight(MIN_SIZE);
-			initRootLayout();
+			this.primaryStage.setMinWidth(MIN_WINDOW_SIZE);
+			this.primaryStage.setMinHeight(MIN_WINDOW_SIZE);
+			initLayout();
 			this.primaryStage.show();
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -55,45 +66,52 @@ public class Main extends Application {
 		}
 	}
 	
-	public void initRootLayout() throws IOException {
+	public void initLayout() throws IOException {
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(Main.class.getResource("Markup.fxml"));
+        loader.setLocation(View.class.getResource("Markup.fxml"));
         rootLayout = (AnchorPane) loader.load();
         
-        gridLayout = (GridPane) rootLayout.lookup("#SudokuBoardGrid");
-        setupBasicSudoku();
-        setSizeChangedListeners();
+        gameLayout = (AnchorPane) rootLayout.lookup("#SudokuBoardPane");
+        setupSudoku(DEFAULT_K);
+        scaleSudoku(MIN_WINDOW_SIZE, DEFAULT_K);
+        setSizeChangedListeners(DEFAULT_K);
 
-        // Show the scene containing the root layout.
-        Scene scene = new Scene(rootLayout);
-		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-
+        // Find buttons and set their listeners
 		Button loadButton = (Button) rootLayout.lookup("#LoadButton");
 		loadButton.setOnMouseClicked(new LoadHandler<MouseEvent>(this));
 		Button saveButton = (Button) rootLayout.lookup("#SaveButton");
 		Button fetchButton = (Button) rootLayout.lookup("#FetchButton");
-		
+		Button solveButton = (Button) rootLayout.lookup("#SolveButton");
+		solveButton.setOnMouseClicked(new SolveHandler<MouseEvent>(this));
+
+        // Show the scene containing the root layout.
+        Scene scene = new Scene(rootLayout);
+		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
         primaryStage.setScene(scene);
+    }
+
+	private void setSizeChangedListeners(int k) {
+		try {
+			rootLayout.widthProperty().removeListener(this.widthListener);
+			rootLayout.heightProperty().removeListener(this.heightListener);
+		} catch (NullPointerException e) {
+			// Do nothing
+		}
+		
+		WindowResizeListener widthListener = new WindowResizeListener(this, k, WindowResizeListener.Property.Width);
+		rootLayout.widthProperty().addListener(widthListener);
+		this.widthListener = widthListener;
+		
+
+		WindowResizeListener heightListener = new WindowResizeListener(this, k, WindowResizeListener.Property.Height);
+		rootLayout.heightProperty().addListener(heightListener);
+		this.heightListener = heightListener;
 	}
 
-	private void setSizeChangedListeners() {
-		rootLayout.widthProperty().addListener((observable, oldValue, newValue) -> {
-			int width = (int) ((Double)newValue).doubleValue();
-			if (width > rootLayout.getHeight()) return;
-			scaleSudoku(width);
-		});
+	public void scaleSudoku(int size, int k) {
+		int buttonWidth = (size/(k*k+1))*3/4;
 
-		rootLayout.heightProperty().addListener((observable, oldValue, newValue) -> {
-			int height = (int) ((Double)newValue).doubleValue();
-			if (height > rootLayout.getWidth()) return;
-			scaleSudoku(height);
-		});
-	}
-
-	private void scaleSudoku(int size) {
-		int buttonWidth = (size/(SIZE*SIZE+1))*3/4;
-
-		GridPane sudoku = (GridPane)gridLayout.getChildren().get(0);
+		GridPane sudoku = (GridPane)gameLayout.getChildren().get(0);
 		for (Node cell : sudoku.getChildren()) {
 			if (cell instanceof Button) {
 				((Button)cell).setMinSize(buttonWidth, buttonWidth);
@@ -108,30 +126,33 @@ public class Main extends Application {
 			}
 		}
 
-		GridPane numbers = (GridPane)gridLayout.getChildren().get(1);
+		GridPane numbers = (GridPane)gameLayout.getChildren().get(1);
 		for (Node cell : numbers.getChildren()) {
 			if (cell instanceof Button) {
 				((Button)cell).setMinSize(buttonWidth, buttonWidth);
 				((Button)cell).setMaxSize(buttonWidth, buttonWidth);
 			}
 		}
+		numbers.setMaxWidth(buttonWidth);
 	}
 
-	private void setupBasicSudoku() {
-		int pix = (int)gridLayout.getPrefHeight()/SIZE/SIZE;
+	private void setupSudoku(int k) {
+		((AnchorPane)gameLayout).getChildren().clear();
+		
+		int pix = 30;//(int)gridLayout.getPrefHeight()/k/k;
 		GridPane sudoku = new GridPane();
 		GridPane numbers = new GridPane();
 		int rowLines = 0;
-		for (int i = 0; i < SIZE*SIZE+(SIZE-1); i++) {
+		for (int i = 0; i < k*k+(k-1); i++) {
 			int colLines = 0;
 			
-			if (rowLines == SIZE) {
+			if (rowLines == k) {
 				sudoku.addRow(i);
 				
-				for (int j = 0; j < SIZE*SIZE+(SIZE-1); j++) {
+				for (int j = 0; j < k*k+(k-1); j++) {
 					Line l = new Line(0,0,pix,0);
 					
-					if (colLines == SIZE) {
+					if (colLines == k) {
 						l = new Line(0,0,1,0);
 						colLines = -1;
 					}
@@ -146,8 +167,8 @@ public class Main extends Application {
 			sudoku.addRow(i);
 			colLines = 0;
 			
-			for (int j = 0; j < SIZE*SIZE+(SIZE-1); j++) {
-				if (colLines == SIZE) {
+			for (int j = 0; j < k*k+(k-1); j++) {
+				if (colLines == k) {
 					sudoku.addColumn(j, new Line(0,0,0,pix));
 					colLines = 0;
 					j++;
@@ -164,10 +185,10 @@ public class Main extends Application {
 			}
 			rowLines++;
 		}
-		gridLayout.add(sudoku, 0, 0);
+		gameLayout.getChildren().add(sudoku);
+		AnchorPane.setLeftAnchor(sudoku, 0.0);
 		
-		numbers.setAlignment(Pos.TOP_RIGHT);
-		for (int i = 1; i <= SIZE*SIZE; i++) {
+		for (int i = 1; i <= k*k; i++) {
 			numbers.addRow(i-1);
 			Button b = new Button(i+"");
 			b.setMinSize(pix, pix);
@@ -177,12 +198,8 @@ public class Main extends Application {
 			b.setOnMouseClicked(new numberFieldController<MouseEvent>(this, i));
 			numbers.addColumn(0, b);
 		}
-		
-		gridLayout.add(numbers, 1, 0);
-	}
-
-	public static void main(String[] args) {
-		launch(args);
+		gameLayout.getChildren().add(numbers);
+		AnchorPane.setLeftAnchor(numbers, 0.0);
 	}
 
 	public void setSelectedField(Button newField) {
@@ -197,7 +214,8 @@ public class Main extends Application {
 		} else {
 			newField.setStyle(selectedEffect);
 		}
-		
+
+		newField.setStyle(selectedEffect);
 		this.selectedField = newField;
 	}
 
@@ -209,6 +227,40 @@ public class Main extends Application {
 		return this.primaryStage;
 	}
 
-	public void displayGrid(Grid grid) {
+	public void setAndDisplayGrid(Grid grid) {
+		this.grid = grid;
+		setupSudoku(grid.k());
+		setSizeChangedListeners(grid.k());
+		displayGrid();
+	}
+
+	private void displayGrid() {
+		int i = 0;
+		GridPane sudokuGrid = (GridPane)gameLayout.getChildren().get(0);
+		for (Node cell : sudokuGrid.getChildren()) {
+			if (cell instanceof Button) {
+				System.out.println("Cell: " + cell);
+				int number = grid.get(i);
+				System.out.println("Grid value: " + number);
+				if (number != 0) {
+					((Button)cell).setText(number+"");
+				}
+				i++;
+			}
+		}
+	}
+
+	public AnchorPane getRootLayout() {
+		return this.rootLayout;
+	}
+
+	public void solveSudoku() {
+		Solver s = new Solver(grid);
+		grid = s.solve();
+		displayGrid();
+	}
+
+	public static void main(String[] args) {
+		launch(args);
 	}
 }

@@ -3,6 +3,7 @@ package controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,13 +13,13 @@ import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import model.Grid;
-import view.Main;
+import view.View;
 
 public class LoadHandler<T> implements EventHandler<MouseEvent> {
 
-	Main view;
+	View view;
 	
-	public LoadHandler(Main view) {
+	public LoadHandler(View view) {
 		this.view = view;
 	}
 
@@ -26,16 +27,19 @@ public class LoadHandler<T> implements EventHandler<MouseEvent> {
 	public void handle(MouseEvent event) {
 		FileChooser fc = new FileChooser();
 		File file = fc.showOpenDialog(view.getStage());
-		
 		try {
-			Grid grid = new Grid(new InputStreamReader(new FileInputStream(file)));
-			view.displayGrid(grid);
+			Grid grid = new Grid(new FileReader(file));
+			view.setAndDisplayGrid(grid);
+			System.out.println("Loaded grid");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (NullPointerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();	
 		}
 	}
 
