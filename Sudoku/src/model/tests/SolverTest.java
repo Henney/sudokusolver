@@ -1,27 +1,18 @@
 package model.tests;
 
 import static org.junit.Assert.*;
-
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.Arrays;
 import java.util.HashSet;
 
 import org.junit.Test;
 
-import com.jaunt.NotFound;
-import com.jaunt.ResponseException;
-
 import model.Grid;
 import model.PossibleValues;
 import model.Solver;
-import model.WebScraper;
 
-public class SolverTest3 {
+public class SolverTest {
 
 	@Test
 	public void findPossible3() throws IOException {
@@ -98,7 +89,7 @@ public class SolverTest3 {
 	}
 	
 	public void solveSudoku(String filename) throws IOException {
-		Grid g = new Grid(new FileReader("3puzzles/" + filename + ".txt"));
+		Grid g = new Grid(new FileReader("puzzles/" + filename + ".txt"));
 		
 		assertFalse(g.isSolved());
 		
@@ -145,34 +136,67 @@ public class SolverTest3 {
 	
 	@Test
 	public void solveEvil1() throws IOException {
-		solveSudoku("evil1");
+		solveSudoku("sudoku_evil1");
 	}
 
 	@Test
 	public void solveEvil2() throws IOException {
-		solveSudoku("evil2");
+		solveSudoku("sudoku_evil2");
 	}
 	
 	@Test
 	public void solveEvil3() throws IOException {
-		solveSudoku("evil3");
+		solveSudoku("sudoku_evil3");
 	}
 	
 	@Test
 	public void solveEvil4() throws IOException {
-		solveSudoku("evil4");
+		solveSudoku("sudoku_evil4");
 	}
 	
 	@Test
 	public void solveExtreme1() throws IOException {
-		solveSudoku("extreme1");
+		solveSudoku("sudoku_extreme1");
 	}
 
 	@Test
 	public void solveWorldsHardest() throws IOException {
 		// From http://www.telegraph.co.uk/news/science/science-news/9359579/Worlds-hardest-sudoku-can-you-crack-it.html
 		
-		solveSudoku("hardest_telegraph");
+		solveSudoku("sudoku_hardest_telegraph");
+	}
+	
+	@Test
+	public void solveNorvigHardest() throws IOException {
+		solveSudoku("sudoku_norvig_hardest");
+	}
+	
+//	@Test
+	public void solveNorvigImpossible() throws IOException {
+		Grid g = new Grid(new FileReader("puzzles/sudoku_norvig_impossible.txt"));
+		assertFalse(g.isSolved());
+		Grid solved = new Solver(g).solve();
+		assertTrue(solved == null);
+	}
+	
+	@Test
+	public void solveTetradoku1() throws IOException {
+		solveSudoku("tetradoku1");
+	}
+	
+	@Test
+	public void solveTetradoku2() throws IOException {
+		solveSudoku("tetradoku2");
+	}
+	
+	@Test
+	public void solveTetradoku3() throws IOException {
+		solveSudoku("tetradoku3");
+	}
+	
+//	@Test
+	public void solvePentadoku1() throws IOException {
+		solveSudoku("pentadoku1");
 	}
 	
 }

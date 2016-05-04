@@ -8,6 +8,8 @@ public class Solver {
 
 	private Grid grid;
 	private IntPriorityQueue pq;
+	private ArrayDeque<Integer> changed = new ArrayDeque<Integer>();
+	private PossibleValues[] pvs;
 
 	public Solver(Grid grid) {
 		this.grid = grid;
@@ -15,7 +17,7 @@ public class Solver {
 	}
 
 	public Grid solve() {
-		PossibleValues[] pvs = findPossibleValues();
+		pvs = findPossibleValues();
 
 		for (int i = 0; i < pvs.length; i++) {
 			if (pvs[i] != null) {
@@ -23,10 +25,10 @@ public class Solver {
 			}
 		}
 
-		return solve_helper(pvs, new Grid(grid));
+		return solve_helper(new Grid(grid));
 	}
 
-	private Grid solve_helper(PossibleValues[] pvs, Grid g) {
+	private Grid solve_helper(Grid g) {
 		if (pq.isEmpty()) {
 			return g;
 		}
@@ -49,14 +51,16 @@ public class Solver {
 
 		final int row = field / n;
 		final int col = field % n;
+		
+		final int rown = row * n;
 
 		final int boxRow = (row / k) * k;
 		final int boxCol = (col / k) * k;
 
-		ArrayDeque<Integer> changed = new ArrayDeque<Integer>();
-
 		while (pv.nextAfter(x) != 0) {
 			x = pv.nextAfter(x);
+			
+			int numberChanged = 0;
 
 			// UPDATE
 
@@ -67,31 +71,36 @@ public class Solver {
 
 				if (pvs[i] != null && pvs[i].set(x, false)) {
 					changed.push(i);
+					numberChanged++;
 					pq.changePrio(i, pvs[i].possible());
 				}
 			}
 
 			for (int c = 0; c < n; c++) {
-				int i = row * n + c;
+				int i = rown + c;
 
 				if (pvs[i] != null && pvs[i].set(x, false)) {
 					changed.push(i);
+					numberChanged++;
 					pq.changePrio(i, pvs[i].possible());
 				}
 			}
 
 			for (int r = boxRow; r < boxRow+k; r++) {
+				int rn = r * n;
+				
 				for (int c = boxCol; c < boxCol+k; c++) {
-					int i = r * n + c;
+					int i = rn + c;
 
 					if (pvs[i] != null && pvs[i].set(x, false)) {
 						changed.push(i);
+						numberChanged++;
 						pq.changePrio(i, pvs[i].possible());
 					}
 				}
 			}
 
-			Grid sol = solve_helper(pvs, g);
+			Grid sol = solve_helper(g);
 
 			if (sol != null) {
 				return sol;
@@ -99,7 +108,7 @@ public class Solver {
 
 			// REVERT
 
-			while (!changed.isEmpty()) {
+			while (numberChanged-- > 0) {
 				int i = changed.pop();
 				pvs[i].set(x, true);
 				pq.changePrio(i, pvs[i].possible());
@@ -116,7 +125,7 @@ public class Solver {
 	public PossibleValues[] findPossibleValues() {
 		final int n = grid.size();
 
-		final PossibleValues[] pvs = new PossibleValues[n * n];
+		final PossibleValues[] pvs = new PossibleValues[grid.numberOfFields()];
 
 		for (int row = 0; row < n; row++) {
 			for (int col = 0; col < n; col++) {
