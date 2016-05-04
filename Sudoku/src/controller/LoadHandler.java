@@ -30,7 +30,6 @@ public class LoadHandler<T> implements EventHandler<MouseEvent> {
 		try {
 			Grid grid = new Grid(new FileReader(file));
 			view.setAndDisplayGrid(grid);
-			System.out.println("Loaded grid");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
