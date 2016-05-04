@@ -14,6 +14,12 @@ public class Grid {
 	private int k;
 	private int n;
 	
+	public Grid(int k) {
+		this.k = k;
+		this.n = k*k;
+		this.grid = new int[n*n];
+	}
+	
 	public Grid(Grid other) {
 		this.grid = Arrays.copyOf(other.grid, other.grid.length);
 		this.k = other.k;
