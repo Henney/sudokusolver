@@ -1,1 +1,9 @@
 /* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+
+.fieldButton {
+	-fx-background-color: linear-gradient(#ffffff, #ffffff);
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-text-fill: black;
+	-fx-effect: none;
+}
