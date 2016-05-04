@@ -5,19 +5,17 @@ public class Node {
 	Node next;
 	Node prev;
 	
-	public Node(int value, Node next, Node prev) {
+	public Node(int value) {
 		this.value = value;
-		this.next = next;
-		this.prev = prev;
 	}
 	
 	public void remove() {
-		if (this.prev != null) {
-			this.prev.next = this.next;
+		if (prev != null) {
+			prev.next = next;
 		}
 		
-		if (this.next != null) {
-			this.next.prev = this.prev;
+		if (next != null) {
+			next.prev = prev;
 		}
 	}
 }

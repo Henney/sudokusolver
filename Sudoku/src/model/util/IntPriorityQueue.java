@@ -3,44 +3,60 @@ package model.util;
 public class IntPriorityQueue {
 
 	private IntLinkedList[] queue;
-	private int next;
 	private Node[] nodes;
-	
+	private int next;
+	private int size;
+
 	public IntPriorityQueue(int maxValue, int maxPrio) {
-		this.queue = new IntLinkedList[maxPrio+1];
-		
+		queue = new IntLinkedList[maxPrio + 1];
+		nodes = new Node[maxValue + 1];
+
 		for (int i = 0; i <= maxPrio; i++) {
-			this.queue[i] = new IntLinkedList();
+			queue[i] = new IntLinkedList();
 		}
-		
-		this.next = 0;
-		
-		this.nodes = new Node[maxValue+1];
+
+		next = 0;
+		size = 0;
+	}
+
+	public int size() {
+		return size;
 	}
 	
+	public boolean isEmpty() {
+		return size == 0;
+	}
+
 	public void insert(int value, int prio) {
-		nodes[value] = this.queue[prio].push(value);
-		
+		nodes[value] = queue[prio].push(value);
+
 		if (prio < next) {
 			next = prio;
 		}
-	}
-	
-	public int extractMin() {
-		while (this.queue[this.next].isEmpty()) {
-			this.next++;
-		}
 		
-		int val = this.queue[this.next].poll();
+		size++;
+	}
+
+	public int extractMin() {
+		assert !isEmpty();
+		
+		while (next < queue.length && queue[next].isEmpty()) {
+			next++;
+		}
+
+		int val = this.queue[next].poll();
 		nodes[val] = null;
+		size--;
+		
 		return val;
 	}
-	
+
 	public void changePrio(int value, int newPrio) {
 		Node n = nodes[value];
 		n.remove();
-		queue[newPrio].push(n);
 		
+		queue[newPrio].push(n);
+
 		if (newPrio < next) {
 			next = newPrio;
 		}

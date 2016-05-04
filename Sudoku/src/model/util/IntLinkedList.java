@@ -2,32 +2,34 @@ package model.util;
 
 public class IntLinkedList {
 
-	private Node head = new Node(-1, null, null);
+	private Node head = new Node(-42);
 
 	public boolean isEmpty() {
-		return this.head.next == null;
+		return head.next == null;
 	}
 
 	public Node push(int value) {
-		Node n = new Node(value, null, null);
+		Node n = new Node(value);
 		push(n);
-		return this.head.next;
+		return n;
 	}
 
 	public void push(Node n) {
-		n.next = this.head.next;
-		n.prev = this.head;
-		this.head.next = n;
+		if (head.next != null) {
+			head.next.prev = n;
+		}
+		
+		n.next = head.next;
+		n.prev = head;
+		head.next = n;
 	}
 
 	public int poll() {
-		assert !this.isEmpty();
-
 		Node ret = head.next;
 		head.next = ret.next;
-
+		
 		if (head.next != null) {
-			head.next.prev = null;
+			head.next.prev = head;
 		}
 
 		return ret.value;
