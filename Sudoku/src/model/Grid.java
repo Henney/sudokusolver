@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
+import java.util.BitSet;
 
 import model.util.Pair;
 
@@ -58,6 +59,59 @@ public class Grid {
 		this.grid[n*row + col] = val;
 	}
 	
+	public boolean isSolved() {
+		for (int i = 0; i < grid.length; i++) {
+			if (grid[i] == 0) {
+				return false;
+			}
+		}
+		
+		BitSet found = new BitSet(n);
+		
+		for (int row = 0; row < n; row++) {
+			found.clear();
+			
+			for (int col = 0; col < n; col++) {
+				found.set(get(row, col)-1);
+			}
+
+			if (found.cardinality() < n) {
+				return false;
+			}
+		}
+
+		for (int col = 0; col < n; col++) {
+			found.clear();
+
+			for (int row = 0; row < n; row++) {
+				found.set(get(row, col)-1);
+			}
+
+			if (found.cardinality() < n) {
+				return false;
+			}
+		}
+
+		for (int box = 0; box < n; box++) {
+			int startRow = (box / k) * k;
+			int startCol = (box % k) * k;
+
+			found.clear();
+
+			for (int dRow = 0; dRow < k; dRow++) {
+				for (int dCol = 0; dCol < k; dCol++) {
+					found.set(get(startRow + dRow, startCol + dCol)-1);
+				}
+			}
+
+			if (found.cardinality() < n) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		
@@ -67,8 +121,10 @@ public class Grid {
 				
 				if (x == 0) {
 					sb.append("  ");
+				} else if (x < 10) {
+					sb.append(x + " ");
 				} else {
-					sb.append(get(row, col) + " ");
+					sb.append((char)('A' + (x - 10)) + " ");
 				}
 				
 				if (col+1 < size() && (col+1) % k == 0) {
@@ -80,7 +136,6 @@ public class Grid {
 			
 
 			if (row+1 < size() && (row+1) % k == 0) {
-				// TODO: probably not entirely correct ;)
 				for (int col = 0; col < size()+k-1; col++) {
 					sb.append("- ");
 				}

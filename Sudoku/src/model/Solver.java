@@ -33,7 +33,7 @@ public class Solver {
 
 		int field = pq.extractMin();
 		
-		PossibleValues pv = new PossibleValues(pvs[field]);
+		PossibleValues pv = pvs[field];
 		
 		if (pv.possible() == 0) {
 			pq.insert(field, 0);
@@ -55,13 +55,13 @@ public class Solver {
 
 		ArrayDeque<Integer> changed = new ArrayDeque<Integer>();
 
-		do {
+		while (pv.nextAfter(x) != 0) {
 			x = pv.nextAfter(x);
 
 			// UPDATE
 
 			g.set(field, x);
-
+		
 			for (int r = 0; r < n; r++) {
 				int i = r * n + col;
 
@@ -104,10 +104,9 @@ public class Solver {
 				pvs[i].set(x, true);
 				pq.changePrio(i, pvs[i].possible());
 			}
+		}
 
-		} while (x != 0);
-
-		g.set(field, 0);
+		g.set(field, 0);		
 		pvs[field] = pv;
 		pq.insert(field, pv.possible());
 
@@ -137,7 +136,7 @@ public class Solver {
 			for (int col = 0; col < n; col++) {
 				PossibleValues p = pvs[row * n + col];
 				if (p != null) {
-					p.merge(rowPossible);
+					p.and(rowPossible);
 				}
 			}
 		}
@@ -153,7 +152,7 @@ public class Solver {
 			for (int row = 0; row < n; row++) {
 				PossibleValues p = pvs[row * n + col];
 				if (p != null) {
-					p.merge(colPossible);
+					p.and(colPossible);
 				}
 			}
 		}
@@ -180,7 +179,7 @@ public class Solver {
 
 					PossibleValues p = pvs[row * n + col];
 					if (p != null) {
-						p.merge(boxPossible);
+						p.and(boxPossible);
 					}
 				}
 			}

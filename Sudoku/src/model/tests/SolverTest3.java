@@ -2,18 +2,26 @@ package model.tests;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.HashSet;
 
 import org.junit.Test;
 
+import com.jaunt.NotFound;
+import com.jaunt.ResponseException;
+
 import model.Grid;
 import model.PossibleValues;
 import model.Solver;
+import model.WebScraper;
 
-public class SolverTest {
+public class SolverTest3 {
 
 	@Test
 	public void findPossible3() throws IOException {
@@ -36,7 +44,6 @@ public class SolverTest {
 		
 		PossibleValues[] pvs = solver.findPossibleValues();
 		
-		// TODO: verify this
 		Integer[][] expected = {
 				{ 2 }, null, { 6 }, null, { 4 }, { 2, 7 }, null, { 9 }, { 4, 5, 9 },
 				null, { 3, 8 }, null, null, { 1, 4 }, { 2, 8 }, null, { 3 }, { 1, 4 },
@@ -65,7 +72,7 @@ public class SolverTest {
 	}
 	
 	@Test
-	public void solveExample3() throws IOException {
+	public void solveExample() throws IOException {
 		String input =
 				"3\n" +
 				".;1;.;3;.;.;8;.;." + "\n" +
@@ -81,19 +88,91 @@ public class SolverTest {
 
 		Grid grid = new Grid(input);
 		
+		assertFalse(grid.isSolved());
+		
 		Solver solver = new Solver(grid);
 		
 		Grid solved = solver.solve();
 		
-		System.out.println(solved);
+		assertTrue(solved.isSolved());
+	}
+	
+	public void solveSudoku(String filename) throws IOException {
+		Grid g = new Grid(new FileReader("3puzzles/" + filename + ".txt"));
+		
+		assertFalse(g.isSolved());
+		
+		Solver solver = new Solver(g);
+		Grid solved = solver.solve();
+		
+		if (!solved.isSolved()) {
+			System.out.println(filename);
+			System.out.println(solved);
+		}
+		
+		assertTrue(solved.isSolved());
 	}
 	
 	@Test
 	public void solveSudoku1() throws IOException {
-		FileReader f = new FileReader("puzzles/sudoku6.txt");
-		Solver solver = new Solver(new Grid(f));
-		Grid solved = solver.solve();
-		System.out.println(solved);
+		solveSudoku("sudoku1");
+	}
+	
+	@Test
+	public void solveSudoku2() throws IOException {
+		solveSudoku("sudoku2");
+	}
+	
+	@Test
+	public void solveSudoku3() throws IOException {
+		solveSudoku("sudoku3");
+	}
+	
+	@Test
+	public void solveSudoku4() throws IOException {
+		solveSudoku("sudoku4");
+	}
+	
+	@Test
+	public void solveSudoku5() throws IOException {
+		solveSudoku("sudoku5");
+	}
+	
+	@Test
+	public void solveSudoku6() throws IOException {
+		solveSudoku("sudoku6");
+	}
+	
+	@Test
+	public void solveEvil1() throws IOException {
+		solveSudoku("evil1");
+	}
+
+	@Test
+	public void solveEvil2() throws IOException {
+		solveSudoku("evil2");
+	}
+	
+	@Test
+	public void solveEvil3() throws IOException {
+		solveSudoku("evil3");
+	}
+	
+	@Test
+	public void solveEvil4() throws IOException {
+		solveSudoku("evil4");
+	}
+	
+	@Test
+	public void solveExtreme1() throws IOException {
+		solveSudoku("extreme1");
+	}
+
+	@Test
+	public void solveWorldsHardest() throws IOException {
+		// From http://www.telegraph.co.uk/news/science/science-news/9359579/Worlds-hardest-sudoku-can-you-crack-it.html
+		
+		solveSudoku("hardest_telegraph");
 	}
 	
 }
