@@ -34,4 +34,8 @@ public class IntLinkedList {
 
 		return ret.value;
 	}
+	
+	public Node peek() {
+		return head.next;
+	}
 }

@@ -96,6 +96,8 @@ public class SolverTest {
 		Solver solver = new Solver(g);
 		Grid solved = solver.solve();
 		
+		assertFalse(solved == null);
+		
 		if (!solved.isSolved()) {
 			System.out.println(filename);
 			System.out.println(solved);

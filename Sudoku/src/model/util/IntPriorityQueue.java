@@ -61,4 +61,8 @@ public class IntPriorityQueue {
 			next = newPrio;
 		}
 	}
+	
+	public IntLinkedList valuesWithPrio(int prio) {
+		return queue[prio];
+	}
 }

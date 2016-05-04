@@ -18,4 +18,16 @@ public class Node {
 			next.prev = prev;
 		}
 	}
+	
+	public int getValue() {
+		return value;
+	}
+	
+	public Node getNext() {
+		return next;
+	}
+
+	public Node getPrev() {
+		return prev;
+	}
 }

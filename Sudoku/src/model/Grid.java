@@ -59,8 +59,6 @@ public class Grid {
 		this.grid[n*row + col] = val;
 	}
 	
-	// TODO: fields "connected"
-	
 	public boolean isSolved() {
 		for (int i = 0; i < grid.length; i++) {
 			if (grid[i] == 0) {
