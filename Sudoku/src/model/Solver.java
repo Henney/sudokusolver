@@ -326,11 +326,14 @@ public class Solver {
 			return null;
 		}
 
-		/*int twinsChanged = twins(g);
-
+		int twinsChanged = 0;
+		if (pq.valuesWithPrio(1).isEmpty()) {
+			twinsChanged = twins(g);
+		}
+			
 		if (twinsChanged == -1) {
 			return null;
-		}*/
+		}
 
 		int field = pq.extractMin();
 
@@ -339,6 +342,7 @@ public class Solver {
 		if (pv.possible() == 0) {
 			pq.insert(field, 0);
 			revertUniqueCand(uniqueCandChanged);
+			revert(twinsChanged);
 			return null;
 		}
 
@@ -368,7 +372,7 @@ public class Solver {
 		pvs[field] = pv;
 		pq.insert(field, pv.possible());
 
-		//revert(twinsChanged);
+		revert(twinsChanged);
 		revertUniqueCand(uniqueCandChanged);
 
 		return null;

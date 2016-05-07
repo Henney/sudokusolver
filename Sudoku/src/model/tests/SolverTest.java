@@ -202,4 +202,9 @@ public class SolverTest {
 		solveSudoku("pentadoku1");
 	}
 	
+//	@Test
+	public void solveDecadoku1() throws IOException {
+		solveSudoku("decadoku1");
+	}
+	
 }
