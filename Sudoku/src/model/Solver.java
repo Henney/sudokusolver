@@ -160,8 +160,8 @@ public class Solver {
 				pvs[f1] = null;
 				pvs[f2] = null;
 
-//				numberChanged += setImpossible.apply(f1, x);
-//				numberChanged += setImpossible.apply(f1, y);
+				numberChanged += setImpossible.apply(f1, x);
+				numberChanged += setImpossible.apply(f1, y);
 
 				pvs[f1] = pv1;
 				pvs[f2] = pv2;
@@ -315,8 +315,6 @@ public class Solver {
 		if (pq.isEmpty()) {
 			return g;
 		}
-		
-		// TODO: peek in pq before running twins
 		
 		int uniqueCandChanged = 0;
 		if (pq.valuesWithPrio(1).isEmpty()) {
