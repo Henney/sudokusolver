@@ -13,6 +13,7 @@ public class Solver {
 	private Grid grid;
 	private IntPriorityQueue pq;
 	private ArrayDeque<Pair<Integer, Integer>> changed;
+	private ArrayDeque<Pair<Integer, ArrayDeque<Integer>>> uniqueCandChanged;
 	private PossibleValues[] pvs;
 
 	// TODO: this can probably be static
@@ -33,6 +34,7 @@ public class Solver {
 		
 		this.pq = new IntPriorityQueue(grid.numberOfFields(), grid.size());
 		this.changed = new ArrayDeque<Pair<Integer, Integer>>();
+		this.uniqueCandChanged = new ArrayDeque<Pair<Integer, ArrayDeque<Integer>>>();
 
 		this.buckets = new ArrayDeque[grid.numberOfFields()];
 
@@ -245,6 +247,69 @@ public class Solver {
 			pq.changePrio(i, pvs[i].possible());
 		}
 	}
+	
+	private int uniqueCandidate() {
+		int numberChanged = 0;
+		ArrayDeque<Integer>[][] rowBucket = new ArrayDeque[n][n];
+		ArrayDeque<Integer>[][] colBucket = new ArrayDeque[n][n];
+		ArrayDeque<Integer>[][] boxBucket = new ArrayDeque[n][n];
+		
+		// Initialize buckets TODO: should probably be fields
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				rowBucket[i][j] = new ArrayDeque<Integer>();
+				colBucket[i][j] = new ArrayDeque<Integer>();
+				boxBucket[i][j] = new ArrayDeque<Integer>();
+			}
+		}
+		
+		for (int index = 0; index < n*n; index++) {
+			PossibleValues pv = pvs[index];
+			int row = index/n;
+			int col = index%n;
+			int box = row/k*k+col/k;
+			for (int j = 0; j < n; j++) {
+				if (pv != null && pv.get(j+1)) {
+					// Syntax: bucket[number][value] = fieldIndex
+					rowBucket[row][j].add(index);
+					colBucket[col][j].add(index);
+					boxBucket[box][j].add(index);
+				}
+			}
+		}
+		
+		// rcbIndex is the index for the row/column/box
+		for (int rcbIndex = 0; rcbIndex < n; rcbIndex++) {
+			for (int value = 0; value < n; value++) {
+				// Check if there is only one candidate
+				ArrayDeque[] bucks = { rowBucket[rcbIndex][value], colBucket[rcbIndex][value], boxBucket[rcbIndex][value] };
+				for (ArrayDeque<Integer> buck : bucks) {
+					if (buck.size() == 1) {
+						int index = buck.removeFirst();
+						ArrayDeque<Integer> oldPos = pvs[index].setOnlyPossible(value+1);
+						if (oldPos == null) {
+							revertUniqueCand(numberChanged);
+							return -1;
+						}
+						uniqueCandChanged.push(new Pair<Integer, ArrayDeque<Integer>>(index, oldPos));
+						pq.changePrio(index, 1);
+						numberChanged++;
+					}
+				}
+			}
+		}
+		return numberChanged;
+	}
+
+	private void revertUniqueCand(int amount) {
+		for (int i = 0; i < amount; i++) {
+			Pair<Integer, ArrayDeque<Integer>> item = uniqueCandChanged.pop();
+			for (int val : item.snd) {
+				pvs[item.fst].set(val, true);
+			}
+			pq.changePrio(item.fst, pvs[item.fst].possible());
+		}
+	}
 
 	private Grid solve_helper(Grid g) {
 		if (pq.isEmpty()) {
@@ -252,12 +317,20 @@ public class Solver {
 		}
 		
 		// TODO: peek in pq before running twins
+		
+		int uniqueCandChanged = 0;
+		if (pq.valuesWithPrio(1).isEmpty()) {
+			uniqueCandChanged = uniqueCandidate();
+		}
+		if (uniqueCandChanged == -1) {
+			return null;
+		}
 
-		int twinsChanged = twins(g);
+		/*int twinsChanged = twins(g);
 
 		if (twinsChanged == -1) {
 			return null;
-		}
+		}*/
 
 		int field = pq.extractMin();
 
@@ -265,6 +338,7 @@ public class Solver {
 
 		if (pv.possible() == 0) {
 			pq.insert(field, 0);
+			revertUniqueCand(uniqueCandChanged);
 			return null;
 		}
 
@@ -294,7 +368,8 @@ public class Solver {
 		pvs[field] = pv;
 		pq.insert(field, pv.possible());
 
-		revert(twinsChanged);
+		//revert(twinsChanged);
+		revertUniqueCand(uniqueCandChanged);
 
 		return null;
 	}

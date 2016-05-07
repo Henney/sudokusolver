@@ -192,12 +192,12 @@ public class SolverTest {
 		solveSudoku("tetradoku2");
 	}
 	
-//	@Test
+	@Test
 	public void solveTetradoku3() throws IOException {
 		solveSudoku("tetradoku3");
 	}
 	
-//	@Test
+	@Test
 	public void solvePentadoku1() throws IOException {
 		solveSudoku("pentadoku1");
 	}

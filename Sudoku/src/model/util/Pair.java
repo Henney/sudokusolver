@@ -10,4 +10,7 @@ public class Pair<A, B> {
 		snd = b;
 	}
 	
+	public String toString() {
+		return "{ " + fst.toString() + " : " + snd.toString() + " }"; 
+	}
 }

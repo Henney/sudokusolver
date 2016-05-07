@@ -2,6 +2,10 @@ package model;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import model.util.Pair;
+
+import java.util.ArrayDeque;
 import java.util.Arrays;
 
 public class PossibleValues {
@@ -12,6 +16,7 @@ public class PossibleValues {
 	public PossibleValues(int maxValue) {	
 		possible = new boolean[maxValue + 1];
 		Arrays.fill(possible, true);
+		possible[0] = false;
 		numberPossible = maxValue;
 	}
 
@@ -45,6 +50,25 @@ public class PossibleValues {
 		}
 		
 		return false;
+	}
+	
+	public ArrayDeque<Integer> setOnlyPossible(int value) {
+		if (!possible[value]) {
+			return null;
+		}
+		
+		ArrayDeque<Integer> oldPossible = new ArrayDeque<Integer>();
+		
+		for (int i = 0; i < possible.length; i++) {
+			if (possible[i]) {
+				oldPossible.add(i);
+				set(i, false);
+			}
+		}
+		set(value, true);
+		assert numberPossible == 1;
+		
+		return oldPossible;
 	}
 
 	public boolean get(int value) {
