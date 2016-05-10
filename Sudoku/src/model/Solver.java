@@ -21,6 +21,10 @@ public class Solver {
 	private ArrayDeque<Integer>[] rows;
 	private ArrayDeque<Integer>[] cols;
 	private ArrayDeque<Integer>[] boxes;
+
+	ArrayDeque<Integer>[][] rowBucket;
+	ArrayDeque<Integer>[][] colBucket;
+	ArrayDeque<Integer>[][] boxBucket;
 	
 	private final int n;
 	private final int k;
@@ -51,6 +55,10 @@ public class Solver {
 			cols[i] = new ArrayDeque<Integer>();
 			boxes[i] = new ArrayDeque<Integer>();
 		}
+
+		this.rowBucket = new ArrayDeque[n][n];
+		this.colBucket = new ArrayDeque[n][n];
+		this.boxBucket = new ArrayDeque[n][n];
 	}
 
 	public Grid solve() {
@@ -250,9 +258,6 @@ public class Solver {
 	
 	private int uniqueCandidate() {
 		int numberChanged = 0;
-		ArrayDeque<Integer>[][] rowBucket = new ArrayDeque[n][n];
-		ArrayDeque<Integer>[][] colBucket = new ArrayDeque[n][n];
-		ArrayDeque<Integer>[][] boxBucket = new ArrayDeque[n][n];
 		
 		// Initialize buckets TODO: should probably be fields
 		for (int i = 0; i < n; i++) {
@@ -326,7 +331,7 @@ public class Solver {
 
 		int twinsChanged = 0;
 		if (pq.valuesWithPrio(1).isEmpty()) {
-			twinsChanged = twins(g);
+//			twinsChanged = twins(g);
 		}
 			
 		if (twinsChanged == -1) {

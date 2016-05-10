@@ -33,6 +33,8 @@ public class View extends Application {
 	private Stage primaryStage;
 	private AnchorPane rootLayout;
 	private AnchorPane gameLayout;
+	
+	private SudokuGridPane sudokuPane;
 
 	private Grid grid;
 
@@ -143,7 +145,7 @@ public class View extends Application {
 		((AnchorPane) gameLayout).getChildren().clear();
 
 		int pix = 30;// (int)gridLayout.getPrefHeight()/k/k;
-		GridPane sudoku = new GridPane();
+		sudokuPane = new SudokuGridPane(grid.k());
 		GridPane numbers = new GridPane();
 		int butIndex = 0;
 		int rowLines = 0;
@@ -151,7 +153,7 @@ public class View extends Application {
 			int colLines = 0;
 
 			if (rowLines == k) {
-				sudoku.addRow(i);
+				sudokuPane.addRow(i);
 
 				for (int j = 0; j < k * k + (k - 1); j++) {
 					Line l = new Line(0, 0, pix, 0);
@@ -161,19 +163,19 @@ public class View extends Application {
 						colLines = -1;
 					}
 
-					sudoku.addColumn(j, l);
+					sudokuPane.addColumn(j, l);
 					colLines++;
 				}
 				rowLines = 0;
 				i++;
 			}
 
-			sudoku.addRow(i);
+			sudokuPane.addRow(i);
 			colLines = 0;
 
 			for (int j = 0; j < k * k + (k - 1); j++) {
 				if (colLines == k) {
-					sudoku.addColumn(j, new Line(0, 0, 0, pix));
+					sudokuPane.addColumn(j, new Line(0, 0, 0, pix));
 					colLines = 0;
 					j++;
 				}
@@ -184,14 +186,14 @@ public class View extends Application {
 				b.setAlignment(Pos.CENTER);
 				b.getStyleClass().add(BUTTON_CLASS);
 				b.setOnMouseClicked(new SudokuFieldController<MouseEvent>(this, b));
-				sudoku.addColumn(j, b);
+				sudokuPane.addColumn(j, b);
 				butIndex++;
 				colLines++;
 			}
 			rowLines++;
 		}
-		gameLayout.getChildren().add(sudoku);
-		AnchorPane.setLeftAnchor(sudoku, 0.0);
+		gameLayout.getChildren().add(sudokuPane);
+		AnchorPane.setLeftAnchor(sudokuPane, 0.0);
 
 		for (int i = 1; i <= k * k; i++) {
 			numbers.addRow(i - 1);
@@ -299,7 +301,7 @@ public class View extends Application {
 			grid.set(index, 0);
 		} else {
 			int value = Integer.parseInt(s);
-			for (int i = 0; i < grid.size(); i++) {
+			/*for (int i = 0; i < grid.size(); i++) {
 				if (grid.get(index, i) == value) {
 					// TODO highlight button with index (index*n+i)
 				}
@@ -308,7 +310,7 @@ public class View extends Application {
 				}
 			}
 			// TODO calc box and highlight as well
-			grid.set(index, value);
+			grid.set(index, value);*/
 			
 		}
 	}
@@ -324,5 +326,12 @@ public class View extends Application {
 
 	public void clearSelectedField() {
 		setSelectedFieldText("");
+	}
+
+	public void moveSelectedField(int x, int y) {
+		int newRow = Math.floorMod(selectedField.getIndex()/grid.size()+y, grid.size());
+		int newCol = Math.floorMod(selectedField.getIndex()+x, grid.size());
+		int newIndex = newRow*grid.size()+newCol;
+		setSelectedField(sudokuPane.getField(newIndex));
 	}
 }
