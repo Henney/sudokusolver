@@ -294,7 +294,23 @@ public class View extends Application {
 	
 	public void setSelectedFieldText(String s) {
 		selectedField.setText(s);
-		grid.set(selectedField.getIndex(), s.isEmpty() ? 0 : Integer.parseInt(s));
+		int index = selectedField.getIndex();
+		if (s.isEmpty()) {
+			grid.set(index, 0);
+		} else {
+			int value = Integer.parseInt(s);
+			for (int i = 0; i < grid.size(); i++) {
+				if (grid.get(index, i) == value) {
+					// TODO highlight button with index (index*n+i)
+				}
+				if (grid.get(i, index) == value) {
+					// TODO highlight button with index (index*n+i)
+				}
+			}
+			// TODO calc box and highlight as well
+			grid.set(index, value);
+			
+		}
 	}
 
 	public void inputNumber(int number) {

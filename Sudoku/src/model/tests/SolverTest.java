@@ -1,10 +1,13 @@
 package model.tests;
 
 import static org.junit.Assert.*;
+
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.StringTokenizer;
 
 import org.junit.Test;
 
@@ -103,7 +106,7 @@ public class SolverTest {
 			System.out.println(filename);
 			System.out.println(solved);
 		}
-		
+		System.out.println(solved);
 		assertTrue(solved.isSolved());
 	}
 	
@@ -200,6 +203,26 @@ public class SolverTest {
 	@Test
 	public void solvePentadoku1() throws IOException {
 		solveSudoku("pentadoku1");
+	}
+	
+	@Test
+	public void solveHexadoku1() throws IOException {
+		solveSudoku("hexadoku1");
+	}
+	
+//	@Test
+	public void solveHeptadoku1() throws IOException {
+		solveSudoku("heptadoku1");
+	}
+	
+	@Test
+	public void solveOctadoku1() throws IOException {
+		solveSudoku("octadoku1");
+	}
+	
+	@Test
+	public void solveEnneadoku1() throws IOException {
+		solveSudoku("enneadoku1");
 	}
 	
 //	@Test
