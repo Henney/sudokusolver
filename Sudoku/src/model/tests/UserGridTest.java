@@ -7,6 +7,7 @@ import java.util.Set;
 import org.junit.Test;
 
 import model.UserGrid;
+import model.util.Pair;
 
 public class UserGridTest {
 
@@ -17,9 +18,19 @@ public class UserGridTest {
 		assertTrue(grid.set(0, 1).fst.isEmpty());
 		assertTrue(grid.set(1, 2).fst.isEmpty());
 		
-		Set<Integer> conflicting = grid.set(2, 1).fst;
-		System.out.println(conflicting);
-		assertTrue(conflicting.contains(0));
+		Pair<Set<Integer>, Set<Integer>> s21 = grid.set(2, 1);
+		
+		assertTrue(s21.fst.contains(0));
+		assertTrue(s21.fst.contains(2));
+		
+		assertTrue(s21.snd.isEmpty());
+		
+		Pair<Set<Integer>, Set<Integer>> s23 = grid.set(2, 3);
+
+		System.out.println(s23.snd);
+		
+		assertTrue(s23.fst.isEmpty());
+		assertTrue(s23.snd.contains(0));
 	}
 
 }
