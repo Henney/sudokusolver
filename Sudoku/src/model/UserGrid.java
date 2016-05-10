@@ -7,8 +7,6 @@ import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.Set;
 
-import model.util.Pair;
-
 
 public class UserGrid {
 	
@@ -30,6 +28,14 @@ public class UserGrid {
 				cols[i][j] = new ArrayDeque<Integer>();
 				boxes[i][j] = new ArrayDeque<Integer>();
 			}
+		}
+		
+		for (int i = 0; i < grid.size(); i++) {
+			int x = grid.get(i);
+			
+			rows[grid.rowFor(i)][x].add(i);
+			cols[grid.colFor(i)][x].add(i);
+			boxes[grid.boxFor(i)][x].add(i);
 		}
 	}
 	
