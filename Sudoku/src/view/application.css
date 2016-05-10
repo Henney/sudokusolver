@@ -8,3 +8,7 @@
 	-fx-effect: none;
 	/*-fx-font-size: 8px;*/
 }
+
+.conflict {
+	-fx-background-color: linear-gradient(#ff0000, #ff0000);
+}

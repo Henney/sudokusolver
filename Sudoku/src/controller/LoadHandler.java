@@ -13,6 +13,7 @@ import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import model.Grid;
+import model.UserGrid;
 import view.View;
 
 public class LoadHandler<T> implements EventHandler<MouseEvent> {
@@ -28,7 +29,7 @@ public class LoadHandler<T> implements EventHandler<MouseEvent> {
 		FileChooser fc = new FileChooser();
 		File file = fc.showOpenDialog(view.getStage());
 		try {
-			Grid grid = new Grid(new FileReader(file));
+			UserGrid grid = new UserGrid(new FileReader(file));
 			view.setAndDisplayGrid(grid);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block

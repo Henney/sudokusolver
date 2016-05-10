@@ -2,21 +2,22 @@ package controller;
 
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
+import view.SudokuGridPane;
 import view.View;
 
 public class numberFieldController<T> implements EventHandler<MouseEvent> {
 
-	View view;
+	SudokuGridPane sudoku;
 	int number;
 	
-	public numberFieldController(View main, int number) {
-		this.view = main;
+	public numberFieldController(SudokuGridPane sudoku, int number) {
+		this.sudoku = sudoku;
 		this.number = number;
 	}
 
 	@Override
 	public void handle(MouseEvent event) {
-		view.inputNumber(number);
+		sudoku.inputNumber(number);
 	}
 
 }

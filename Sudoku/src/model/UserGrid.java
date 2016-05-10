@@ -33,6 +33,11 @@ public class UserGrid {
 		}
 	}
 	
+	public UserGrid(Grid grid) {
+		this.grid = grid;
+		initPossibleValues();
+	}
+	
 	public UserGrid(int k) {
 		grid = new Grid(k);
 		initPossibleValues();
@@ -96,5 +101,17 @@ public class UserGrid {
 		}
 				
 		return conflicting;
+	}
+	
+	public int k() {
+		return grid.k();
+	}
+	
+	public int size() {
+		return grid.size();
+	}
+	
+	public Grid getGrid() {
+		return grid;
 	}
 }

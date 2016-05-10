@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import model.Grid;
 import model.Solver;
+import model.UserGrid;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -36,9 +37,7 @@ public class View extends Application {
 	
 	private SudokuGridPane sudokuPane;
 
-	private Grid grid;
-
-	private SudokuButton selectedField;
+	UserGrid grid;
 
 	private final int DEFAULT_K = 3;
 
@@ -47,14 +46,12 @@ public class View extends Application {
 	private WindowResizeListener heightListener;
 
 	// css strings
-	private final String BUTTON_CLASS = "fieldButton";
-	private String noEffect = "-fx-effect: none;";
-	private String selectedEffect = "-fx-effect: innershadow( three-pass-box , rgba(255.0,0,0,.5) , 2, 1, 0, 0);";
+	static final String BUTTON_CLASS = "fieldButton";
 
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			this.grid = new Grid(DEFAULT_K);
+			this.grid = new UserGrid(DEFAULT_K);
 			this.primaryStage = primaryStage;
 			this.primaryStage.setTitle("Sudoku");
 			primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("Smiley_icon.png")));
@@ -89,7 +86,7 @@ public class View extends Application {
 		// Show the scene containing the root layout.
 		Scene scene = new Scene(rootLayout);
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-		scene.addEventHandler(KeyEvent.KEY_PRESSED, new InputHandler(this));
+		scene.addEventHandler(KeyEvent.KEY_PRESSED, new InputHandler(sudokuPane));
 		primaryStage.setScene(scene);
 	}
 
@@ -114,21 +111,7 @@ public class View extends Application {
 		int buttonWidth = (size / (k * k + 1)) * 3 / 4;
 		Font font = new Font(buttonWidth/4);
 		
-		GridPane sudoku = (GridPane) gameLayout.getChildren().get(0);
-		for (Node cell : sudoku.getChildren()) {
-			if (cell instanceof Button) {
-				((Button) cell).setMinSize(buttonWidth, buttonWidth);
-				((Button) cell).setMaxSize(buttonWidth, buttonWidth);
-				((Button) cell).setFont(font);
-			} else if (cell instanceof Line) {
-				Line line = ((Line) cell);
-				if (line.getEndX() > 1) {
-					line.setEndX(buttonWidth);
-				} else if (line.getEndY() > 1) {
-					line.setEndY(buttonWidth);
-				}
-			}
-		}
+		sudokuPane.scale(buttonWidth, font);
 
 		GridPane numbers = (GridPane) gameLayout.getChildren().get(1);
 		for (Node cell : numbers.getChildren()) {
@@ -145,53 +128,9 @@ public class View extends Application {
 		((AnchorPane) gameLayout).getChildren().clear();
 
 		int pix = 30;// (int)gridLayout.getPrefHeight()/k/k;
-		sudokuPane = new SudokuGridPane(grid.k());
+		sudokuPane = new SudokuGridPane(grid);
 		GridPane numbers = new GridPane();
-		int butIndex = 0;
-		int rowLines = 0;
-		for (int i = 0; i < k * k + (k - 1); i++) {
-			int colLines = 0;
-
-			if (rowLines == k) {
-				sudokuPane.addRow(i);
-
-				for (int j = 0; j < k * k + (k - 1); j++) {
-					Line l = new Line(0, 0, pix, 0);
-
-					if (colLines == k) {
-						l = new Line(0, 0, 1, 0);
-						colLines = -1;
-					}
-
-					sudokuPane.addColumn(j, l);
-					colLines++;
-				}
-				rowLines = 0;
-				i++;
-			}
-
-			sudokuPane.addRow(i);
-			colLines = 0;
-
-			for (int j = 0; j < k * k + (k - 1); j++) {
-				if (colLines == k) {
-					sudokuPane.addColumn(j, new Line(0, 0, 0, pix));
-					colLines = 0;
-					j++;
-				}
-
-				SudokuButton b = new SudokuButton(butIndex);
-				b.setMinSize(pix, pix);
-				b.setMaxSize(pix, pix);
-				b.setAlignment(Pos.CENTER);
-				b.getStyleClass().add(BUTTON_CLASS);
-				b.setOnMouseClicked(new SudokuFieldController<MouseEvent>(this, b));
-				sudokuPane.addColumn(j, b);
-				butIndex++;
-				colLines++;
-			}
-			rowLines++;
-		}
+		sudokuPane.setup();
 		gameLayout.getChildren().add(sudokuPane);
 		AnchorPane.setLeftAnchor(sudokuPane, 0.0);
 
@@ -202,60 +141,23 @@ public class View extends Application {
 			b.setMaxSize(pix, pix);
 			b.setAlignment(Pos.CENTER);
 			b.getStyleClass().add(BUTTON_CLASS);
-			b.setOnMouseClicked(new numberFieldController<MouseEvent>(this, i));
+			b.setOnMouseClicked(new numberFieldController<MouseEvent>(sudokuPane, i));
 			numbers.addColumn(0, b);
 		}
 		gameLayout.getChildren().add(numbers);
 		AnchorPane.setRightAnchor(numbers, 0.0);
 	}
 
-	public void setSelectedField(SudokuButton newField) {
-		if (selectedField != null && selectedField != newField
-				&& !selectedField.styleProperty().get().contains(noEffect)) {
-			selectedField.setStyle(noEffect);
-			String s = selectedField.getText();
-			if (!s.isEmpty()) {
-				int n = Integer.parseInt(s);
-				if (n > grid.size() || n <= 0) {
-					selectedField.setText("");
-				}
-			}
-		}
-
-		if (newField.styleProperty().get().contains(selectedEffect)) {
-			newField.setStyle(noEffect);
-			selectedField = null;
-		} else {
-			newField.setStyle(selectedEffect);
-			selectedField = newField;
-		}
-
-	}
-
 	public Window getStage() {
 		return this.primaryStage;
 	}
 
-	public void setAndDisplayGrid(Grid grid) {
+	public void setAndDisplayGrid(UserGrid grid) {
 		this.grid = grid;
 		setupSudoku(grid.k());
 		scaleSudoku((int)rootLayout.getHeight(), grid.k());
 		setSizeChangedListeners(grid.k());
-		displayGrid();
-	}
-
-	private void displayGrid() {
-		int i = 0;
-		GridPane sudokuGrid = (GridPane) gameLayout.getChildren().get(0);
-		for (Node cell : sudokuGrid.getChildren()) {
-			if (cell instanceof Button) {
-				int number = grid.get(i);
-				if (number != 0) {
-					((Button) cell).setText(number + "");
-				}
-				i++;
-			}
-		}
+		sudokuPane.displayGrid();
 	}
 
 	public AnchorPane getRootLayout() {
@@ -264,16 +166,16 @@ public class View extends Application {
 
 	public void solveSudoku() {
 		
-		Task<Grid> task = new Task<Grid>() {
+		Task<UserGrid> task = new Task<UserGrid>() {
 			
 			@Override
-			protected Grid call() throws Exception {
-				Solver s = new Solver(grid);
+			protected UserGrid call() throws Exception {
+				Solver s = new Solver(grid.getGrid());
 				Grid solvedGrid = s.solve();
 				Platform.runLater(new Runnable() {
                     @Override public void run() {
-                    	grid = solvedGrid;
-                		displayGrid();
+                    	grid = new UserGrid(solvedGrid);
+                		sudokuPane.displayGrid();
                     }
                 });
 				return grid;
@@ -288,50 +190,5 @@ public class View extends Application {
 
 	public static void main(String[] args) {
 		launch(args);
-	}
-
-	public Button getSelectedField() {
-		return this.selectedField;
-	}
-	
-	public void setSelectedFieldText(String s) {
-		selectedField.setText(s);
-		int index = selectedField.getIndex();
-		if (s.isEmpty()) {
-			grid.set(index, 0);
-		} else {
-			int value = Integer.parseInt(s);
-			/*for (int i = 0; i < grid.size(); i++) {
-				if (grid.get(index, i) == value) {
-					// TODO highlight button with index (index*n+i)
-				}
-				if (grid.get(i, index) == value) {
-					// TODO highlight button with index (index*n+i)
-				}
-			}
-			// TODO calc box and highlight as well
-			grid.set(index, value);*/
-			
-		}
-	}
-
-	public void inputNumber(int number) {
-		selectedField.setText("");
-		inputNumberNoDelete(number);
-	}
-
-	public void inputNumberNoDelete(int i) {
-		setSelectedFieldText(selectedField.getText() + String.valueOf(i));
-	}
-
-	public void clearSelectedField() {
-		setSelectedFieldText("");
-	}
-
-	public void moveSelectedField(int x, int y) {
-		int newRow = Math.floorMod(selectedField.getIndex()/grid.size()+y, grid.size());
-		int newCol = Math.floorMod(selectedField.getIndex()+x, grid.size());
-		int newIndex = newRow*grid.size()+newCol;
-		setSelectedField(sudokuPane.getField(newIndex));
 	}
 }
