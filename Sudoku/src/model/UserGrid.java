@@ -2,7 +2,6 @@ package model;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.lang.reflect.Array;
 import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,9 +32,11 @@ public class UserGrid {
 		for (int i = 0; i < grid.size(); i++) {
 			int x = grid.get(i);
 			
-			rows[grid.rowFor(i)][x].add(i);
-			cols[grid.colFor(i)][x].add(i);
-			boxes[grid.boxFor(i)][x].add(i);
+			if (x != 0) {
+				rows[grid.rowFor(i)][x].add(i);
+				cols[grid.colFor(i)][x].add(i);
+				boxes[grid.boxFor(i)][x].add(i);
+			}
 		}
 	}
 	
@@ -83,19 +84,23 @@ public class UserGrid {
 			boxes[box][old].remove(i);
 		}
 		
-		ArrayDeque<Integer> r = rows[row][val];
+		if (val == 0) {
+			return conflicting;
+		}
+		
+		ArrayDeque<Integer> r = rows[row][val-1];
 		r.push(i);
 		if (r.size() > 1) {
 			conflicting.addAll(r);
 		}
 
-		ArrayDeque<Integer> c = cols[col][val];
+		ArrayDeque<Integer> c = cols[col][val-1];
 		c.push(i);
 		if (c.size() > 1) {
 			conflicting.addAll(c);
 		}
 		
-		ArrayDeque<Integer> b = boxes[box][val];
+		ArrayDeque<Integer> b = boxes[box][val-1];
 		b.push(i);
 		if (b.size() > 1) {
 			conflicting.addAll(b);
