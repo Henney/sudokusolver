@@ -70,6 +70,7 @@ public class UserGrid {
 	}
 	
 	public Pair<Set<Integer>, Set<Integer>> set(int i, int val) {
+		int old = grid.get(i);
 		grid.set(i, val);
 		
 		HashSet<Integer> conflicting = new HashSet<Integer>();
@@ -79,14 +80,14 @@ public class UserGrid {
 		final int col = grid.colFor(i);
 		final int box = grid.boxFor(i);
 		
-		int old = grid.get(i);
-		
 		if (old != 0) {
+			System.out.println(i + ", " + val);
+			
 			old--;
 			
 			ArrayDeque<Integer> r = rows[row][old];
-			ArrayDeque<Integer> c = rows[col][old];
-			ArrayDeque<Integer> b = rows[box][old];
+			ArrayDeque<Integer> c = cols[col][old];
+			ArrayDeque<Integer> b = boxes[box][old];
 			
 			r.remove(i);
 			c.remove(i);
@@ -117,6 +118,8 @@ public class UserGrid {
 			}
 		}
 		
+		System.out.println(i + ", " + val + ": " + resolved);
+		
 		if (val == 0) {
 			return new Pair<Set<Integer>, Set<Integer>>(conflicting, resolved);
 		}
@@ -138,7 +141,7 @@ public class UserGrid {
 		if (b.size() > 1) {
 			conflicting.addAll(b);
 		}
-				
+			
 		return new Pair<Set<Integer>, Set<Integer>>(conflicting, resolved);
 	}
 	
@@ -156,5 +159,6 @@ public class UserGrid {
 		x--;
 		
 		return rows[row][x].size() > 1 || cols[col][x].size() > 1 || boxes[box][x].size() > 1;
+
 	}
 }
