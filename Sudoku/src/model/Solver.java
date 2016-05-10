@@ -177,18 +177,14 @@ public class Solver {
 	}
 
 	private int setRowImpossible(int field, int x) {
-		final int row = field / n;
+		final int row = grid.rowFor(field);
 		final int startField = row * n;
 
 		int numberChanged = 0;
 
 		for (int c = 0; c < n; c++) {
-			int i = startField + c;
-
-			if (pvs[i] != null && pvs[i].set(x, false)) {
-				changed.push(new Pair<Integer, Integer>(i, x));
+			if (updateField(startField + c, x)) {
 				numberChanged++;
-				pq.changePrio(i, pvs[i].possible());
 			}
 		}
 
@@ -196,17 +192,13 @@ public class Solver {
 	}
 
 	private int setColImpossible(int field, int x) {
-		final int col = field % n;
+		final int col = grid.colFor(field);
 
 		int numberChanged = 0;
 
 		for (int r = 0; r < n; r++) {
-			int i = r * n + col;
-
-			if (pvs[i] != null && pvs[i].set(x, false)) {
-				changed.push(new Pair<Integer, Integer>(i, x));
+			if (updateField(r * n + col, x)) {
 				numberChanged++;
-				pq.changePrio(i, pvs[i].possible());
 			}
 		}
 
@@ -214,8 +206,8 @@ public class Solver {
 	}
 
 	private int setBoxImpossible(int field, int x) {
-		final int row = field / n;
-		final int col = field % n;
+		final int row = grid.rowFor(field);
+		final int col = grid.colFor(field);
 
 		final int boxRow = (row / k) * k;
 		final int boxCol = (col / k) * k;
@@ -226,17 +218,23 @@ public class Solver {
 			int rn = r * n;
 
 			for (int c = boxCol; c < boxCol + k; c++) {
-				int i = rn + c;
-
-				if (pvs[i] != null && pvs[i].set(x, false)) {
-					changed.push(new Pair<Integer, Integer>(i, x));
+				if (updateField(rn+c, x)) {
 					numberChanged++;
-					pq.changePrio(i, pvs[i].possible());
 				}
 			}
 		}
 
 		return numberChanged;
+	}
+	
+	private boolean updateField(int i, int x) {
+		if (pvs[i] != null && pvs[i].set(x, false)) {
+			changed.push(new Pair<Integer, Integer>(i, x));
+			pq.changePrio(i, pvs[i].possible());
+			return true;
+		}
+		
+		return false;
 	}
 
 	private int setConnectedImpossible(int field, int x) {
