@@ -16,7 +16,6 @@ public class Solver {
 	private ArrayDeque<Pair<Integer, ArrayDeque<Integer>>> uniqueCandChanged;
 	private PossibleValues[] pvs;
 
-	// TODO: this can probably be static
 	private ArrayDeque<Integer>[] buckets;
 	private ArrayDeque<Integer>[] rows;
 	private ArrayDeque<Integer>[] cols;
@@ -70,9 +69,7 @@ public class Solver {
 			buckets[i].clear();
 		}
 
-		IntLinkedList prio2s = pq.valuesWithPrio(2);
-
-		Node head = prio2s.peek();
+		Node head = pq.valuesWithPrio(2).peek();
 
 		while (head != null) {
 			int field = head.getValue();

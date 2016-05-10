@@ -106,7 +106,8 @@ public class SolverTest {
 			System.out.println(filename);
 			System.out.println(solved);
 		}
-		System.out.println(solved);
+		
+//		System.out.println(solved);
 		assertTrue(solved.isSolved());
 	}
 	
