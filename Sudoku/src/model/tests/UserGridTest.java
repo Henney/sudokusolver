@@ -14,10 +14,10 @@ public class UserGridTest {
 	public void setPossible() {
 		UserGrid grid = new UserGrid(3);
 
-		assertTrue(grid.set(0, 1).isEmpty());
-		assertTrue(grid.set(1, 2).isEmpty());
+		assertTrue(grid.set(0, 1).fst.isEmpty());
+		assertTrue(grid.set(1, 2).fst.isEmpty());
 		
-		Set<Integer> conflicting = grid.set(2, 1);
+		Set<Integer> conflicting = grid.set(2, 1).fst;
 		System.out.println(conflicting);
 		assertTrue(conflicting.contains(0));
 	}

@@ -6,6 +6,8 @@ import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.Set;
 
+import model.util.Pair;
+
 
 public class UserGrid {
 	
@@ -63,14 +65,15 @@ public class UserGrid {
 		return grid.get(i);
 	}
 	
-	public Set<Integer> set(int row, int col, int val) {
+	public Pair<Set<Integer>, Set<Integer>> set(int row, int col, int val) {
 		return set(row*grid.size() + col, val);
 	}
 	
-	public Set<Integer> set(int i, int val) {
+	public Pair<Set<Integer>, Set<Integer>> set(int i, int val) {
 		grid.set(i, val);
 		
 		HashSet<Integer> conflicting = new HashSet<Integer>();
+		HashSet<Integer> resolved = new HashSet<Integer>();
 		
 		final int row = grid.rowFor(i);
 		final int col = grid.colFor(i);
@@ -79,13 +82,43 @@ public class UserGrid {
 		int old = grid.get(i);
 		
 		if (old != 0) {
-			rows[row][old].remove(i);
-			cols[col][old].remove(i);
-			boxes[box][old].remove(i);
+			old--;
+			
+			ArrayDeque<Integer> r = rows[row][old];
+			ArrayDeque<Integer> c = rows[col][old];
+			ArrayDeque<Integer> b = rows[box][old];
+			
+			r.remove(i);
+			c.remove(i);
+			b.remove(i);
+			
+			if (r.size() == 1) {
+				int f = r.peek();
+				
+				if(!inConflict(f)) {
+					resolved.add(f);
+				}
+			}
+			
+			if (c.size() == 1) {
+				int f = c.peek();
+				
+				if(!inConflict(f)) {
+					resolved.add(f);
+				}
+			}
+			
+			if (b.size() == 1) {
+				int f = b.peek();
+				
+				if(!inConflict(f)) {
+					resolved.add(f);
+				}
+			}
 		}
 		
 		if (val == 0) {
-			return conflicting;
+			return new Pair<Set<Integer>, Set<Integer>>(conflicting, resolved);
 		}
 		
 		ArrayDeque<Integer> r = rows[row][val-1];
@@ -106,6 +139,22 @@ public class UserGrid {
 			conflicting.addAll(b);
 		}
 				
-		return conflicting;
+		return new Pair<Set<Integer>, Set<Integer>>(conflicting, resolved);
+	}
+	
+	private boolean inConflict(int i) {
+		final int row = grid.rowFor(i);
+		final int col = grid.colFor(i);
+		final int box = grid.boxFor(i);
+		
+		int x = grid.get(i);
+		
+		if (x == 0) {
+			return false;
+		}
+		
+		x--;
+		
+		return rows[row][x].size() > 1 || cols[col][x].size() > 1 || boxes[box][x].size() > 1;
 	}
 }
