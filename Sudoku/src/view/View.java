@@ -8,7 +8,7 @@ import controller.LoadHandler;
 import controller.SolveHandler;
 import controller.SudokuFieldController;
 import controller.WindowResizeListener;
-import controller.numberFieldController;
+import controller.NumberFieldController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -88,7 +88,6 @@ public class View extends Application {
 		// Show the scene containing the root layout.
 		Scene scene = new Scene(rootLayout);
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-		scene.addEventHandler(KeyEvent.KEY_PRESSED, new InputHandler(sudokuPane));
 		primaryStage.setScene(scene);
 	}
 
@@ -129,12 +128,13 @@ public class View extends Application {
 	private void setupSudoku(int k) {
 		((AnchorPane) gameLayout).getChildren().clear();
 
-		int pix = 30;// (int)gridLayout.getPrefHeight()/k/k;
+		int pix = 30;
 		sudokuPane = new SudokuGridPane(grid);
 		GridPane numbers = new GridPane();
 		sudokuPane.setup();
 		gameLayout.getChildren().add(sudokuPane);
 		AnchorPane.setLeftAnchor(sudokuPane, 0.0);
+		sudokuPane.addEventHandler(KeyEvent.KEY_PRESSED, new InputHandler(sudokuPane));
 
 		for (int i = 1; i <= k * k; i++) {
 			numbers.addRow(i - 1);
@@ -143,7 +143,7 @@ public class View extends Application {
 			b.setMaxSize(pix, pix);
 			b.setAlignment(Pos.CENTER);
 			b.getStyleClass().add(BUTTON_CLASS);
-			b.setOnMouseClicked(new numberFieldController<MouseEvent>(sudokuPane, i));
+			b.setOnMouseClicked(new NumberFieldController<MouseEvent>(sudokuPane, i));
 			numbers.addColumn(0, b);
 		}
 		gameLayout.getChildren().add(numbers);
@@ -176,8 +176,7 @@ public class View extends Application {
 				Grid solvedGrid = s.solve();
 				Platform.runLater(new Runnable() {
                     @Override public void run() {
-                    	grid = new UserGrid(solvedGrid);
-                		sudokuPane.displayGrid();
+                    	setAndDisplayGrid(new UserGrid(solvedGrid));
                     }
                 });
 				return grid;
