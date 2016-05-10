@@ -35,6 +35,7 @@ public class UserGrid {
 			int x = grid.get(i);
 			
 			if (x != 0) {
+				x--;
 				rows[grid.rowFor(i)][x].add(i);
 				cols[grid.colFor(i)][x].add(i);
 				boxes[grid.boxFor(i)][x].add(i);

@@ -12,3 +12,7 @@
 .conflict {
 	-fx-background-color: linear-gradient(#ff0000, #ff0000);
 }
+
+.selected {
+	-fx-effect: innershadow( three-pass-box , rgba(255.0,0,0,.5) , 2, 1, 0, 0);
+}

@@ -12,6 +12,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import model.Grid;
 import model.UserGrid;
+import model.util.Pair;
 
 public class SudokuGridPane extends GridPane {
 
@@ -23,8 +24,7 @@ public class SudokuGridPane extends GridPane {
 	
 	// css strings
 	static final String CONFLICT_CLASS = "conflict";
-	private String noEffect = "-fx-effect: none;";
-	private String selectedEffect = "-fx-effect: innershadow( three-pass-box , rgba(255.0,0,0,.5) , 2, 1, 0, 0);";
+	static final String SELECTED_CLASS = "selected";
 	
 	public SudokuGridPane(UserGrid grid) {
 		super();
@@ -123,23 +123,21 @@ public class SudokuGridPane extends GridPane {
 	}
 
 	public void setSelectedField(SudokuButton newField) {
-		if (selectedField != null && selectedField != newField
-				&& !selectedField.styleProperty().get().contains(noEffect)) {
-			selectedField.setStyle(noEffect);
+		if (selectedField != null && selectedField != newField) {
+			selectedField.getStyleClass().remove(SELECTED_CLASS);
 			String s = selectedField.getText();
 			if (!s.isEmpty()) {
 				int x = Integer.parseInt(s);
 				if (x > n || x <= 0) {
-					selectedField.setText("");
+					setSelectedFieldText("");
 				}
 			}
 		}
-
-		if (newField.styleProperty().get().contains(selectedEffect)) {
-			newField.setStyle(noEffect);
+		if (newField.equals(selectedField)) {
+			newField.getStyleClass().remove(SELECTED_CLASS);
 			selectedField = null;
 		} else {
-			newField.setStyle(selectedEffect);
+			newField.getStyleClass().add(SELECTED_CLASS);
 			selectedField = newField;
 		}
 
@@ -159,22 +157,30 @@ public class SudokuGridPane extends GridPane {
 	public void setSelectedFieldText(String s) {
 		selectedField.setText(s);
 		int index = selectedField.getIndex();
+		Pair<Set<Integer>, Set<Integer>> conflicts;
 		if (s.isEmpty()) {
-			grid.set(index, 0);
+			conflicts = grid.set(index, 0);
+			setConflict(index, false);
 		} else {
 			int value = Integer.parseInt(s);
 			if (value < n) {
-				Set<Integer> conflicts = grid.set(index, value);
-				for (Integer i : conflicts) {
-					setConflict(i);
-				}
+				conflicts = grid.set(index, value);
+			} else {
+				return;
 			}
+		}
+		
+		for (int i : conflicts.fst) {
+			setConflict(i, true);
+		}
+		for (int i : conflicts.snd) {
+			setConflict(i, false);
 		}
 	}
 	
-	private void setConflict(int index) {
+	private void setConflict(int index, boolean conflict) {
 		getField(index).getStyleClass().remove(CONFLICT_CLASS);
-		getField(index).getStyleClass().add(CONFLICT_CLASS);
+		if (conflict) getField(index).getStyleClass().add(CONFLICT_CLASS);
 	}
 
 	public void inputNumber(int number) {

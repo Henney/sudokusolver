@@ -2,6 +2,7 @@ package view;
 
 import java.io.IOException;
 
+import controller.FetchHandler;
 import controller.InputHandler;
 import controller.LoadHandler;
 import controller.SolveHandler;
@@ -80,6 +81,7 @@ public class View extends Application {
 		loadButton.setOnMouseClicked(new LoadHandler<MouseEvent>(this));
 		Button saveButton = (Button) rootLayout.lookup("#SaveButton");
 		Button fetchButton = (Button) rootLayout.lookup("#FetchButton");
+		fetchButton.setOnMouseClicked(new FetchHandler<MouseEvent>(this));
 		Button solveButton = (Button) rootLayout.lookup("#SolveButton");
 		solveButton.setOnMouseClicked(new SolveHandler<MouseEvent>(this));
 
