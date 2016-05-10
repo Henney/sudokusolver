@@ -5,6 +5,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Iterator;
 
 import model.util.Pair;
 
@@ -65,6 +66,121 @@ public class Grid {
 		this.grid[n*row + col] = val;
 	}
 	
+	private class RowIterator implements Iterable<Integer> {
+		final int row;
+		
+		public RowIterator(int r) {
+			row = r;
+		}
+		
+		public Iterator<Integer> iterator() {
+			return new Iterator<Integer>() {
+				private int col = 0;
+				
+				@Override
+	            public boolean hasNext() {
+	                return col < n;
+	            }
+
+	            @Override
+	            public Integer next() {
+	                int ret = get(row, col);
+	                col++;
+	                return ret;
+	            }
+
+	            @Override
+	            public void remove() {
+	                throw new UnsupportedOperationException();
+	            }
+			};
+		}
+	}
+	
+	private class ColIterator implements Iterable<Integer> {
+		final int col;
+		
+		public ColIterator(int c) {
+			col = c;
+		}
+		
+		public Iterator<Integer> iterator() {
+			return new Iterator<Integer>() {
+				private int row = 0;
+				
+				@Override
+	            public boolean hasNext() {
+	                return row < n;
+	            }
+
+	            @Override
+	            public Integer next() {
+	                int ret = get(row, col);
+	                row++;
+	                return ret;
+	            }
+
+	            @Override
+	            public void remove() {
+	                throw new UnsupportedOperationException();
+	            }
+			};
+		}
+	}
+	
+	private class BoxIterator implements Iterable<Integer> {
+		final int box;
+		
+		public BoxIterator(int b) {
+			box = b;
+		}
+		
+		public Iterator<Integer> iterator() {
+			return new Iterator<Integer>() {
+				private int r = 0;
+				private int c = 0;
+				
+				private final int startRow = (box / k) * k;
+				private final int startCol = (box % k) * k;
+				
+				@Override
+	            public boolean hasNext() {
+	                return r < k && c < k;
+	            }
+	
+	            @Override
+	            public Integer next() {
+	                int ret = get(startRow+r, startCol+c);
+	                
+	                c++;
+	                
+	                if (c >= k) {
+	                	c = 0;
+	                	r++;
+	                }
+	                
+                return ret;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+		};}
+	}
+	
+	public RowIterator iterRow(int r) {
+		return new RowIterator(r);
+	}
+	
+	public ColIterator iterCol(int c) {
+		return new ColIterator(c);
+	}
+	
+	public BoxIterator iterBox(int b) {
+		return new BoxIterator(b);
+	}
+	
 	public boolean isSolved() {
 		for (int i = 0; i < grid.length; i++) {
 			if (grid[i] == 0) {
@@ -77,37 +193,32 @@ public class Grid {
 		for (int row = 0; row < n; row++) {
 			found.clear();
 			
-			for (int col = 0; col < n; col++) {
-				found.set(get(row, col)-1);
+			for (int f : iterRow(row)) {
+				found.set(f - 1);
 			}
-
+			
 			if (found.cardinality() < n) {
 				return false;
 			}
 		}
-
+		
 		for (int col = 0; col < n; col++) {
 			found.clear();
-
-			for (int row = 0; row < n; row++) {
-				found.set(get(row, col)-1);
+			
+			for (int f : iterCol(col)) {
+				found.set(f - 1);
 			}
 
 			if (found.cardinality() < n) {
 				return false;
 			}
 		}
-
+		
 		for (int box = 0; box < n; box++) {
-			int startRow = (box / k) * k;
-			int startCol = (box % k) * k;
-
 			found.clear();
-
-			for (int dRow = 0; dRow < k; dRow++) {
-				for (int dCol = 0; dCol < k; dCol++) {
-					found.set(get(startRow + dRow, startCol + dCol)-1);
-				}
+			
+			for (int f : iterBox(box)) {
+				found.set(f - 1);
 			}
 
 			if (found.cardinality() < n) {

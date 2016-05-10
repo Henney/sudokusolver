@@ -392,8 +392,8 @@ public class Solver {
 		for (int row = 0; row < n; row++) {
 			PossibleValues rowPossible = new PossibleValues(n);
 
-			for (int col = 0; col < n; col++) {
-				rowPossible.set(grid.get(row, col), false);
+			for (int f : grid.iterRow(row)) {
+				rowPossible.set(f, false);
 			}
 
 			for (int col = 0; col < n; col++) {
@@ -404,12 +404,11 @@ public class Solver {
 			}
 		}
 
-		// TODO: do something about the redundancy?
 		for (int col = 0; col < n; col++) {
 			PossibleValues colPossible = new PossibleValues(n);
 
-			for (int row = 0; row < n; row++) {
-				colPossible.set(grid.get(row, col), false);
+			for (int f : grid.iterCol(col)) {
+				colPossible.set(f, false);
 			}
 
 			for (int row = 0; row < n; row++) {
@@ -423,16 +422,13 @@ public class Solver {
 		final int k = grid.k();
 
 		for (int box = 0; box < n; box++) {
-			int startRow = (box / k) * k;
-			int startCol = (box % k) * k;
+			final int startRow = (box / k) * k;
+			final int startCol = (box % k) * k;
 
 			PossibleValues boxPossible = new PossibleValues(n);
-
-			for (int dRow = 0; dRow < k; dRow++) {
-				for (int dCol = 0; dCol < k; dCol++) {
-
-					boxPossible.set(grid.get(startRow + dRow, startCol + dCol), false);
-				}
+			
+			for (int f : grid.iterBox(box)) {
+				boxPossible.set(f, false);
 			}
 
 			for (int dRow = 0; dRow < k; dRow++) {
