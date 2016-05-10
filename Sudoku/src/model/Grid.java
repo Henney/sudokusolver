@@ -66,6 +66,18 @@ public class Grid {
 		this.grid[n*row + col] = val;
 	}
 	
+	public int rowFor(int field) {
+		return field / n;
+	}
+	
+	public int colFor(int field) {
+		return field % n;
+	}
+	
+	public int boxFor(int field) {
+		return (rowFor(field) / k) * k + colFor(field) / k;
+	}
+	
 	private class RowIterator implements Iterable<Integer> {
 		final int row;
 		
