@@ -163,7 +163,7 @@ public class SudokuGridPane extends GridPane {
 			setConflict(index, false);
 		} else {
 			int value = Integer.parseInt(s);
-			if (value < n) {
+			if (value <= n) {
 				conflicts = grid.set(index, value);
 			} else {
 				return;
