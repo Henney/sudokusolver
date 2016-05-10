@@ -87,7 +87,7 @@ public class View extends Application {
 
 		// Show the scene containing the root layout.
 		Scene scene = new Scene(rootLayout);
-		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		scene.getStylesheets().add(getClass().getResource("stylesheets/application.css").toExternalForm());
 		primaryStage.setScene(scene);
 	}
 
@@ -172,13 +172,8 @@ public class View extends Application {
 			
 			@Override
 			protected UserGrid call() throws Exception {
-				Solver s = new Solver(grid.getGrid());
+				GuiSolver s = new GuiSolver(grid.getGrid(), View.this);
 				Grid solvedGrid = s.solve();
-				Platform.runLater(new Runnable() {
-                    @Override public void run() {
-                    	setAndDisplayGrid(new UserGrid(solvedGrid));
-                    }
-                });
 				return grid;
 			}
 			

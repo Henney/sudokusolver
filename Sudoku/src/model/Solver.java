@@ -10,7 +10,7 @@ import model.util.Pair;
 
 public class Solver {
 
-	private Grid grid;
+	public Grid grid;
 	private IntPriorityQueue pq;
 	private ArrayDeque<Pair<Integer, Integer>> changed;
 	private ArrayDeque<Pair<Integer, ArrayDeque<Integer>>> uniqueCandChanged;
@@ -311,7 +311,7 @@ public class Solver {
 		}
 	}
 
-	private Grid solve_helper(Grid g) {
+	protected Grid solve_helper(Grid g) {
 		if (pq.isEmpty()) {
 			return g;
 		}
