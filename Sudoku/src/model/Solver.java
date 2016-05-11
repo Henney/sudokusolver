@@ -354,6 +354,8 @@ public class Solver {
 			// UPDATE
 
 			g.set(field, x);
+			
+			showGrid(g);
 
 			int numberChanged = setConnectedImpossible(field, x);
 
@@ -447,4 +449,7 @@ public class Solver {
 		return pvs;
 	}
 
+	protected void showGrid(Grid g) {
+		// This method does nothing but is overridden in GuiSolver to display the grid.		
+	}
 }

@@ -13,13 +13,12 @@ public class GuiSolver extends Solver {
 		super(grid);
 		this.view = view;
 	}
-	
+
 	@Override
-	protected Grid solve_helper(Grid g) {
-		final Grid grid = new Grid(g);
+	protected void showGrid(Grid g) {
 		Platform.runLater(new Runnable() {
             @Override public void run() {
-            	view.setAndDisplayGrid(new UserGrid(grid));
+            	view.setAndDisplayGrid(new UserGrid(g));
             }
         });
 		try {
@@ -28,8 +27,6 @@ public class GuiSolver extends Solver {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		g = super.solve_helper(g);
-		return g;
 	}
 
 }
