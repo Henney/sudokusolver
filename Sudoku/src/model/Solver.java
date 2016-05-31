@@ -1,12 +1,14 @@
 package model;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.function.BiFunction;
 
 import model.util.IntLinkedList;
 import model.util.IntPriorityQueue;
 import model.util.Node;
 import model.util.Pair;
+import model.util.XWingBucket;
 
 public class Solver {
 
@@ -310,6 +312,95 @@ public class Solver {
 			pq.changePrio(item.fst, pvs[item.fst].possible());
 		}
 	}
+	
+	private void xWing() {
+		xWingRow();
+		xWingCol();
+	}
+
+	private void xWingRow() {
+		for (int val = 1; val <= n; val++) {
+
+			XWingBucket rowBucket = new XWingBucket(n);
+			
+			for (int rowIdx = 0; rowIdx < n*n; rowIdx += n) {
+				ArrayDeque<Integer> fields = new ArrayDeque<Integer>();
+				for (int field : grid.iterRow(rowIdx)) {
+					if (pvs[field].get(val)) {
+						fields.add(field);
+					}
+				}
+				
+				if (fields.size() == 2) {
+					int f1 = fields.poll();
+					int f2 = fields.poll();
+					rowBucket.add(grid.colFor(f1), grid.colFor(f2), f1, f2);
+				}
+			}
+			
+			for (Pair<Pair<Integer, Integer>,
+					  Pair<Integer, Integer>> x : rowBucket.getBest()) {
+				int field1 = x.fst.fst;
+				int field2 = x.fst.snd;
+				int field3 = x.snd.fst;
+				int field4 = x.snd.snd;
+				
+				int col1 = grid.colFor(x.fst.fst);
+				int col2 = grid.colFor(x.fst.snd);
+								
+				for (int field : grid.iterCol(col1)) {
+					if (field == field1 || field == field3) continue;
+					pvs[field].set(val, false);
+				}
+				for (int field : grid.iterCol(col2)) {
+					if (field == field2 || field == field4) continue;
+					pvs[field].set(val, false);
+				}
+			}
+		}
+	}
+
+	private void xWingCol() {		
+		for (int val = 1; val <= n; val++) {
+
+			XWingBucket colBucket = new XWingBucket(n);
+			
+			for (int colIdx = 0; colIdx < n; colIdx++) {
+				ArrayDeque<Integer> fields = new ArrayDeque<Integer>();
+				for (int field : grid.iterCol(colIdx)) {
+					if (pvs[field].get(val)) {
+						fields.add(field);
+					}
+				}
+				
+				if (fields.size() == 2) {
+					int f1 = fields.poll();
+					int f2 = fields.poll();
+					colBucket.add(grid.rowFor(f1), grid.rowFor(f2), f1, f2);
+				}
+			}
+			
+			for (Pair<Pair<Integer, Integer>,
+					  Pair<Integer, Integer>> x : colBucket.getBest()) {
+				int field1 = x.fst.fst;
+				int field2 = x.fst.snd;
+				int field3 = x.snd.fst;
+				int field4 = x.snd.snd;
+				
+				int row1 = grid.rowFor(x.fst.fst);
+				int row2 = grid.rowFor(x.fst.snd);
+								
+				for (int field : grid.iterCol(row1)) {
+					if (field == field1 || field == field3) continue;
+					pvs[field].set(val, false);
+				}
+				for (int field : grid.iterCol(row2)) {
+					if (field == field2 || field == field4) continue;
+					pvs[field].set(val, false);
+				}
+			}
+		}
+	}
 
 	protected Grid solve_helper(Grid g) {
 		if (pq.isEmpty()) {
@@ -326,7 +417,7 @@ public class Solver {
 
 		int twinsChanged = 0;
 		if (pq.valuesWithPrio(1).isEmpty()) {
-//			twinsChanged = twins(g);
+			twinsChanged = twins(g);
 		}
 			
 		if (twinsChanged == -1) {
