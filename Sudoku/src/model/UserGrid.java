@@ -95,7 +95,7 @@ public class UserGrid {
 			r.remove(i);
 			c.remove(i);
 			b.remove(i);
-
+			
 			if (r.size() == 1) {
 				if (!inConflict(r.peek())) {
 					resolved.add(r.peek());
@@ -113,6 +113,10 @@ public class UserGrid {
 					resolved.add(b.peek());
 				}
 			}
+			
+			if (r.size() == 1 && c.size() == 1 && b.size() == 1) {
+				resolved.add(i);
+			}
 		}
 
 		if (val == 0) {
@@ -124,8 +128,6 @@ public class UserGrid {
 		ArrayDeque<Integer> r = rows[row][val];
 		ArrayDeque<Integer> c = cols[col][val];
 		ArrayDeque<Integer> b = boxes[box][val];
-
-		System.out.println(val + ": " + r);
 
 		r.push(i);
 		if (r.size() > 1) {

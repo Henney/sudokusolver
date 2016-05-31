@@ -34,6 +34,22 @@ public class UserGridTest {
 	}
 	
 	@Test
+	public void setPossibleRevert() {
+		UserGrid grid = new UserGrid(3);
+
+		assertTrue(grid.set(10, 1).fst.isEmpty());
+		
+		assertTrue(grid.set(0, 1).fst.size() == 2);
+		assertTrue(grid.set(16, 1).fst.size() == 2);
+		assertTrue(grid.set(28, 1).fst.size() == 2);
+
+		Pair<Set<Integer>, Set<Integer>> cr = grid.set(10, 2);
+		assertTrue(cr.fst.size() == 0);
+		assertTrue(cr.snd.size() == 4);
+		
+	}
+	
+	@Test
 	public void box9regression() throws IOException {
 		UserGrid grid = new UserGrid(new FileReader("puzzles/sudoku1.txt"));
 		
