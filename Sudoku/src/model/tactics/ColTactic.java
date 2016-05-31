@@ -10,8 +10,8 @@ public class ColTactic extends Tactic {
 	}
 	
 	@Override
-	public boolean apply(int field, int value) {
-		return pGrid.setColImpossible(field, value);
+	public void apply(int field, int value) {
+		pGrid.setColImpossible(field, value);
 	}
 
 }

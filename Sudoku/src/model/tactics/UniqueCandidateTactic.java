@@ -35,7 +35,7 @@ public class UniqueCandidateTactic extends Tactic {
 
 	@Override
 @SuppressWarnings({ "rawtypes", "unchecked" })
-	public boolean apply(int field_, int value_) throws UnsolvableException {
+	public void apply(int field_, int value_) throws UnsolvableException {
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
 				rowBucket[i][j].clear();
@@ -82,8 +82,6 @@ public class UniqueCandidateTactic extends Tactic {
 				}
 			}
 		}
-		
-		return false; // TODO
 	}
 
 }

@@ -10,8 +10,8 @@ public class RowTactic extends Tactic {
 	}
 	
 	@Override
-	public boolean apply(int field, int value) {
-		return pGrid.setRowImpossible(field, value);
+	public void apply(int field, int value) {
+		pGrid.setRowImpossible(field, value);
 	}
 
 }

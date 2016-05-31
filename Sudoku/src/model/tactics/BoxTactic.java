@@ -10,8 +10,8 @@ public class BoxTactic extends Tactic {
 	}
 	
 	@Override
-	public boolean apply(int field, int value) {
-		return pGrid.setBoxImpossible(field, value);
+	public void apply(int field, int value) {
+		pGrid.setBoxImpossible(field, value);
 	}
 
 }

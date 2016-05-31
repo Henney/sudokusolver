@@ -51,25 +51,6 @@ public class PossibleValues {
 		
 		return false;
 	}
-	
-	public ArrayDeque<Integer> setOnlyPossible(int value) {
-		if (!possible[value]) {
-			return null;
-		}
-		
-		ArrayDeque<Integer> oldPossible = new ArrayDeque<Integer>();
-		
-		for (int i = 0; i < possible.length; i++) {
-			if (possible[i]) {
-				oldPossible.add(i);
-				set(i, false);
-			}
-		}
-		set(value, true);
-		assert numberPossible == 1;
-		
-		return oldPossible;
-	}
 
 	public boolean get(int value) {
 		return possible[value];
@@ -111,6 +92,10 @@ public class PossibleValues {
 		sb.append("}");
 
 		return sb.toString();
+	}
+	
+	public boolean equals(PossibleValues other) {
+		return Arrays.equals(possible, other.possible);
 	}
 
 }

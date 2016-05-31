@@ -5,6 +5,7 @@ import java.util.function.BiFunction;
 
 import model.tactics.BoxTactic;
 import model.tactics.ColTactic;
+import model.tactics.IncrementalTwinsTactic;
 import model.tactics.RowTactic;
 import model.tactics.Tactic;
 import model.tactics.TwinsTactic;
@@ -44,9 +45,12 @@ public class Solver {
 		pGrid = new PossibleValuesGrid(grid, pvs, pq);
 
 		alwaysTactics = new Tactic[] { new RowTactic(grid, pGrid), new ColTactic(grid, pGrid),
-				new BoxTactic(grid, pGrid) };
+				new BoxTactic(grid, pGrid), new IncrementalTwinsTactic(grid, pGrid)
+				};
 
-		choiceTactics = new Tactic[] { new UniqueCandidateTactic(grid, pGrid), new TwinsTactic(grid, pGrid) };
+		choiceTactics = new Tactic[] { new UniqueCandidateTactic(grid, pGrid)
+//				, new TwinsTactic(grid, pGrid)
+				};
 
 		return solve_helper(new Grid(grid));
 	}
