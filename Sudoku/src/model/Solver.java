@@ -3,6 +3,13 @@ package model;
 import java.util.ArrayDeque;
 import java.util.function.BiFunction;
 
+import model.tactics.BoxTactic;
+import model.tactics.ColTactic;
+import model.tactics.RowTactic;
+import model.tactics.Tactic;
+import model.tactics.TwinsTactic;
+import model.tactics.UniqueCandidateTactic;
+import model.tactics.UnsolvableException;
 import model.util.IntLinkedList;
 import model.util.IntPriorityQueue;
 import model.util.Node;
@@ -15,49 +22,14 @@ public class Solver {
 	private ArrayDeque<Pair<Integer, Integer>> changed;
 	private ArrayDeque<Pair<Integer, ArrayDeque<Integer>>> uniqueCandChanged;
 	private PossibleValues[] pvs;
+	private PossibleValuesGrid pGrid;
 
-	private ArrayDeque<Integer>[] buckets;
-	private ArrayDeque<Integer>[] rows;
-	private ArrayDeque<Integer>[] cols;
-	private ArrayDeque<Integer>[] boxes;
+	private Tactic[] alwaysTactics;
+	private Tactic[] choiceTactics;
 
-	ArrayDeque<Integer>[][] rowBucket;
-	ArrayDeque<Integer>[][] colBucket;
-	ArrayDeque<Integer>[][] boxBucket;
-	
-	private final int n;
-	private final int k;
-
-	@SuppressWarnings("unchecked")
 	public Solver(Grid grid) {
 		this.grid = grid;
-		
-		this.n = grid.size();
-		this.k = grid.k();
-		
 		this.pq = new IntPriorityQueue(grid.numberOfFields(), grid.size());
-		this.changed = new ArrayDeque<Pair<Integer, Integer>>();
-		this.uniqueCandChanged = new ArrayDeque<Pair<Integer, ArrayDeque<Integer>>>();
-
-		this.buckets = new ArrayDeque[grid.numberOfFields()];
-
-		for (int i = 0; i < buckets.length; i++) {
-			buckets[i] = new ArrayDeque<Integer>();
-		}
-
-		this.rows = new ArrayDeque[grid.size()];
-		this.cols = new ArrayDeque[grid.size()];
-		this.boxes = new ArrayDeque[grid.size()];
-
-		for (int i = 0; i < grid.size(); i++) {
-			rows[i] = new ArrayDeque<Integer>();
-			cols[i] = new ArrayDeque<Integer>();
-			boxes[i] = new ArrayDeque<Integer>();
-		}
-
-		this.rowBucket = new ArrayDeque[n][n];
-		this.colBucket = new ArrayDeque[n][n];
-		this.boxBucket = new ArrayDeque[n][n];
 	}
 
 	public Grid solve() {
@@ -69,280 +41,52 @@ public class Solver {
 			}
 		}
 
+		pGrid = new PossibleValuesGrid(grid, pvs, pq);
+
+		alwaysTactics = new Tactic[] { new RowTactic(grid, pGrid), new ColTactic(grid, pGrid),
+				new BoxTactic(grid, pGrid) };
+
+		choiceTactics = new Tactic[] { new UniqueCandidateTactic(grid, pGrid), new TwinsTactic(grid, pGrid) };
+
 		return solve_helper(new Grid(grid));
-	}
-
-	private int twins(Grid g) {
-		for (int i = 0; i < buckets.length; i++) {
-			buckets[i].clear();
-		}
-
-		Node head = pq.valuesWithPrio(2).peek();
-
-		while (head != null) {
-			int field = head.getValue();
-
-			PossibleValues pv = pvs[field];
-
-			int x = pv.nextAfter(0);
-			int y = pv.nextAfter(x);
-
-			x--;
-			y--;
-
-			buckets[x * n + y].push(field);
-
-			head = head.getNext();
-		}
-
-		int numberChanged = 0;
-
-		for (int i = 0; i < buckets.length; i++) {
-			for (int j = 0; j < rows.length; j++) {
-				rows[j].clear();
-				cols[j].clear();
-				boxes[j].clear();
-			}
-
-			for (int field : buckets[i]) {
-				final int row = field / n;
-				final int col = field % n;
-				final int box = (row / k) * k + col / k;
-
-				rows[row].add(field);
-				cols[col].add(field);
-				boxes[box].add(field);
-			}
-
-			int changedRows = updateBucket(rows, (field, x) -> setRowImpossible(field, x));
-			if (changedRows == -1) {
-				revert(numberChanged);
-				return -1;
-			}
-
-			numberChanged += changedRows;
-
-			int changedCols = updateBucket(cols, (field, x) -> setColImpossible(field, x));
-			if (changedCols == -1) {
-				revert(numberChanged);
-				return -1;
-			}
-
-			numberChanged += changedCols;
-
-			int changedBoxes = updateBucket(boxes, (field, x) -> setBoxImpossible(field, x));
-			if (changedBoxes == -1) {
-				revert(numberChanged);
-				return -1;
-			}
-
-			numberChanged += changedBoxes;
-		}
-
-		return numberChanged;
-	}
-
-	private int updateBucket(ArrayDeque<Integer>[] bucket, BiFunction<Integer, Integer, Integer> setImpossible) {
-		int numberChanged = 0;
-
-		for (int i = 0; i < bucket.length; i++) {
-			if (bucket[i].size() < 2) {
-				continue;
-			} else if (bucket[i].size() > 2) {
-				revert(numberChanged);
-				return -1;
-			} else {
-				int f1 = bucket[i].pop();
-				int f2 = bucket[i].pop();
-
-				PossibleValues pv1 = pvs[f1];
-				PossibleValues pv2 = pvs[f2];
-
-				int x = pv1.nextAfter(0);
-				int y = pv2.nextAfter(x);
-
-				// don't update these
-				pvs[f1] = null;
-				pvs[f2] = null;
-
-				numberChanged += setImpossible.apply(f1, x);
-				numberChanged += setImpossible.apply(f1, y);
-
-				pvs[f1] = pv1;
-				pvs[f2] = pv2;
-			}
-		}
-
-		return numberChanged;
-	}
-
-	private int setRowImpossible(int field, int x) {
-		final int row = grid.rowFor(field);
-		final int startField = row * n;
-
-		int numberChanged = 0;
-
-		for (int c = 0; c < n; c++) {
-			if (updateField(startField + c, x)) {
-				numberChanged++;
-			}
-		}
-
-		return numberChanged;
-	}
-
-	private int setColImpossible(int field, int x) {
-		final int col = grid.colFor(field);
-
-		int numberChanged = 0;
-
-		for (int r = 0; r < n; r++) {
-			if (updateField(r * n + col, x)) {
-				numberChanged++;
-			}
-		}
-
-		return numberChanged;
-	}
-
-	private int setBoxImpossible(int field, int x) {
-		final int row = grid.rowFor(field);
-		final int col = grid.colFor(field);
-
-		final int boxRow = (row / k) * k;
-		final int boxCol = (col / k) * k;
-
-		int numberChanged = 0;
-
-		for (int r = boxRow; r < boxRow + k; r++) {
-			int rn = r * n;
-
-			for (int c = boxCol; c < boxCol + k; c++) {
-				if (updateField(rn+c, x)) {
-					numberChanged++;
-				}
-			}
-		}
-
-		return numberChanged;
-	}
-	
-	private boolean updateField(int i, int x) {
-		if (pvs[i] != null && pvs[i].set(x, false)) {
-			changed.push(new Pair<Integer, Integer>(i, x));
-			pq.changePrio(i, pvs[i].possible());
-			return true;
-		}
-		
-		return false;
-	}
-
-	private int setConnectedImpossible(int field, int x) {
-		return setRowImpossible(field, x) + setColImpossible(field, x) + setBoxImpossible(field, x);
-	}
-
-	private void revert(int count) {
-		while (count-- > 0) {
-			Pair<Integer, Integer> p = changed.pop();
-			int i = p.fst;
-			int v = p.snd;
-			pvs[i].set(v, true);
-			pq.changePrio(i, pvs[i].possible());
-		}
-	}
-	
-	private int uniqueCandidate() {
-		int numberChanged = 0;
-		
-		// Initialize buckets TODO: should probably be fields
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++) {
-				rowBucket[i][j] = new ArrayDeque<Integer>();
-				colBucket[i][j] = new ArrayDeque<Integer>();
-				boxBucket[i][j] = new ArrayDeque<Integer>();
-			}
-		}
-		
-		for (int index = 0; index < n*n; index++) {
-			PossibleValues pv = pvs[index];
-			int row = index/n;
-			int col = index%n;
-			int box = row/k*k+col/k;
-			for (int j = 0; j < n; j++) {
-				if (pv != null && pv.get(j+1)) {
-					// Syntax: bucket[number][value] = fieldIndex
-					rowBucket[row][j].add(index);
-					colBucket[col][j].add(index);
-					boxBucket[box][j].add(index);
-				}
-			}
-		}
-		
-		// rcbIndex is the index for the row/column/box
-		for (int rcbIndex = 0; rcbIndex < n; rcbIndex++) {
-			for (int value = 0; value < n; value++) {
-				// Check if there is only one candidate
-				ArrayDeque[] bucks = { rowBucket[rcbIndex][value], colBucket[rcbIndex][value], boxBucket[rcbIndex][value] };
-				for (ArrayDeque<Integer> buck : bucks) {
-					if (buck.size() == 1) {
-						int index = buck.removeFirst();
-						ArrayDeque<Integer> oldPos = pvs[index].setOnlyPossible(value+1);
-						if (oldPos == null) {
-							revertUniqueCand(numberChanged);
-							return -1;
-						}
-						uniqueCandChanged.push(new Pair<Integer, ArrayDeque<Integer>>(index, oldPos));
-						pq.changePrio(index, 1);
-						numberChanged++;
-					}
-				}
-			}
-		}
-		return numberChanged;
-	}
-
-	private void revertUniqueCand(int amount) {
-		for (int i = 0; i < amount; i++) {
-			Pair<Integer, ArrayDeque<Integer>> item = uniqueCandChanged.pop();
-			for (int val : item.snd) {
-				pvs[item.fst].set(val, true);
-			}
-			pq.changePrio(item.fst, pvs[item.fst].possible());
-		}
 	}
 
 	protected Grid solve_helper(Grid g) {
 		if (pq.isEmpty()) {
 			return g;
 		}
-		
-		int uniqueCandChanged = 0;
-		if (pq.valuesWithPrio(1).isEmpty()) {
-			uniqueCandChanged = uniqueCandidate();
-		}
-		if (uniqueCandChanged == -1) {
+
+		if (!pq.valuesWithPrio(0).isEmpty()) {
 			return null;
 		}
 
-		int twinsChanged = 0;
-		if (pq.valuesWithPrio(1).isEmpty()) {
-//			twinsChanged = twins(g);
+		pGrid.newTransaction();
+
+		try {
+			for (Tactic t : choiceTactics) {
+				if (!pq.valuesWithPrio(0).isEmpty()) {
+					throw new UnsolvableException();
+				} else if (pq.valuesWithPrio(1).isEmpty()) {
+					t.apply(-1, -1); // TODO!
+				} else {
+					break;
+				}
+			}
+		} catch (UnsolvableException e) {
+			pGrid.cancelTransaction();
+			return null;
 		}
-			
-		if (twinsChanged == -1) {
+
+		pGrid.endTransaction();
+
+		if (!pq.valuesWithPrio(0).isEmpty()) {
+			pGrid.revert();
 			return null;
 		}
 
 		int field = pq.extractMin();
 
 		PossibleValues pv = pvs[field];
-
-		if (pv.possible() == 0) {
-			pq.insert(field, 0);
-			revertUniqueCand(uniqueCandChanged);
-			revert(twinsChanged);
-			return null;
-		}
 
 		pvs[field] = null;
 
@@ -354,10 +98,21 @@ public class Solver {
 			// UPDATE
 
 			g.set(field, x);
-			
+
 			showGrid(g);
 
-			int numberChanged = setConnectedImpossible(field, x);
+			pGrid.newTransaction();
+
+			try {
+				for (Tactic t : alwaysTactics) {
+					t.apply(field, x);
+				}
+			} catch (UnsolvableException e) {
+				e.printStackTrace();
+				// TODO: impossible right now, but not necessarily
+			}
+
+			pGrid.endTransaction();
 
 			Grid sol = solve_helper(g);
 
@@ -365,15 +120,14 @@ public class Solver {
 				return sol;
 			}
 
-			revert(numberChanged);
+			pGrid.revert();
 		}
 
 		g.set(field, 0);
 		pvs[field] = pv;
 		pq.insert(field, pv.possible());
 
-		revert(twinsChanged);
-		revertUniqueCand(uniqueCandChanged);
+		pGrid.revert();
 
 		return null;
 	}
@@ -428,7 +182,7 @@ public class Solver {
 			final int startCol = (box % k) * k;
 
 			PossibleValues boxPossible = new PossibleValues(n);
-			
+
 			for (int f : grid.iterBox(box)) {
 				boxPossible.set(f, false);
 			}
@@ -450,6 +204,7 @@ public class Solver {
 	}
 
 	protected void showGrid(Grid g) {
-		// This method does nothing but is overridden in GuiSolver to display the grid.		
+		// This method does nothing but is overridden in GuiSolver to display
+		// the grid.
 	}
 }
