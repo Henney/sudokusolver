@@ -4,8 +4,11 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.function.BiFunction;
 
+import model.tactics.AlwaysTactic;
 import model.tactics.BoxTactic;
+import model.tactics.ChoiceTactic;
 import model.tactics.ColTactic;
+import model.tactics.IncrementalTwinsTactic;
 import model.tactics.RowTactic;
 import model.tactics.Tactic;
 import model.tactics.TwinsTactic;
@@ -27,8 +30,8 @@ public class Solver {
 	private PossibleValues[] pvs;
 	private PossibleValuesGrid pGrid;
 
-	private Tactic[] alwaysTactics;
-	private Tactic[] choiceTactics;
+	private AlwaysTactic[] alwaysTactics;
+	private ChoiceTactic[] choiceTactics;
 
 	public Solver(Grid grid) {
 		this.grid = grid;
@@ -46,10 +49,12 @@ public class Solver {
 
 		pGrid = new PossibleValuesGrid(grid, pvs, pq);
 
-		alwaysTactics = new Tactic[] { new RowTactic(grid, pGrid), new ColTactic(grid, pGrid),
-				new BoxTactic(grid, pGrid) };
+		alwaysTactics = new AlwaysTactic[] { new RowTactic(grid, pGrid), new ColTactic(grid, pGrid),
+										new BoxTactic(grid, pGrid),
+										new IncrementalTwinsTactic(grid, pGrid)
+										};
 
-		choiceTactics = new Tactic[] { new UniqueCandidateTactic(grid, pGrid),
+		choiceTactics = new ChoiceTactic[] { new UniqueCandidateTactic(grid, pGrid),
 									   new TwinsTactic(grid, pGrid),
 									   new XWingTactic(grid, pGrid)
 									   };
@@ -69,11 +74,11 @@ public class Solver {
 		pGrid.newTransaction();
 
 		try {
-			for (Tactic t : choiceTactics) {
+			for (ChoiceTactic t : choiceTactics) {
 				if (!pq.valuesWithPrio(0).isEmpty()) {
 					throw new UnsolvableException();
 				} else if (pq.valuesWithPrio(1).isEmpty()) {
-					t.apply(-1, -1); // TODO!
+					t.apply(); // TODO!
 				} else {
 					break;
 				}
@@ -110,7 +115,7 @@ public class Solver {
 			pGrid.newTransaction();
 
 			try {
-				for (Tactic t : alwaysTactics) {
+				for (AlwaysTactic t : alwaysTactics) {
 					t.apply(field, x);
 				}
 			} catch (UnsolvableException e) {

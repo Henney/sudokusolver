@@ -16,7 +16,4 @@ public abstract class Tactic {
 		this.k = grid.k();
 		this.pGrid = pGrid;
 	}
-	
-	public abstract boolean apply(int field, int value) throws UnsolvableException;
-	
 }

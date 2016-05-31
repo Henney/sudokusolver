@@ -3,15 +3,15 @@ package model.tactics;
 import model.Grid;
 import model.PossibleValuesGrid;
 
-public class ColTactic extends Tactic {
+public class ColTactic extends AlwaysTactic {
 
 	public ColTactic(Grid grid, PossibleValuesGrid pGrid) {
 		super(grid, pGrid);
 	}
 	
 	@Override
-	public boolean apply(int field, int value) {
-		return pGrid.setColImpossible(field, value);
+	public void apply(int field, int value) {
+		pGrid.setColImpossible(field, value);
 	}
 
 }

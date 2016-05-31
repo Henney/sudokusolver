@@ -8,7 +8,7 @@ import model.PossibleValues;
 import model.PossibleValuesGrid;
 import model.util.Node;
 
-public class TwinsTactic extends Tactic {
+public class TwinsTactic extends ChoiceTactic {
 
 	private PossibleValues[] pvs;
 
@@ -41,7 +41,7 @@ public class TwinsTactic extends Tactic {
 	}
 
 	@Override
-	public boolean apply(int field_, int value_) throws UnsolvableException {
+	public void apply() throws UnsolvableException {
 		for (int i = 0; i < buckets.length; i++) {
 			buckets[i].clear();
 		}
@@ -64,8 +64,6 @@ public class TwinsTactic extends Tactic {
 			head = head.getNext();
 		}
 
-		boolean updated = false;
-
 		for (int i = 0; i < buckets.length; i++) {
 			for (int j = 0; j < rows.length; j++) {
 				rows[j].clear();
@@ -83,18 +81,15 @@ public class TwinsTactic extends Tactic {
 				boxes[box].add(field);
 			}
 
-			updated |= updateBucket(rows, (field, x) -> pGrid.setRowImpossible(field, x));
-			updated |= updateBucket(cols, (field, x) -> pGrid.setColImpossible(field, x));
-			updated |= updateBucket(boxes, (field, x) -> pGrid.setBoxImpossible(field, x));
+			updateBucket(rows, (field, x) -> { pGrid.setRowImpossible(field, x); return null; });
+			updateBucket(cols, (field, x) -> { pGrid.setColImpossible(field, x); return null; });
+			updateBucket(boxes, (field, x) -> { pGrid.setBoxImpossible(field, x); return null; });
 		}
 
-		return updated;
 	}
 
-	private boolean updateBucket(ArrayDeque<Integer>[] bucket, BiFunction<Integer, Integer, Boolean> setImpossible) throws UnsolvableException {
-		boolean updated = false;
-
-		for (int i = 0; i < bucket.length; i++) {
+	private void updateBucket(ArrayDeque<Integer>[] bucket, BiFunction<Integer, Integer, Void> setImpossible) throws UnsolvableException {
+				for (int i = 0; i < bucket.length; i++) {
 			if (bucket[i].size() < 2) {
 				continue;
 			} else if (bucket[i].size() > 2) {
@@ -113,15 +108,13 @@ public class TwinsTactic extends Tactic {
 				pvs[f1] = null;
 				pvs[f2] = null;
 
-				updated |= setImpossible.apply(f1, x);
-				updated |= setImpossible.apply(f1, y);
+				setImpossible.apply(f1, x);
+				setImpossible.apply(f1, y);
 
 				pvs[f1] = pv1;
 				pvs[f2] = pv2;
 			}
 		}
-
-		return updated;
 	}
 
 }

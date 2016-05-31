@@ -8,7 +8,7 @@ import model.PossibleValuesGrid;
 import model.util.Pair;
 import model.util.XWingBucket;
 
-public class XWingTactic extends Tactic {
+public class XWingTactic extends ChoiceTactic {
 	
 
 	PossibleValues[] pvs;
@@ -24,12 +24,11 @@ public class XWingTactic extends Tactic {
 	}
 
 	@Override
-	public boolean apply(int field, int value) throws UnsolvableException {
+	public void apply() throws UnsolvableException {
 		for (int val = 1; val <= n; val++) {
 			xWingRow(val);
 			xWingCol(val);
 		}
-		return false;
 	}
 
 	// TODO remove redundancy of these two methods if possible
@@ -109,4 +108,5 @@ public class XWingTactic extends Tactic {
 		}
 		buck.clear();
 	}
+
 }

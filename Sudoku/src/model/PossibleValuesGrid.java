@@ -72,33 +72,26 @@ public class PossibleValuesGrid {
 		return false;
 	}
 	
-	public boolean setRowImpossible(int field, int value) {
+	public void setRowImpossible(int field, int value) {
 		final int row = grid.rowFor(field);
 		final int n = grid.size();
 		final int startField = row * n;
 		
-		boolean updated = false;
-
 		for (int c = 0; c < n; c++) {
-			updated |= updateField(startField + c, value);
+			updateField(startField + c, value);
 		}
-		
-		return updated;
 	}
 	
-	public boolean setColImpossible(int field, int value) {
+	public void setColImpossible(int field, int value) {
 		final int col = grid.colFor(field);
 		final int n = grid.size();
-		boolean updated = false;
 			
 		for (int r = 0; r < n; r++) {
-			updated |= updateField(r * n + col, value);
+			updateField(r * n + col, value);
 		}
-		
-		return updated;
 	}
 	
-	public boolean setBoxImpossible(int field, int value) {
+	public void setBoxImpossible(int field, int value) {
 		final int row = grid.rowFor(field);
 		final int col = grid.colFor(field);
 		final int k = grid.k();
@@ -107,17 +100,19 @@ public class PossibleValuesGrid {
 		final int boxRow = (row / k) * k;
 		final int boxCol = (col / k) * k;
 		
-		boolean updated = false;
-
 		for (int r = boxRow; r < boxRow + k; r++) {
 			int rn = r * n;
 
 			for (int c = boxCol; c < boxCol + k; c++) {
-				updated |= updateField(rn+c, value);
+				updateField(rn+c, value);
 			}
 		}
-
-		return updated;
+	}
+	
+	public void setConnectedImpossible(int field, int value) {
+		setRowImpossible(field, value);
+		setColImpossible(field, value);
+		setBoxImpossible(field, value);
 	}
 	
 	public IntLinkedList valuesWithPrio(int prio) {
@@ -136,5 +131,9 @@ public class PossibleValuesGrid {
 		for (int i = value+1; i <= grid.size(); i++) {
 			updateField(field, i);
 		}
+	}
+	
+	public int changesMadeInTransaction() {
+		return countChanged;
 	}
 }
