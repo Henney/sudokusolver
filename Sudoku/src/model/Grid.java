@@ -7,7 +7,10 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Iterator;
 
+import model.util.BoxIterator;
+import model.util.ColIterator;
 import model.util.Pair;
+import model.util.RowIterator;
 
 public class Grid {
 
@@ -78,119 +81,16 @@ public class Grid {
 		return (rowFor(field) / k) * k + colFor(field) / k;
 	}
 	
-	private class RowIterator implements Iterable<Integer> {
-		final int row;
-		
-		public RowIterator(int r) {
-			row = r;
-		}
-		
-		public Iterator<Integer> iterator() {
-			return new Iterator<Integer>() {
-				private int col = 0;
-				
-				@Override
-	            public boolean hasNext() {
-	                return col < n;
-	            }
-
-	            @Override
-	            public Integer next() {
-	                int ret = get(row, col);
-	                col++;
-	                return ret;
-	            }
-
-	            @Override
-	            public void remove() {
-	                throw new UnsupportedOperationException();
-	            }
-			};
-		}
-	}
-	
-	private class ColIterator implements Iterable<Integer> {
-		final int col;
-		
-		public ColIterator(int c) {
-			col = c;
-		}
-		
-		public Iterator<Integer> iterator() {
-			return new Iterator<Integer>() {
-				private int row = 0;
-				
-				@Override
-	            public boolean hasNext() {
-	                return row < n;
-	            }
-
-	            @Override
-	            public Integer next() {
-	                int ret = get(row, col);
-	                row++;
-	                return ret;
-	            }
-
-	            @Override
-	            public void remove() {
-	                throw new UnsupportedOperationException();
-	            }
-			};
-		}
-	}
-	
-	private class BoxIterator implements Iterable<Integer> {
-		final int box;
-		
-		public BoxIterator(int b) {
-			box = b;
-		}
-		
-		public Iterator<Integer> iterator() {
-			return new Iterator<Integer>() {
-				private int r = 0;
-				private int c = 0;
-				
-				private final int startRow = (box / k) * k;
-				private final int startCol = (box % k) * k;
-				
-				@Override
-	            public boolean hasNext() {
-	                return r < k && c < k;
-	            }
-	
-	            @Override
-	            public Integer next() {
-	                int ret = get(startRow+r, startCol+c);
-	                
-	                c++;
-	                
-	                if (c >= k) {
-	                	c = 0;
-	                	r++;
-	                }
-	                
-                return ret;
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-		};}
-	}
-	
 	public RowIterator iterRow(int r) {
-		return new RowIterator(r);
+		return new RowIterator(this, r);
 	}
 	
 	public ColIterator iterCol(int c) {
-		return new ColIterator(c);
+		return new ColIterator(this, c);
 	}
 	
 	public BoxIterator iterBox(int b) {
-		return new BoxIterator(b);
+		return new BoxIterator(this, b);
 	}
 	
 	public boolean isSolved() {
