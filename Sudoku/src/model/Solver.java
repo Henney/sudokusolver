@@ -1,32 +1,24 @@
 package model;
 
-import java.util.ArrayDeque;
-import java.util.function.BiFunction;
-
+import model.tactics.AlwaysTactic;
 import model.tactics.BoxTactic;
+import model.tactics.ChoiceTactic;
 import model.tactics.ColTactic;
 import model.tactics.IncrementalTwinsTactic;
 import model.tactics.RowTactic;
-import model.tactics.Tactic;
-import model.tactics.TwinsTactic;
 import model.tactics.UniqueCandidateTactic;
 import model.tactics.UnsolvableException;
-import model.util.IntLinkedList;
 import model.util.IntPriorityQueue;
-import model.util.Node;
-import model.util.Pair;
 
 public class Solver {
 
 	public Grid grid;
 	private IntPriorityQueue pq;
-	private ArrayDeque<Pair<Integer, Integer>> changed;
-	private ArrayDeque<Pair<Integer, ArrayDeque<Integer>>> uniqueCandChanged;
 	private PossibleValues[] pvs;
 	private PossibleValuesGrid pGrid;
 
-	private Tactic[] alwaysTactics;
-	private Tactic[] choiceTactics;
+	private AlwaysTactic[] alwaysTactics;
+	private ChoiceTactic[] choiceTactics;
 
 	public Solver(Grid grid) {
 		this.grid = grid;
@@ -44,11 +36,12 @@ public class Solver {
 
 		pGrid = new PossibleValuesGrid(grid, pvs, pq);
 
-		alwaysTactics = new Tactic[] { new RowTactic(grid, pGrid), new ColTactic(grid, pGrid),
-				new BoxTactic(grid, pGrid), new IncrementalTwinsTactic(grid, pGrid)
+		alwaysTactics = new AlwaysTactic[] { new RowTactic(grid, pGrid), new ColTactic(grid, pGrid),
+				new BoxTactic(grid, pGrid)
+				, new IncrementalTwinsTactic(grid, pGrid)
 				};
 
-		choiceTactics = new Tactic[] { new UniqueCandidateTactic(grid, pGrid)
+		choiceTactics = new ChoiceTactic[] { new UniqueCandidateTactic(grid, pGrid)
 //				, new TwinsTactic(grid, pGrid)
 				};
 
@@ -67,14 +60,20 @@ public class Solver {
 		pGrid.newTransaction();
 
 		try {
-			for (Tactic t : choiceTactics) {
-				if (!pq.valuesWithPrio(0).isEmpty()) {
-					throw new UnsolvableException();
-				} else if (pq.valuesWithPrio(1).isEmpty()) {
-					t.apply(-1, -1); // TODO!
-				} else {
-					break;
+			int changesMadeLast = -1;
+			
+			while (pGrid.changesMadeInTransaction() != changesMadeLast) {
+				for (ChoiceTactic t : choiceTactics) {
+					if (!pq.valuesWithPrio(0).isEmpty()) {
+						throw new UnsolvableException();
+					} else if (pq.valuesWithPrio(1).isEmpty()) {
+						t.apply();
+					} else {
+						break;
+					}
 				}
+				
+				changesMadeLast = pGrid.changesMadeInTransaction();
 			}
 		} catch (UnsolvableException e) {
 			pGrid.cancelTransaction();
@@ -108,12 +107,12 @@ public class Solver {
 			pGrid.newTransaction();
 
 			try {
-				for (Tactic t : alwaysTactics) {
+				for (AlwaysTactic t : alwaysTactics) {
 					t.apply(field, x);
 				}
 			} catch (UnsolvableException e) {
-				e.printStackTrace();
-				// TODO: impossible right now, but not necessarily
+				pGrid.cancelTransaction();
+				continue;
 			}
 
 			pGrid.endTransaction();

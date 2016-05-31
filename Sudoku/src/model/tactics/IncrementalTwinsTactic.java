@@ -8,7 +8,7 @@ import model.PossibleValues;
 import model.PossibleValuesGrid;
 import model.util.Node;
 
-public class IncrementalTwinsTactic extends Tactic {
+public class IncrementalTwinsTactic extends AlwaysTactic {
 
 	private PossibleValues[] pvs;
 

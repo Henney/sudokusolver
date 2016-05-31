@@ -8,7 +8,7 @@ import model.PossibleValues;
 import model.PossibleValuesGrid;
 import model.util.Node;
 
-public class TwinsTactic extends Tactic {
+public class TwinsTactic extends ChoiceTactic {
 
 	private PossibleValues[] pvs;
 
@@ -41,7 +41,7 @@ public class TwinsTactic extends Tactic {
 	}
 
 	@Override
-	public void apply(int field_, int value_) throws UnsolvableException {
+	public void apply() throws UnsolvableException {
 		for (int i = 0; i < buckets.length; i++) {
 			buckets[i].clear();
 		}

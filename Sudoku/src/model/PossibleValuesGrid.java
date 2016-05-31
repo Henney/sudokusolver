@@ -132,4 +132,8 @@ public class PossibleValuesGrid {
 			updateField(field, i);
 		}
 	}
+	
+	public int changesMadeInTransaction() {
+		return countChanged;
+	}
 }

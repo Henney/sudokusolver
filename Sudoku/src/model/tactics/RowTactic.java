@@ -3,7 +3,7 @@ package model.tactics;
 import model.Grid;
 import model.PossibleValuesGrid;
 
-public class RowTactic extends Tactic {
+public class RowTactic extends AlwaysTactic {
 
 	public RowTactic(Grid grid, PossibleValuesGrid pGrid) {
 		super(grid, pGrid);
