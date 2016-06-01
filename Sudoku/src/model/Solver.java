@@ -30,6 +30,8 @@ public class Solver {
 	private ArrayDeque<Pair<Integer, ArrayDeque<Integer>>> uniqueCandChanged;
 	private PossibleValues[] pvs;
 	private PossibleValuesGrid pGrid;
+	
+	boolean foundSolution = true;
 
 	private AlwaysTactic[] alwaysTactics;
 	private ChoiceTactic[] choiceTactics;
@@ -130,7 +132,11 @@ public class Solver {
 			Grid sol = solve_helper(g);
 
 			if (sol != null) {
-				return sol;
+				if (foundSolution) {
+					return sol;
+				} else {
+					foundSolution = true;
+				}
 			}
 
 			pGrid.revert();
@@ -143,6 +149,11 @@ public class Solver {
 		pGrid.revert();
 
 		return null;
+	}
+	
+	public boolean unique() {
+		foundSolution = false;
+		return solve() == null;
 	}
 
 	protected void showGrid(Grid g) {
