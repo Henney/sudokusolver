@@ -51,14 +51,10 @@ public class Solver {
 		pGrid = new PossibleValuesGrid(grid, pvs, pq);
 
 		alwaysTactics = new AlwaysTactic[] { new RowTactic(grid, pGrid), new ColTactic(grid, pGrid),
-										new BoxTactic(grid, pGrid),
-										new IncrementalTwinsTactic(grid, pGrid)
-										};
+				new BoxTactic(grid, pGrid), new IncrementalTwinsTactic(grid, pGrid) };
 
-		choiceTactics = new ChoiceTactic[] { new UniqueCandidateTactic(grid, pGrid),
-									   new TwinsTactic(grid, pGrid),
-									   new XWingTactic(grid, pGrid)
-									   };
+		choiceTactics = new ChoiceTactic[] { new UniqueCandidateTactic(grid, pGrid), new TwinsTactic(grid, pGrid),
+				new XWingTactic(grid, pGrid) };
 
 		return solve_helper(new Grid(grid));
 	}
@@ -71,17 +67,22 @@ public class Solver {
 		if (!pq.valuesWithPrio(0).isEmpty()) {
 			return null;
 		}
-		
+
 		pGrid.newTransaction();
 
 		try {
-			for (ChoiceTactic t : choiceTactics) {
-				if (!pq.valuesWithPrio(0).isEmpty()) {
-					throw new UnsolvableException();
-				} else if (pq.valuesWithPrio(1).isEmpty()) {
-					t.apply(); // TODO!
-				} else {
-					break;
+			int changesMadeLast = -1;
+			while (pGrid.changesMadeInTransaction() != changesMadeLast) {
+				changesMadeLast = pGrid.changesMadeInTransaction();
+
+				for (ChoiceTactic t : choiceTactics) {
+					if (!pq.valuesWithPrio(0).isEmpty()) {
+						throw new UnsolvableException();
+					} else if (pq.valuesWithPrio(1).isEmpty()) {
+						t.apply();
+					} else {
+						break;
+					}
 				}
 			}
 		} catch (UnsolvableException e) {
@@ -120,8 +121,8 @@ public class Solver {
 					t.apply(field, x);
 				}
 			} catch (UnsolvableException e) {
-				e.printStackTrace();
-				// TODO: impossible right now, but not necessarily
+				pGrid.cancelTransaction();
+				continue;
 			}
 
 			pGrid.endTransaction();
