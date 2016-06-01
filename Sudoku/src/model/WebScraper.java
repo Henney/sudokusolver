@@ -11,7 +11,7 @@ public class WebScraper {
 	// Site only supports k = 3;
 	private static final int K = 3;
 
-	public String getSudokuFromWeb(int level) throws ResponseException,
+	public static String getSudokuFromWeb(int level) throws ResponseException,
 			NotFound {
 		String url = "http://view.websudoku.com/?level=" + level;
 
