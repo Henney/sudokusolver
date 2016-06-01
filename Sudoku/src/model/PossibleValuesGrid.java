@@ -15,7 +15,7 @@ public class PossibleValuesGrid {
 	private ArrayDeque<Pair<Integer, Integer>> changed;
 	
 	private int countChanged = 0;
-	private Stack<Integer> changedHistory;
+	private ArrayDeque<Integer> changedHistory;
 
 	public PossibleValuesGrid(Grid grid, PossibleValues[] pvs, IntPriorityQueue pq) {
 		this.grid = grid;
@@ -23,7 +23,7 @@ public class PossibleValuesGrid {
 		this.pq = pq;
 		this.changed = new ArrayDeque<Pair<Integer, Integer>>();
 		
-		this.changedHistory = new Stack<Integer>();
+		this.changedHistory = new ArrayDeque<Integer>();
 	}
 	
 	public void newTransaction() {
