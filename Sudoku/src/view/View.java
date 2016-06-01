@@ -172,7 +172,7 @@ public class View extends Application {
 			
 			@Override
 			protected UserGrid call() throws Exception {
-				GuiSolver s = new GuiSolver(grid.getGrid(), View.this);
+				GuiSolver s = new GuiSolver(grid, View.this);
 				Grid solvedGrid = s.solve();
 				return grid;
 			}

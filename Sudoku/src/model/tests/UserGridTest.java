@@ -57,7 +57,7 @@ public class UserGridTest {
 		assertTrue(grid.get(other) == 9);
 		
 		int i = 3*9 + 4;
-		assertTrue(grid.getGrid().rowFor(other) == grid.getGrid().rowFor(i));
+		assertTrue(grid.rowFor(other) == grid.rowFor(i));
 		
 		Pair<Set<Integer>, Set<Integer>> s34 = grid.set(i, 9);
 		

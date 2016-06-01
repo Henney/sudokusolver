@@ -9,6 +9,7 @@ import model.tactics.BoxTactic;
 import model.tactics.ChoiceTactic;
 import model.tactics.ColTactic;
 import model.tactics.IncrementalTwinsTactic;
+import model.tactics.XWingTactic;
 import model.tactics.RowTactic;
 import model.tactics.Tactic;
 import model.tactics.TwinsTactic;

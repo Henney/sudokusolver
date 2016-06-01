@@ -6,6 +6,7 @@ import java.io.StringReader;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import model.util.BoxIterator;
 import model.util.ColIterator;
@@ -57,16 +58,18 @@ public class Grid {
 		return grid[i];
 	}
 	
-	public void set(int i, int val) {
+	public Pair<Set<Integer>, Set<Integer>> set(int i, int val) {
 		grid[i] = val;
+		return null;
 	}
 	
 	public int get(int row, int col) {
 		return this.grid[n*row + col];
 	}
 
-	public void set(int row, int col, int val) {
+	public Pair<Set<Integer>, Set<Integer>> set(int row, int col, int val) {
 		this.grid[n*row + col] = val;
+		return null;
 	}
 	
 	public int rowFor(int field) {
