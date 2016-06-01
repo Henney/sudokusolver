@@ -9,6 +9,7 @@ import model.tactics.BoxTactic;
 import model.tactics.ChoiceTactic;
 import model.tactics.ColTactic;
 import model.tactics.IncrementalTwinsTactic;
+import model.tactics.XWingTactic;
 import model.tactics.RowTactic;
 import model.tactics.Tactic;
 import model.tactics.TwinsTactic;
@@ -29,6 +30,8 @@ public class Solver {
 	private ArrayDeque<Pair<Integer, ArrayDeque<Integer>>> uniqueCandChanged;
 	private PossibleValues[] pvs;
 	private PossibleValuesGrid pGrid;
+	
+	boolean foundSolution = true;
 
 	private AlwaysTactic[] alwaysTactics;
 	private ChoiceTactic[] choiceTactics;
@@ -39,7 +42,7 @@ public class Solver {
 	}
 
 	public Grid solve() {
-		pvs = findPossibleValues();
+		pvs = grid.findPossibleValues();
 
 		for (int i = 0; i < pvs.length; i++) {
 			if (pvs[i] != null) {
@@ -58,7 +61,7 @@ public class Solver {
 		return solve_helper(new Grid(grid));
 	}
 
-	protected Grid solve_helper(Grid g) {
+	private Grid solve_helper(Grid g) {
 		if (pq.isEmpty()) {
 			return g;
 		}
@@ -129,7 +132,11 @@ public class Solver {
 			Grid sol = solve_helper(g);
 
 			if (sol != null) {
-				return sol;
+				if (foundSolution) {
+					return sol;
+				} else {
+					foundSolution = true;
+				}
 			}
 
 			pGrid.revert();
@@ -143,76 +150,10 @@ public class Solver {
 
 		return null;
 	}
-
-	public PossibleValues[] findPossibleValues() {
-		final int n = grid.size();
-
-		final PossibleValues[] pvs = new PossibleValues[grid.numberOfFields()];
-
-		for (int row = 0; row < n; row++) {
-			for (int col = 0; col < n; col++) {
-				if (grid.get(row, col) == 0) {
-					pvs[row * n + col] = new PossibleValues(n);
-				}
-			}
-		}
-
-		for (int row = 0; row < n; row++) {
-			PossibleValues rowPossible = new PossibleValues(n);
-
-			for (int f : grid.iterRow(row)) {
-				rowPossible.set(f, false);
-			}
-
-			for (int col = 0; col < n; col++) {
-				PossibleValues p = pvs[row * n + col];
-				if (p != null) {
-					p.and(rowPossible);
-				}
-			}
-		}
-
-		for (int col = 0; col < n; col++) {
-			PossibleValues colPossible = new PossibleValues(n);
-
-			for (int f : grid.iterCol(col)) {
-				colPossible.set(f, false);
-			}
-
-			for (int row = 0; row < n; row++) {
-				PossibleValues p = pvs[row * n + col];
-				if (p != null) {
-					p.and(colPossible);
-				}
-			}
-		}
-
-		final int k = grid.k();
-
-		for (int box = 0; box < n; box++) {
-			final int startRow = (box / k) * k;
-			final int startCol = (box % k) * k;
-
-			PossibleValues boxPossible = new PossibleValues(n);
-
-			for (int f : grid.iterBox(box)) {
-				boxPossible.set(f, false);
-			}
-
-			for (int dRow = 0; dRow < k; dRow++) {
-				for (int dCol = 0; dCol < k; dCol++) {
-					int row = startRow + dRow;
-					int col = startCol + dCol;
-
-					PossibleValues p = pvs[row * n + col];
-					if (p != null) {
-						p.and(boxPossible);
-					}
-				}
-			}
-		}
-
-		return pvs;
+	
+	public boolean unique() {
+		foundSolution = false;
+		return solve() == null;
 	}
 
 	protected void showGrid(Grid g) {

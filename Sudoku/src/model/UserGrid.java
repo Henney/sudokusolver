@@ -8,19 +8,37 @@ import java.util.Set;
 
 import model.util.Pair;
 
-public class UserGrid {
-
-	private Grid grid;
+public class UserGrid extends Grid {
 
 	private ArrayDeque<Integer>[][] rows;
 	private ArrayDeque<Integer>[][] cols;
 	private ArrayDeque<Integer>[][] boxes;
 
+	public UserGrid(Grid grid) {
+		super(grid);
+		initPossibleValues();
+	}
+
+	public UserGrid(int k) {
+		super(k);
+		initPossibleValues();
+	}
+
+	public UserGrid(String input) throws IOException {
+		super(input);
+		initPossibleValues();
+	}
+
+	public UserGrid(Reader input) throws IOException {
+		super(input);
+		initPossibleValues();
+	}
+
 	@SuppressWarnings("unchecked")
 	private void initPossibleValues() {
-		rows = new ArrayDeque[grid.size()][grid.size()];
-		cols = new ArrayDeque[grid.size()][grid.size()];
-		boxes = new ArrayDeque[grid.size()][grid.size()];
+		rows = new ArrayDeque[size()][size()];
+		cols = new ArrayDeque[size()][size()];
+		boxes = new ArrayDeque[size()][size()];
 
 		for (int i = 0; i < rows.length; i++) {
 			for (int j = 0; j < rows[i].length; j++) {
@@ -30,60 +48,34 @@ public class UserGrid {
 			}
 		}
 
-		for (int i = 0; i < grid.numberOfFields(); i++) {
-			int x = grid.get(i);
+		for (int i = 0; i < numberOfFields(); i++) {
+			int x = get(i);
 
 			if (x != 0) {
 				x--;
-				rows[grid.rowFor(i)][x].add(i);
-				cols[grid.colFor(i)][x].add(i);
-				boxes[grid.boxFor(i)][x].add(i);
+				rows[rowFor(i)][x].add(i);
+				cols[colFor(i)][x].add(i);
+				boxes[boxFor(i)][x].add(i);
 			}
 		}
 	}
 
-	public UserGrid(Grid grid) {
-		this.grid = grid;
-		initPossibleValues();
-	}
-
-	public UserGrid(int k) {
-		grid = new Grid(k);
-		initPossibleValues();
-	}
-
-	public UserGrid(String input) throws IOException {
-		grid = new Grid(input);
-		initPossibleValues();
-	}
-
-	public UserGrid(Reader input) throws IOException {
-		grid = new Grid(input);
-		initPossibleValues();
-	}
-
-	public int get(int row, int col) {
-		return grid.get(row, col);
-	}
-
-	public int get(int i) {
-		return grid.get(i);
-	}
-
+	@Override
 	public Pair<Set<Integer>, Set<Integer>> set(int row, int col, int val) {
-		return set(row * grid.size() + col, val);
+		return set(row * size() + col, val);
 	}
 
+	@Override
 	public Pair<Set<Integer>, Set<Integer>> set(int i, int val) {
-		int old = grid.get(i);
-		grid.set(i, val);
+		int old = get(i);
+		super.set(i, val);
 
 		HashSet<Integer> conflicting = new HashSet<Integer>();
 		HashSet<Integer> resolved = new HashSet<Integer>();
 
-		final int row = grid.rowFor(i);
-		final int col = grid.colFor(i);
-		final int box = grid.boxFor(i);
+		final int row = rowFor(i);
+		final int col = colFor(i);
+		final int box = boxFor(i);
 
 		if (old != 0) {
 			old--;
@@ -148,7 +140,7 @@ public class UserGrid {
 	}
 
 	private boolean inConflict(int i) {
-		int x = grid.get(i);
+		int x = get(i);
 
 		if (x == 0) {
 			return false;
@@ -156,20 +148,8 @@ public class UserGrid {
 
 		x--;
 
-		return rows[grid.rowFor(i)][x].size() > 1 || cols[grid.colFor(i)][x].size() > 1
-				|| boxes[grid.boxFor(i)][x].size() > 1;
+		return rows[rowFor(i)][x].size() > 1 || cols[colFor(i)][x].size() > 1
+				|| boxes[boxFor(i)][x].size() > 1;
 
-	}
-
-	public int k() {
-		return grid.k();
-	}
-
-	public int size() {
-		return grid.size();
-	}
-
-	public Grid getGrid() {
-		return grid;
 	}
 }

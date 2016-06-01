@@ -6,6 +6,7 @@ import java.io.StringReader;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import model.util.BoxIterator;
 import model.util.ColIterator;
@@ -40,6 +41,73 @@ public class Grid {
 		this.k = parsed.snd;
 		this.n = k*k;
 	}
+
+	public PossibleValues[] findPossibleValues() {
+		final PossibleValues[] pvs = new PossibleValues[numberOfFields()];
+
+		for (int row = 0; row < n; row++) {
+			for (int col = 0; col < n; col++) {
+				if (get(row, col) == 0) {
+					pvs[row * n + col] = new PossibleValues(n);
+				}
+			}
+		}
+
+		for (int row = 0; row < n; row++) {
+			PossibleValues rowPossible = new PossibleValues(n);
+
+			for (int f : iterRow(row)) {
+				rowPossible.set(f, false);
+			}
+
+			for (int col = 0; col < n; col++) {
+				PossibleValues p = pvs[row * n + col];
+				if (p != null) {
+					p.and(rowPossible);
+				}
+			}
+		}
+
+		for (int col = 0; col < n; col++) {
+			PossibleValues colPossible = new PossibleValues(n);
+
+			for (int f : iterCol(col)) {
+				colPossible.set(f, false);
+			}
+
+			for (int row = 0; row < n; row++) {
+				PossibleValues p = pvs[row * n + col];
+				if (p != null) {
+					p.and(colPossible);
+				}
+			}
+		}
+
+		for (int box = 0; box < n; box++) {
+			final int startRow = (box / k) * k;
+			final int startCol = (box % k) * k;
+
+			PossibleValues boxPossible = new PossibleValues(n);
+
+			for (int f : iterBox(box)) {
+				boxPossible.set(f, false);
+			}
+
+			for (int dRow = 0; dRow < k; dRow++) {
+				for (int dCol = 0; dCol < k; dCol++) {
+					int row = startRow + dRow;
+					int col = startCol + dCol;
+
+					PossibleValues p = pvs[row * n + col];
+					if (p != null) {
+						p.and(boxPossible);
+					}
+				}
+			}
+		}
+
+		return pvs;
+	}
 	
 	public int numberOfFields() {
 		return n*n;
@@ -57,16 +125,18 @@ public class Grid {
 		return grid[i];
 	}
 	
-	public void set(int i, int val) {
+	public Pair<Set<Integer>, Set<Integer>> set(int i, int val) {
 		grid[i] = val;
+		return null;
 	}
 	
 	public int get(int row, int col) {
 		return this.grid[n*row + col];
 	}
 
-	public void set(int row, int col, int val) {
+	public Pair<Set<Integer>, Set<Integer>> set(int row, int col, int val) {
 		this.grid[n*row + col] = val;
+		return null;
 	}
 	
 	public int rowFor(int field) {
