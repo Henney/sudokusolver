@@ -1,9 +1,5 @@
 package model;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.function.BiFunction;
-
 import model.tactics.AlwaysTactic;
 import model.tactics.BoxTactic;
 import model.tactics.ChoiceTactic;
@@ -11,23 +7,15 @@ import model.tactics.ColTactic;
 import model.tactics.IncrementalTwinsTactic;
 import model.tactics.XWingTactic;
 import model.tactics.RowTactic;
-import model.tactics.Tactic;
 import model.tactics.TwinsTactic;
 import model.tactics.UniqueCandidateTactic;
 import model.tactics.UnsolvableException;
-import model.tactics.XWingTactic;
-import model.util.IntLinkedList;
 import model.util.IntPriorityQueue;
-import model.util.Node;
-import model.util.Pair;
-import model.util.XWingBucket;
 
 public class Solver {
 
 	public Grid grid;
 	private IntPriorityQueue pq;
-	private ArrayDeque<Pair<Integer, Integer>> changed;
-	private ArrayDeque<Pair<Integer, ArrayDeque<Integer>>> uniqueCandChanged;
 	private PossibleValues[] pvs;
 	private PossibleValuesGrid pGrid;
 	
