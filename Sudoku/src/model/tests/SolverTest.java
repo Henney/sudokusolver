@@ -177,7 +177,7 @@ public class SolverTest {
 		solveSudoku("sudoku_norvig_hardest");
 	}
 	
-//	@Test
+	@Test
 	public void solveNorvigImpossible() throws IOException {
 		Grid g = new Grid(new FileReader("puzzles/sudoku_norvig_impossible.txt"));
 		assertFalse(g.isSolved());

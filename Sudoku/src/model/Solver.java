@@ -20,6 +20,8 @@ public class Solver {
 	private PossibleValuesGrid pGrid;
 	
 	boolean foundSolution = true;
+	int timeout = 0;
+	long start;
 
 	private AlwaysTactic[] alwaysTactics;
 	private ChoiceTactic[] choiceTactics;
@@ -46,13 +48,18 @@ public class Solver {
 		alwaysTactics = new AlwaysTactic[] { new RowTactic(g, pGrid), new ColTactic(g, pGrid),
 				new BoxTactic(g, pGrid), new IncrementalTwinsTactic(g, pGrid) };
 
-		choiceTactics = new ChoiceTactic[] { new UniqueCandidateTactic(g, pGrid), new TwinsTactic(g, pGrid),
-				new XWingTactic(g, pGrid) };
+		choiceTactics = new ChoiceTactic[] { new UniqueCandidateTactic(g, pGrid), //new TwinsTactic(g, pGrid),
+				/*new XWingTactic(g, pGrid)*/ };
 
 		return solve_helper(g);
 	}
 
 	private Grid solve_helper(Grid g) {
+		long ct = System.currentTimeMillis();
+		if (start != 0 && ct-start > timeout) {
+			return null;
+		}
+		
 		if (pq.isEmpty()) {
 			return g;
 		}
@@ -99,6 +106,7 @@ public class Solver {
 		int x = 0;
 
 		while (pv.nextAfter(x) != 0) {
+			
 			x = pv.nextAfter(x);
 
 			// UPDATE
@@ -152,5 +160,20 @@ public class Solver {
 	protected void showGrid(Grid g) {
 		// This method does nothing but is overridden in GuiSolver to display
 		// the grid.
+	}
+	
+	public Grid solveWithTimeout(int t) {
+		start = System.currentTimeMillis();
+		timeout = t;	
+		Grid g = solve();
+		timeout = 0;
+		return g;
+	}
+
+	public boolean uniqueWithTimeout(int t) {
+		timeout = t;
+		boolean ret = unique();
+		timeout = 0;
+		return ret;
 	}
 }

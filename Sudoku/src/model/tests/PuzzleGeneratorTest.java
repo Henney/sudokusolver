@@ -31,21 +31,21 @@ public class PuzzleGeneratorTest {
 		}
 	}
 	
-//	@Test
+	@Test
 	public void generate3() {
 		for (int i = 0; i < 100; i++) {
 			generalTest(3);
 		}
 	}
 	
-//	@Test
+	@Test
 	public void generate4() {
 		for (int i = 0; i < 1; i++) {
 			generalTest(4);
 		}
 	}
 	
-	@Test
+//	@Test
 	public void generate5() {
 		for (int i = 0; i < 1; i++) {
 			generalTest(5);
