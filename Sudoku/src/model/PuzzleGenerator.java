@@ -1,24 +1,15 @@
 package model;
 
-import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 
 public class PuzzleGenerator {
-
-	private PossibleValues[] pvs;
-
-	public static void main(String[] args) {
-//		for (int i = 0; i < 100; i++) {
-			new PuzzleGenerator().generate(4);
-//		}
-	}
 	
 	public PuzzleGenerator() {
 	}
 	
-	public Grid generate(int k) {
+	public static Grid generate(int k) {
 		Grid g = randomBoard(new Grid(k), 0);
 		
 		LinkedList<Integer> fields = new LinkedList<Integer>();
@@ -26,13 +17,13 @@ public class PuzzleGenerator {
 			fields.add(i);
 		}
 		Collections.shuffle(fields);
-		g = minimise(g, fields);
-		System.out.println(g);
+		
+		minimise(g, fields);
 		
 		return g;
 	}
 
-	private Grid minimise(Grid g, LinkedList<Integer> fields) {
+	private static Grid minimise(Grid g, LinkedList<Integer> fields) {
 		while (!fields.isEmpty()) {
 			int field = fields.remove();
 			int prevVal = g.get(field);
@@ -46,13 +37,13 @@ public class PuzzleGenerator {
 		return g;
 	}
 
-	private Grid randomBoard(Grid g, int field) {
+	private static Grid randomBoard(Grid g, int field) {
 		if (field == g.numberOfFields()) return g;
 		PossibleValues[] pvs = g.findPossibleValues(); // TODO optimise this so we don't have to find possible values every time
 													   // - maybe not necessary since we have to solve every time anyway
 		
-
 		long b = System.currentTimeMillis();
+		
 		while (true) {
 			int idx = (int) (Math.random()*pvs[field].possible());
 			int val = pvs[field].possibilities()[idx];
@@ -62,12 +53,45 @@ public class PuzzleGenerator {
 			if (s.solve() != null) {
 				break;
 			}
+			long a = System.currentTimeMillis();
 			g.set(field, 0);
-			if (System.currentTimeMillis()-b > 1000) return null;
 		}
 
 		return randomBoard(g, field+1);
 	}
 	
+	// TODO: Possibly try generating in some other way?
+	private static Grid generate2(int k) {
+		Grid g = new Grid(k);
+		
+		Solver s = new Solver(g);
+		while (true) {
+			PossibleValues[] pvs = g.findPossibleValues();
+
+			LinkedList<Integer> fields = new LinkedList<Integer>();
+			for (int i = 0; i < g.numberOfFields(); i++) {
+				fields.add(i);
+			}
+			Collections.shuffle(fields);
+			
+			int field = fields.remove();
+			
+			int idx = (int) (Math.random()*pvs[field].possible());
+			int val = pvs[field].possibilities()[idx];
+			
+			g.set(field, val);
+			s = new Solver(g);
+
+			if (s.unique()) {
+				g.set(field, 0);
+			} else {
+				break;
+			}
+			
+			
+		}
+		
+		return g;
+	}
 	
 }
