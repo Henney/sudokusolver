@@ -9,10 +9,10 @@ import java.io.OutputStreamWriter;
 public class Writer {
 	
 	public static void main(String[] args) {
-		int amount = 1;
+		int amount = 10;
 		for (int i = 0; i < amount; i++) {
-			Grid g = PuzzleGenerator.generate(6);
-			writeToFile(g);
+			Grid g = PuzzleGenerator.generate(2);
+			System.out.println(writeToFile(g));
 		}
 	}
 
