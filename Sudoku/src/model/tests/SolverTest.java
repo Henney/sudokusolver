@@ -230,4 +230,40 @@ public class SolverTest {
 		solveSudoku("decadoku1");
 	}
 	
+	@Test
+	public void top95() throws IOException {
+		FileReader f = new FileReader("puzzles/top95.txt");
+		BufferedReader b = new BufferedReader(f);
+		
+		Solver[] solvers = new Solver[95];
+		
+		int n = 0;
+		
+		while (b.ready()) {
+			String line = b.readLine();
+			
+			StringBuilder sb = new StringBuilder();
+			sb.append("3\n");
+			
+			for (int i = 0; i < 9; i++) {
+				for (int j = 0; j < 8; j++) {
+					sb.append(line.charAt(i*9 + j));
+					sb.append(";");
+				}
+				sb.append(line.charAt(i*9+8));
+				
+				sb.append('\n');
+			}
+
+			solvers[n] = new Solver(new Grid(sb.toString()));
+			n++;
+		}
+
+		b.close();
+		
+		for (int i = 0; i < solvers.length; i++) {
+			assertTrue(solvers[i].solve() != null);
+		}
+	}
+	
 }
