@@ -36,7 +36,7 @@ public class SolverTest {
 		
 		Solver solver = new Solver(grid);
 		
-		PossibleValues[] pvs = solver.findPossibleValues();
+		PossibleValues[] pvs = grid.findPossibleValues();
 		
 		Integer[][] expected = {
 				{ 2 }, null, { 6 }, null, { 4 }, { 2, 7 }, null, { 9 }, { 4, 5, 9 },

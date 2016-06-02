@@ -26,11 +26,14 @@ public class Solver {
 
 	public Solver(Grid grid) {
 		this.grid = grid;
-		this.pq = new IntPriorityQueue(grid.numberOfFields(), grid.size());
 	}
 
 	public Grid solve() {
-		pvs = grid.findPossibleValues();
+		Grid g = new Grid(grid);
+		
+		this.pq = new IntPriorityQueue(g.numberOfFields(), g.size());
+		
+		pvs = g.findPossibleValues();
 
 		for (int i = 0; i < pvs.length; i++) {
 			if (pvs[i] != null) {
@@ -38,15 +41,15 @@ public class Solver {
 			}
 		}
 
-		pGrid = new PossibleValuesGrid(grid, pvs, pq);
+		pGrid = new PossibleValuesGrid(g, pvs, pq);
 
-		alwaysTactics = new AlwaysTactic[] { new RowTactic(grid, pGrid), new ColTactic(grid, pGrid),
-				new BoxTactic(grid, pGrid), new IncrementalTwinsTactic(grid, pGrid) };
+		alwaysTactics = new AlwaysTactic[] { new RowTactic(g, pGrid), new ColTactic(g, pGrid),
+				new BoxTactic(g, pGrid), new IncrementalTwinsTactic(g, pGrid) };
 
-		choiceTactics = new ChoiceTactic[] { new UniqueCandidateTactic(grid, pGrid), new TwinsTactic(grid, pGrid),
-				new XWingTactic(grid, pGrid) };
+		choiceTactics = new ChoiceTactic[] { new UniqueCandidateTactic(g, pGrid), new TwinsTactic(g, pGrid),
+				new XWingTactic(g, pGrid) };
 
-		return solve_helper(new Grid(grid));
+		return solve_helper(g);
 	}
 
 	private Grid solve_helper(Grid g) {
@@ -141,7 +144,9 @@ public class Solver {
 	
 	public boolean unique() {
 		foundSolution = false;
-		return solve() == null;
+		boolean ret = solve() == null && foundSolution;
+		foundSolution = true;
+		return ret;
 	}
 
 	protected void showGrid(Grid g) {
