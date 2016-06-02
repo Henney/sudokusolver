@@ -60,9 +60,7 @@ public class UserGridTest {
 		assertTrue(grid.rowFor(other) == grid.rowFor(i));
 		
 		Pair<Set<Integer>, Set<Integer>> s34 = grid.set(i, 9);
-		
-		System.out.println(s34.fst);
-		
+
 		assertTrue(s34.fst.contains(other));
 	}
 
