@@ -13,6 +13,8 @@ import controller.NumberFieldController;
 import controller.SATHandler;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
@@ -37,9 +39,11 @@ import javafx.scene.text.Font;
 
 public class View extends Application {
 	
-	Solver cSolver;
-	Service<UserGrid> s;
-	Task<UserGrid>  solveTask;
+	private Solver cSolver;
+	private Service<UserGrid> s;
+	private Task<UserGrid>  solveTask;
+	private int solveSpeed = SpeedListener.MAX_DELAY;
+	
 	public enum Method { Constraint, SAT};
 
 	private Stage primaryStage;
@@ -99,6 +103,10 @@ public class View extends Application {
 		SATButton.setOnMouseClicked(new SATHandler<MouseEvent>(this));
 		Button cancelButton = (Button) rootLayout.lookup("#CancelButton");
 		cancelButton.setOnMouseClicked(new CancelHandler<MouseEvent>(this));
+		// TODO: create a superclass for these handlers
+		
+		Slider speedSlider = (Slider) rootLayout.lookup("#SpeedSlider");
+		speedSlider.valueProperty().addListener(new SpeedListener<Number>(this));
 
 		// Show the scene containing the root layout.
 		Scene scene = new Scene(rootLayout);
@@ -236,5 +244,13 @@ public class View extends Application {
 
 	public static void main(String[] args) {
 		launch(args);
+	}
+
+	public int getSolveSpeed() {
+		return solveSpeed;
+	}
+
+	public void setSolveSpeed(int s) {
+		solveSpeed = s;
 	}
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 
@@ -12,6 +13,7 @@
             <Button id="SolveButton" alignment="CENTER" mnemonicParsing="false" text="Solve" textAlignment="CENTER" />
             <Button id="SATButton" mnemonicParsing="false" text="SAT Solve" />
             <Button id="CancelButton" alignment="CENTER" minWidth="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="102.0" text="Cancel solve" textAlignment="CENTER" />
+            <Slider id="SpeedSlider" />
          </children>
       </HBox>
       <HBox alignment="CENTER" layoutX="10.0" layoutY="318.0" prefHeight="31.0" prefWidth="580.0" spacing="10.0" AnchorPane.bottomAnchor="45.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
