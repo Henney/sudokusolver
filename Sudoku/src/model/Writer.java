@@ -8,15 +8,13 @@ import java.io.OutputStreamWriter;
 
 public class Writer {
 	
-	public static void main(String[] args) {
-		int amount = 1;
-		for (int i = 0; i < amount; i++) {
-			Grid g = PuzzleGenerator.generate(6);
-			writeToFile(g);
-		}
-	}
+	public static final String DEFAULT_PATH = "puzzles/";
 
-	public static boolean writeToFile(Grid g) {
+	public static File writeToFile(Grid g) {
+		return writeToFile(g, DEFAULT_PATH);
+	}
+	
+	public static File writeToFile(Grid g, String loc) {
 		int k = g.k();
 		
 		String prefix = "";
@@ -32,7 +30,7 @@ public class Writer {
 		case 10: prefix = "deca"; break;
 		}
 		prefix += "doku";
-		String path = "puzzles/" + prefix + "s/";
+		String path = loc + prefix + "s/";
 		
 		String name;
 		File f;
@@ -42,12 +40,16 @@ public class Writer {
 			name = prefix + num;
 			f = new File(path, name + ".txt");
 		} while (f.exists());
+		
+		if (!f.getParentFile().mkdirs()) {
+			return null;
+		}
 				
 		try {
 			f.createNewFile();
 		} catch (IOException e1) {
 			e1.printStackTrace();
-			return false;
+			return null;
 		}
 		
 		StringBuilder sb = new StringBuilder();
@@ -64,11 +66,12 @@ public class Writer {
 		try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
 	              new FileOutputStream(f.getAbsolutePath()), "utf-8"))) {
 		   writer.write(sb.toString());
+		   writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-			return false;
-		}
+			return null;
+		}		
 		
-		return true;
+		return f;
 	}
 }

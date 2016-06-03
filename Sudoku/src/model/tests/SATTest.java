@@ -12,7 +12,7 @@ import model.Grid;
 
 public class SATTest {
 
-	@Test
+//	@Test
 	public void solveExample() throws IOException {
 		String input = "3\n" + ".;1;.;3;.;.;8;.;." + "\n" + "5;.;9;6;.;.;7;.;." + "\n" + "7;.;4;.;9;5;.;2;." + "\n"
 				+ "4;.;.;.;.;.;1;.;." + "\n" + ".;2;8;.;7;1;.;6;3" + "\n" + ".;.;.;2;.;4;9;5;." + "\n"
@@ -36,7 +36,7 @@ public class SATTest {
 		assertTrue(solved.isSolved());
 	}
 	
-	@Test
+//	@Test
 	public void solveTop95() throws IOException {
 		FileReader f = new FileReader("puzzles/top95.txt");
 		BufferedReader b = new BufferedReader(f);

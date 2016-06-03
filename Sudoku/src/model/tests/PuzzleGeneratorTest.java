@@ -12,7 +12,7 @@ public class PuzzleGeneratorTest {
 
 	public void generalTest(int k) {
 		Grid g = PuzzleGenerator.generate(k);
-		System.out.println(g);
+		
 		Solver s = new Solver(g);
 		
 		assertFalse(g.isSolved());
@@ -38,7 +38,7 @@ public class PuzzleGeneratorTest {
 		}
 	}
 	
-	@Test
+//	@Test
 	public void generate4() {
 		for (int i = 0; i < 1; i++) {
 			generalTest(4);
