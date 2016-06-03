@@ -41,7 +41,7 @@ public class Writer {
 			f = new File(path, name + ".txt");
 		} while (f.exists());
 		
-		if (!f.getParentFile().mkdirs()) {
+		if (!f.getParentFile().exists() && !f.getParentFile().mkdirs()) {
 			return null;
 		}
 				

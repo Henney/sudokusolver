@@ -20,7 +20,9 @@ public class SAT {
 		FileWriter f = new FileWriter(tmp);
 
 		generateRules(grid.k(), f);
+		System.out.println("Generated rules");
 		generateGiven(grid, f);
+		System.out.println("generated given");
 		f.write("(check-sat)\n");
 		f.write("(get-model)");
 
@@ -28,6 +30,7 @@ public class SAT {
 
 		ProcessBuilder pb = new ProcessBuilder("z3", tmp.getAbsolutePath());
 		Process p = pb.start();
+		System.out.println("z3 started");
 
 		InputStream in = p.getInputStream();
 		BufferedReader b = new BufferedReader(new InputStreamReader(in));

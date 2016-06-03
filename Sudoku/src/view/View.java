@@ -9,6 +9,7 @@ import controller.SolveHandler;
 import controller.SudokuFieldController;
 import controller.WindowResizeListener;
 import controller.NumberFieldController;
+import controller.SATHandler;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -17,6 +18,7 @@ import javafx.geometry.Pos;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import model.Grid;
+import model.SAT;
 import model.Solver;
 import model.UserGrid;
 import javafx.scene.Node;
@@ -31,6 +33,8 @@ import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 
 public class View extends Application {
+	
+	public enum Method { Constraint, SAT};
 
 	private Stage primaryStage;
 	private AnchorPane rootLayout;
@@ -85,6 +89,8 @@ public class View extends Application {
 		fetchButton.setOnMouseClicked(new FetchHandler<MouseEvent>(this));
 		Button solveButton = (Button) rootLayout.lookup("#SolveButton");
 		solveButton.setOnMouseClicked(new SolveHandler<MouseEvent>(this));
+		Button SATButton = (Button) rootLayout.lookup("#SATButton");
+		SATButton.setOnMouseClicked(new SATHandler<MouseEvent>(this));
 
 		// Show the scene containing the root layout.
 		Scene scene = new Scene(rootLayout);
@@ -167,15 +173,29 @@ public class View extends Application {
 		return this.rootLayout;
 	}
 
-	public void solveSudoku() {
+	public void solveSudoku(Method m) {
 		
 		Task<UserGrid> task = new Task<UserGrid>() {
 			
 			@Override
 			protected UserGrid call() throws Exception {
-				GuiSolver s = new GuiSolver(grid, View.this);
-				Grid solvedGrid = s.solve();
-				return grid;
+				Grid solvedGrid = null;
+				switch (m) {
+				case Constraint:
+					GuiSolver s = new GuiSolver(grid, View.this);
+					solvedGrid = s.solve();
+					break;
+				case SAT:
+					solvedGrid = SAT.solveWithZ3(grid);
+					break;
+				}
+				UserGrid ug = new UserGrid(solvedGrid);
+				Platform.runLater(new Runnable() {
+		            @Override public void run() {
+						setAndDisplayGrid(ug);
+		            }
+		        });
+				return ug;
 			}
 			
 		};
