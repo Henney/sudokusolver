@@ -18,10 +18,6 @@ public class IntPriorityQueue {
 		next = 0;
 		size = 0;
 	}
-
-	public int size() {
-		return size;
-	}
 	
 	public boolean isEmpty() {
 		return size == 0;
