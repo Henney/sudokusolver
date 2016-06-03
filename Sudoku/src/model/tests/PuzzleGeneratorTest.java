@@ -6,14 +6,14 @@ import org.junit.Test;
 
 import model.Grid;
 import model.PuzzleGenerator;
-import model.Solver;
+import model.TacticSolver;
 
 public class PuzzleGeneratorTest {
 
 	public void generalTest(int k) {
 		Grid g = PuzzleGenerator.generate(k);
 		
-		Solver s = new Solver(g);
+		TacticSolver s = new TacticSolver(g);
 		
 		assertFalse(g.isSolved());
 		assertTrue(s.unique());

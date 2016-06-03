@@ -7,7 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import org.junit.Test;
-import model.SAT;
+import model.SATSolver;
 import model.Grid;
 
 public class SATTest {
@@ -20,7 +20,7 @@ public class SATTest {
 
 		Grid grid = new Grid(input);
 
-		Grid solved = SAT.solveWithZ3(grid);
+		Grid solved = new SATSolver(grid).solve();
 
 		assertTrue(solved != null);
 		assertTrue(solved.isSolved());
@@ -30,7 +30,7 @@ public class SATTest {
 	public void solveTetradoku1() throws IOException {
 		Grid g = new Grid(new FileReader("puzzles/tetradoku1.txt"));
 
-		Grid solved = SAT.solveWithZ3(g);
+		Grid solved = new SATSolver(g).solve();
 
 		assertTrue(solved != null);
 		assertTrue(solved.isSolved());
@@ -68,7 +68,7 @@ public class SATTest {
 		b.close();
 		
 		for (int i = 0; i < grids.length; i++) {
-			Grid solved = SAT.solveWithZ3(grids[i]);
+			Grid solved = new SATSolver(grids[i]).solve();
 			assertTrue(solved != null);
 			assertTrue(solved.isSolved());
 		}

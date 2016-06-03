@@ -26,7 +26,7 @@ public class PuzzleGenerator {
 			int prevVal = g.get(field);
 			g.set(field, 0);
 			
-			Solver s = new Solver(g);
+			TacticSolver s = new TacticSolver(g);
 			long b = System.currentTimeMillis();
 			if (!s.uniqueWithTimeout(timeout)) {
 				g.set(field, prevVal);
@@ -58,7 +58,7 @@ public class PuzzleGenerator {
 			int val = pvs[field].possibilities()[idx];
 			
 			g.set(field, val);
-			Solver s = new Solver(g);
+			TacticSolver s = new TacticSolver(g);
 			if (s.solveWithTimeout(timeout) != null) {
 				break;
 			}

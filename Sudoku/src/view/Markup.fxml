@@ -6,14 +6,19 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <AnchorPane id="SudokuBoardPane" prefHeight="330.0" prefWidth="600.0" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
-      <HBox alignment="CENTER" layoutY="308.0" prefHeight="40.0" prefWidth="600.0" spacing="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
+      <AnchorPane id="SudokuBoardPane" prefHeight="381.0" prefWidth="580.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+      <HBox alignment="CENTER" layoutY="308.0" prefHeight="31.0" prefWidth="580.0" spacing="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
+         <children>
+            <Button id="SolveButton" alignment="CENTER" mnemonicParsing="false" text="Solve" textAlignment="CENTER" />
+            <Button id="SATButton" mnemonicParsing="false" text="SAT Solve" />
+            <Button id="CancelButton" alignment="CENTER" minWidth="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="102.0" text="Cancel solve" textAlignment="CENTER" />
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" layoutX="10.0" layoutY="318.0" prefHeight="31.0" prefWidth="580.0" spacing="10.0" AnchorPane.bottomAnchor="45.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
          <children>
             <Button id="LoadButton" alignment="CENTER" contentDisplay="TOP" minWidth="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="123.0" text="Load board" textAlignment="CENTER" />
             <Button id="FetchButton" alignment="CENTER" minWidth="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="123.0" text="Fetch online" textAlignment="CENTER" />
             <Button id="SaveButton" alignment="CENTER" minWidth="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="123.0" text="Save board" textAlignment="CENTER" />
-            <Button id="SolveButton" alignment="CENTER" mnemonicParsing="false" text="Solve" textAlignment="CENTER" />
-            <Button id="SATButton" mnemonicParsing="false" text="SAT Solve" />
          </children>
       </HBox>
    </children>

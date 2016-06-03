@@ -2,6 +2,7 @@ package view;
 
 import java.io.IOException;
 
+import controller.CancelHandler;
 import controller.FetchHandler;
 import controller.InputHandler;
 import controller.LoadHandler;
@@ -12,14 +13,16 @@ import controller.NumberFieldController;
 import controller.SATHandler;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import model.Grid;
-import model.SAT;
+import model.SATSolver;
 import model.Solver;
+import model.TacticSolver;
 import model.UserGrid;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -34,6 +37,9 @@ import javafx.scene.text.Font;
 
 public class View extends Application {
 	
+	Solver cSolver;
+	Service<UserGrid> s;
+	Task<UserGrid>  solveTask;
 	public enum Method { Constraint, SAT};
 
 	private Stage primaryStage;
@@ -91,6 +97,8 @@ public class View extends Application {
 		solveButton.setOnMouseClicked(new SolveHandler<MouseEvent>(this));
 		Button SATButton = (Button) rootLayout.lookup("#SATButton");
 		SATButton.setOnMouseClicked(new SATHandler<MouseEvent>(this));
+		Button cancelButton = (Button) rootLayout.lookup("#CancelButton");
+		cancelButton.setOnMouseClicked(new CancelHandler<MouseEvent>(this));
 
 		// Show the scene containing the root layout.
 		Scene scene = new Scene(rootLayout);
@@ -175,34 +183,55 @@ public class View extends Application {
 
 	public void solveSudoku(Method m) {
 		
-		Task<UserGrid> task = new Task<UserGrid>() {
-			
+		if (!cancelSolveTask()) {
+			return;
+		}
+		
+		s = new Service<UserGrid>() {
+
 			@Override
-			protected UserGrid call() throws Exception {
-				Grid solvedGrid = null;
-				switch (m) {
-				case Constraint:
-					GuiSolver s = new GuiSolver(grid, View.this);
-					solvedGrid = s.solve();
-					break;
-				case SAT:
-					solvedGrid = SAT.solveWithZ3(grid);
-					break;
-				}
-				UserGrid ug = new UserGrid(solvedGrid);
-				Platform.runLater(new Runnable() {
-		            @Override public void run() {
-						setAndDisplayGrid(ug);
-		            }
-		        });
-				return ug;
+			protected Task<UserGrid> createTask() {
+				solveTask = new Task<UserGrid>() {
+					
+					@Override
+					protected UserGrid call() throws Exception {
+						Grid solvedGrid = null;
+						switch (m) {
+						case Constraint:
+							cSolver = new GuiTacticSolver(new Grid(grid), View.this);
+							solvedGrid = cSolver.solve();
+							break;
+						case SAT:
+							cSolver = new SATSolver(new Grid(grid));
+							solvedGrid = cSolver.solve();
+							break;
+						}
+						UserGrid ug = new UserGrid(solvedGrid);
+						Platform.runLater(new Runnable() {
+				            @Override public void run() {
+								setAndDisplayGrid(ug);
+				            }
+				        });
+						return ug;
+					}
+				};
+				return solveTask;
 			}
-			
 		};
 		
-		Thread t = new Thread(task);
-		t.setDaemon(true); // thread will not prevent application shutdown
-		t.start();
+		s.restart();
+	}
+	
+	public boolean cancelSolveTask() {
+		if (solveTask == null || solveTask.isDone()) {
+			return true;
+		}
+		cSolver.cancel();
+		boolean b = s.cancel();
+		if (!b) {
+			// TODO throw an exception in a window
+		}
+		return true;
 	}
 
 	public static void main(String[] args) {

@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import model.Grid;
 import model.PossibleValues;
-import model.Solver;
+import model.TacticSolver;
 
 public class SolverTest {
 
@@ -34,7 +34,7 @@ public class SolverTest {
 
 		Grid grid = new Grid(input);
 		
-		Solver solver = new Solver(grid);
+		TacticSolver solver = new TacticSolver(grid);
 		
 		PossibleValues[] pvs = grid.findPossibleValues();
 		
@@ -84,7 +84,7 @@ public class SolverTest {
 		
 		assertFalse(grid.isSolved());
 		
-		Solver solver = new Solver(grid);
+		TacticSolver solver = new TacticSolver(grid);
 		
 		Grid solved = solver.solve();
 		
@@ -97,7 +97,7 @@ public class SolverTest {
 		
 		assertFalse(g.isSolved());
 		
-		Solver solver = new Solver(g);
+		TacticSolver solver = new TacticSolver(g);
 		Grid solved = solver.solve();
 		
 		assertFalse(solved == null);
@@ -181,7 +181,7 @@ public class SolverTest {
 	public void solveNorvigImpossible() throws IOException {
 		Grid g = new Grid(new FileReader("puzzles/sudoku_norvig_impossible.txt"));
 		assertFalse(g.isSolved());
-		Grid solved = new Solver(g).solve();
+		Grid solved = new TacticSolver(g).solve();
 		assertTrue(solved == null);
 	}
 	
@@ -235,7 +235,7 @@ public class SolverTest {
 		FileReader f = new FileReader("puzzles/top95.txt");
 		BufferedReader b = new BufferedReader(f);
 		
-		Solver[] solvers = new Solver[95];
+		TacticSolver[] solvers = new TacticSolver[95];
 		
 		int n = 0;
 		
@@ -255,7 +255,7 @@ public class SolverTest {
 				sb.append('\n');
 			}
 
-			solvers[n] = new Solver(new Grid(sb.toString()));
+			solvers[n] = new TacticSolver(new Grid(sb.toString()));
 			n++;
 		}
 
@@ -281,7 +281,7 @@ public class SolverTest {
 				".;5;2;.;8;.;.;4;." ;
 		
 		Grid grid = new Grid(input);
-		Solver solver = new Solver(grid);
+		TacticSolver solver = new TacticSolver(grid);
 		
 		assertTrue(solver.solvable());
 	}
@@ -302,7 +302,7 @@ public class SolverTest {
 		
 		
 		Grid grid = new Grid(input);
-		Solver solver = new Solver(grid);
+		TacticSolver solver = new TacticSolver(grid);
 		
 		assertFalse(solver.solvable());
 	}

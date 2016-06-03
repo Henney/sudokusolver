@@ -11,28 +11,65 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class SAT {
+public class SATSolver extends Solver {
+	
+	public SATSolver(Grid g) {
+		super(g);
+	}
 
-	public static Grid solveWithZ3(Grid grid) throws IOException {
+	public Process process;
+	
+	public Grid solve() {
+		try {
+			return solveHelper();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	@Override
+	public void cancel() {
+		super.cancel();
+		
+		Thread t = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				while (process == null) {
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				process.destroyForcibly();
+				process = null;
+			}
+			
+		});
+		
+		t.setDaemon(true);
+		t.start();
+	}
+
+	public Grid solveHelper() throws IOException {
 		File tmp = File.createTempFile("sudoku", "z3");
 		tmp.deleteOnExit();
 
 		FileWriter f = new FileWriter(tmp);
 
 		generateRules(grid.k(), f);
-		System.out.println("Generated rules");
-		generateGiven(grid, f);
-		System.out.println("generated given");
+		generateGiven(f);
 		f.write("(check-sat)\n");
 		f.write("(get-model)");
 
 		f.close();
 
 		ProcessBuilder pb = new ProcessBuilder("z3", tmp.getAbsolutePath());
-		Process p = pb.start();
-		System.out.println("z3 started");
+		process = pb.start();
 
-		InputStream in = p.getInputStream();
+		InputStream in = process.getInputStream();
 		BufferedReader b = new BufferedReader(new InputStreamReader(in));
 
 		String out = b.lines().collect(Collectors.joining("\n"));
@@ -40,23 +77,30 @@ public class SAT {
 		return parseModel(grid.k(), out);
 	}
 
-	public static void generateRules(final int k, Writer w) throws IOException {
+	public void generateRules(final int k, Writer w) throws IOException {
 		declareConstants(k, w);
+		if (!run) return;
 
 		// Necessary constraints
 		atLeastOneInEachField(k, w);
+		if (!run) return;
 		onceInRows(k, w);
+		if (!run) return;
 		onceInCols(k, w);
+		if (!run) return;
 		onceInBoxes(k, w);
+		if (!run) return;
 
 		// Redundant but helpful constraints
 		atMostOneInEach(k, w);
+		if (!run) return;
 		atLeastOnceInEachRow(k, w);
+		if (!run) return;
 		atLeastOnceInEachCol(k, w);
 		// atLeastOnceInEachBox is not helpful
 	}
 
-	public static void generateGiven(Grid grid, Writer w) throws IOException {
+	public void generateGiven(Writer w) throws IOException {
 		for (int x = 0; x < grid.size(); x++) {
 			for (int y = 0; y < grid.size(); y++) {
 				int i = grid.get(x, y);
@@ -68,7 +112,7 @@ public class SAT {
 		}
 	}
 
-	public static Grid parseModel(final int k, String s) {
+	public Grid parseModel(final int k, String s) {
 		/*
 		 * INPUT: sat (model (define-fun s6_2_7 () Bool true) (define-fun s4_5_3
 		 * () Bool true) ...)
@@ -110,19 +154,19 @@ public class SAT {
 		return grid;
 	}
 
-	private static void startAssert(Writer w) throws IOException {
+	private void startAssert(Writer w) throws IOException {
 		w.write("(assert\n");
 	}
 
-	private static void endAssert(Writer w) throws IOException {
+	private void endAssert(Writer w) throws IOException {
 		w.write(")\n\n");
 	}
 
-	private static String makeConstant(int row, int col, int val) {
+	private String makeConstant(int row, int col, int val) {
 		return "s" + row + "_" + col + "_" + val;
 	}
 
-	private static void declareConstants(final int k, Writer w) throws IOException {
+	private void declareConstants(final int k, Writer w) throws IOException {
 		final int n = k * k;
 
 		for (int x = 1; x <= n; x++) {
@@ -136,7 +180,7 @@ public class SAT {
 		w.write("\n");
 	}
 
-	private static void atLeastOneInEachField(final int k, Writer w) throws IOException {
+	private void atLeastOneInEachField(final int k, Writer w) throws IOException {
 		final int n = k * k;
 
 		startAssert(w);
@@ -156,7 +200,7 @@ public class SAT {
 		endAssert(w);
 	}
 
-	private static void onceInRows(final int k, Writer w) throws IOException {
+	private void onceInRows(final int k, Writer w) throws IOException {
 		final int n = k * k;
 
 		startAssert(w);
@@ -177,7 +221,7 @@ public class SAT {
 		endAssert(w);
 	}
 
-	private static void onceInCols(final int k, Writer w) throws IOException {
+	private void onceInCols(final int k, Writer w) throws IOException {
 		final int n = k * k;
 
 		startAssert(w);
@@ -198,12 +242,12 @@ public class SAT {
 		endAssert(w);
 	}
 
-	private static void onceInBoxes(final int k, Writer w) throws IOException {
+	private void onceInBoxes(final int k, Writer w) throws IOException {
 		onceInBoxes1(k, w);
 		onceInBoxes2(k, w);
 	}
 
-	private static void onceInBoxes1(final int k, Writer w) throws IOException {
+	private void onceInBoxes1(final int k, Writer w) throws IOException {
 		final int n = k * k;
 
 		startAssert(w);
@@ -229,7 +273,7 @@ public class SAT {
 		endAssert(w);
 	}
 
-	private static void onceInBoxes2(final int k, Writer w) throws IOException {
+	private void onceInBoxes2(final int k, Writer w) throws IOException {
 		final int n = k * k;
 
 		startAssert(w);
@@ -257,7 +301,7 @@ public class SAT {
 		endAssert(w);
 	}
 
-	private static void atMostOneInEach(final int k, Writer w) throws IOException {
+	private void atMostOneInEach(final int k, Writer w) throws IOException {
 		final int n = k * k;
 
 		startAssert(w);
@@ -277,7 +321,7 @@ public class SAT {
 		endAssert(w);
 	}
 
-	private static void atLeastOnceInEachRow(final int k, Writer w) throws IOException {
+	private void atLeastOnceInEachRow(final int k, Writer w) throws IOException {
 		final int n = k * k;
 
 		startAssert(w);
@@ -297,7 +341,7 @@ public class SAT {
 		endAssert(w);
 	}
 
-	private static void atLeastOnceInEachCol(final int k, Writer w) throws IOException {
+	private void atLeastOnceInEachCol(final int k, Writer w) throws IOException {
 		final int n = k * k;
 
 		startAssert(w);
