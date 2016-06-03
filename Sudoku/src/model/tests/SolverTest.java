@@ -266,4 +266,45 @@ public class SolverTest {
 		}
 	}
 	
+	@Test
+	public void exampleIsSolvable() throws IOException {
+		String input =
+				"3\n" +
+				".;1;.;3;.;.;8;.;." + "\n" +
+				"5;.;9;6;.;.;7;.;." + "\n" +
+				"7;.;4;.;9;5;.;2;." + "\n" +
+				"4;.;.;.;.;.;1;.;." + "\n" +
+				".;2;8;.;7;1;.;6;3" + "\n" +
+				".;.;.;2;.;4;9;5;." + "\n" +
+				"6;.;3;.;.;9;.;.;7" + "\n" +
+				".;.;.;4;2;.;5;1;6" + "\n" +
+				".;5;2;.;8;.;.;4;." ;
+		
+		Grid grid = new Grid(input);
+		Solver solver = new Solver(grid);
+		
+		assertTrue(solver.solvable());
+	}
+	
+	@Test
+	public void noPossibleFieldsExampleIsUnsolvable() throws IOException {
+		String input =
+				"3\n" +
+				"1;.;.;.;.;.;.;.;." + "\n" +
+				".;2;.;.;.;.;.;.;." + "\n" +
+				".;.;3;.;.;.;.;.;." + "\n" +
+				"4;.;.;.;.;.;.;.;." + "\n" +
+				"5;.;.;.;.;.;.;.;." + "\n" +
+				"6;.;.;.;.;.;.;.;." + "\n" +
+				"7;.;.;.;.;.;.;.;." + "\n" +
+				"8;.;.;.;.;.;.;.;." + "\n" +
+				"9;.;.;.;.;.;.;.;." ;
+		
+		
+		Grid grid = new Grid(input);
+		Solver solver = new Solver(grid);
+		
+		assertFalse(solver.solvable());
+	}
+	
 }

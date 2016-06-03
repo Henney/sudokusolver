@@ -48,8 +48,8 @@ public class Solver {
 		alwaysTactics = new AlwaysTactic[] { new RowTactic(g, pGrid), new ColTactic(g, pGrid),
 				new BoxTactic(g, pGrid), new IncrementalTwinsTactic(g, pGrid) };
 
-		choiceTactics = new ChoiceTactic[] { new UniqueCandidateTactic(g, pGrid), //new TwinsTactic(g, pGrid),
-				/*new XWingTactic(g, pGrid)*/ };
+		choiceTactics = new ChoiceTactic[] { new UniqueCandidateTactic(g, pGrid), new TwinsTactic(g, pGrid),
+				new XWingTactic(g, pGrid) };
 
 		return solve_helper(g);
 	}
@@ -89,7 +89,7 @@ public class Solver {
 			pGrid.cancelTransaction();
 			return null;
 		}
-
+	
 		pGrid.endTransaction();
 
 		if (!pq.valuesWithPrio(0).isEmpty()) {
@@ -117,13 +117,8 @@ public class Solver {
 
 			pGrid.newTransaction();
 
-			try {
-				for (AlwaysTactic t : alwaysTactics) {
-					t.apply(field, x);
-				}
-			} catch (UnsolvableException e) {
-				pGrid.cancelTransaction();
-				continue;
+			for (AlwaysTactic t : alwaysTactics) {
+				t.apply(field, x);
 			}
 
 			pGrid.endTransaction();
@@ -176,4 +171,21 @@ public class Solver {
 		timeout = 0;
 		return ret;
 	}
+
+	public boolean solvable() {
+		if (!grid.isLegal()) {
+			return false;
+		}
+		
+		PossibleValues[] ps = grid.findPossibleValues();
+		
+		for (int i = 0; i < ps.length; i++) {
+			if (grid.get(i) == 0 && ps[i].possible() == 0) {
+				return false;
+			}
+		}
+		
+		return solve() != null;
+	}
+	
 }

@@ -27,7 +27,7 @@ public class IncrementalTwinsTactic extends AlwaysTactic {
 	}
 
 	@Override
-	public void apply(int field, int value) throws UnsolvableException {
+	public void apply(int field, int value) {
 		final int row = grid.rowFor(field);
 		final int col = grid.colFor(field);
 		final int box = grid.boxFor(field);

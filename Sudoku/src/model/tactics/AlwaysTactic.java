@@ -9,6 +9,6 @@ public abstract class AlwaysTactic extends Tactic {
 		super(grid, pGrid);
 	}
 
-	public abstract void apply(int field, int value) throws UnsolvableException;
+	public abstract void apply(int field, int value);
 
 }

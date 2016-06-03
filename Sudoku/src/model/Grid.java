@@ -163,6 +163,50 @@ public class Grid {
 		return new BoxIterator(this, b);
 	}
 	
+	public boolean isLegal() {
+		BitSet found = new BitSet(n);
+		
+		for (int i = 0; i < n; i++) {
+			for (int f : iterRow(i)) {
+				if (f == 0) continue;
+				
+				if (found.get(f - 1)) {
+					return false;
+				}
+				
+				found.set(f - 1);
+			}
+			
+			found.clear();
+			
+			for (int f : iterCol(i)) {
+				if (f == 0) continue;
+				
+				if (found.get(f - 1)) {
+					return false;
+				}
+				
+				found.set(f - 1);
+			}
+			
+			found.clear();
+			
+			for (int f : iterBox(i)) {
+				if (f == 0) continue;
+				
+				if (found.get(f - 1)) {
+					return false;
+				}
+				
+				found.set(f - 1);
+			}
+			
+			found.clear();
+		}
+		
+		return true;
+	}
+	
 	public boolean isSolved() {
 		for (int i = 0; i < grid.length; i++) {
 			if (grid[i] == 0) {
