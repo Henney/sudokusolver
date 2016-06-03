@@ -12,7 +12,7 @@ public class PuzzleGeneratorTest {
 
 	public void generalTest(int k) {
 		Grid g = PuzzleGenerator.generate(k);
-		System.out.println(g);
+		
 		Solver s = new Solver(g);
 		
 		assertFalse(g.isSolved());

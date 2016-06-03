@@ -22,7 +22,6 @@ public class PuzzleGenerator {
 	private static Grid minimise(Grid g, LinkedList<Integer> fields) {
 		int timeout = g.k()*100;
 		while (!fields.isEmpty()) {
-			System.out.println("Minimising. Fields done: " + (g.numberOfFields()-fields.size()));
 			int field = fields.remove();
 			int prevVal = g.get(field);
 			g.set(field, 0);
@@ -42,7 +41,6 @@ public class PuzzleGenerator {
 	}
 
 	private static Grid randomBoard(Grid g, int field) {
-		System.out.println("Random board field: " + field);
 		if (field == g.numberOfFields()) return g;
 		PossibleValues[] pvs = g.findPossibleValues();
 		
