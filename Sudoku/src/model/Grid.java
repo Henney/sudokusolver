@@ -246,4 +246,25 @@ public class Grid {
 		return sb.toString();
 	}
 	
+	@Override
+	public boolean equals(Object other) {
+		if(!(other instanceof Grid)) {
+	        return false;
+	    }
+		
+		Grid g = (Grid) other;
+		
+		if (k != g.k) {
+			return false;
+		}
+		
+		for (int i = 0; i < numberOfFields(); i++) {
+			if (get(i) != g.get(i)) {
+				System.out.println("Returned false at " + i);
+				return false;
+			}
+		}
+		return true;
+	}
+	
 }
