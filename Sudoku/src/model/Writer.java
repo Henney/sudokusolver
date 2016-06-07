@@ -40,7 +40,7 @@ public class Writer {
 			name = prefix + num;
 			f = new File(path, name + ".txt");
 		} while (f.exists());
-		
+
 		if (!f.getParentFile().exists() && !f.getParentFile().mkdirs()) {
 			return null;
 		}

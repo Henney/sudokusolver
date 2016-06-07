@@ -16,7 +16,8 @@ public class SpeedListener<T> implements ChangeListener<Number> {
 
 	@Override
 	public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-		view.setSolveSpeed(MAX_DELAY-(newValue.intValue()*(MAX_DELAY/100)));
+		int delay = (int)(1./newValue.doubleValue()*MAX_DELAY);
+		view.setSolveSpeed(delay);
 	}
 
 }

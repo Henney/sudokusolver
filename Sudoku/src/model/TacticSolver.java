@@ -50,10 +50,10 @@ public class TacticSolver extends Solver {
 		choiceTactics = new ChoiceTactic[] { new UniqueCandidateTactic(g, pGrid), new TwinsTactic(g, pGrid),
 				new XWingTactic(g, pGrid) };
 		
-		return solve_helper(g);
+		return solveHelper(g);
 	}
 
-	private Grid solve_helper(Grid g) {
+	private Grid solveHelper(Grid g) {
 		long ct = System.currentTimeMillis();
 		if (start != 0 && ct-start > timeout) {
 			return null;
@@ -125,7 +125,7 @@ public class TacticSolver extends Solver {
 
 			pGrid.endTransaction();
 
-			Grid sol = solve_helper(g);
+			Grid sol = solveHelper(g);
 
 			if (sol != null) {
 				if (foundSolution) {

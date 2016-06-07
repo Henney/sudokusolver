@@ -1,21 +1,18 @@
 package controller;
 
-import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import view.View;
 import view.View.Method;
 
-public class SolveHandler<T> implements EventHandler<MouseEvent> {
-	
-	private View view;
+public class SolveHandler<T> extends ButtonHandler<MouseEvent> {
 	
 	public SolveHandler(View view) {
-		this.view = view;
+		super(view);
 	}
 
 	@Override
 	public void handle(MouseEvent e) {
-		view.solveSudoku(Method.Constraint);
+		view.solveSudoku(Method.Tactic);
 	}
 
 }

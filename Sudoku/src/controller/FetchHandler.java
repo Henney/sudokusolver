@@ -1,6 +1,5 @@
 package controller;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 
@@ -9,24 +8,21 @@ import com.jaunt.ResponseException;
 
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import model.UserGrid;
 import model.WebScraper;
 import view.View;
 
-public class FetchHandler<T> implements EventHandler<MouseEvent> {
+public class FetchHandler<T> extends ButtonHandler<MouseEvent> {
 
-	private View view;
 	private int level = -1;
 	
 	public FetchHandler(View view) {
-		this.view = view;
+		super(view);
 	}
 
 	@Override
@@ -56,9 +52,9 @@ public class FetchHandler<T> implements EventHandler<MouseEvent> {
 		stage = new Stage();
 		try {
 			root = FXMLLoader.load(getClass().getResource("../view/DifficultyWindow.fxml"));
-		} catch (IOException e1) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e.printStackTrace();
 		}
 		stage.setScene(new Scene(root));
 		stage.setTitle("Select a difficulty");

@@ -1,16 +1,13 @@
 package controller;
 
-import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import view.View;
 import view.View.Method;
 
-public class SATHandler<T> implements EventHandler<MouseEvent> {
-	
-	private View view;
+public class SATHandler<T> extends ButtonHandler<MouseEvent> {
 	
 	public SATHandler(View view) {
-		this.view = view;
+		super(view);
 	}
 
 	@Override
