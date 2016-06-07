@@ -17,7 +17,11 @@ public class SaveHandler<T> extends ButtonHandler<MouseEvent> {
 	public void handle(MouseEvent event) {
 		DirectoryChooser dc = new DirectoryChooser();
 		File f = dc.showDialog(view.getStage());
-		Writer.writeToFile(view.getGrid(), f.getAbsolutePath()+"/");
+		try {
+			Writer.writeToFile(view.getGrid(), f.getAbsolutePath()+"/");
+		} catch (NullPointerException e) {
+			// Do nothing
+		}
 	}
 
 }

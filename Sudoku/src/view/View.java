@@ -1,6 +1,8 @@
 package view;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import controller.CancelHandler;
@@ -314,6 +316,21 @@ public class View extends Application {
 		dialog.setTitle("Generate sudoku");
 		dialog.setHeaderText(null);
 		dialog.setContentText("Please enter size k (2 <= k <= 6):");
+		return dialog.showAndWait();
+	}
+	
+	public Optional<String> createFetchDialog() {
+		List<String> choices = new ArrayList<>();
+		choices.add("Easy");
+		choices.add("Medium");
+		choices.add("Hard");
+		choices.add("Evil");
+
+		ChoiceDialog<String> dialog = new ChoiceDialog<>("Medium", choices);
+		dialog.setTitle("Difficulty");
+		dialog.setHeaderText(null);
+		dialog.setContentText("Select a difficulty:");
+
 		return dialog.showAndWait();
 	}
 }

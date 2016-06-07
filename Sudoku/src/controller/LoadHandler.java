@@ -21,6 +21,7 @@ public class LoadHandler<T> extends ButtonHandler<MouseEvent> {
 	@Override
 	public void handle(MouseEvent event) {
 		FileChooser fc = new FileChooser();
+		fc.setInitialDirectory(new File("puzzles")); // TODO Don't set? Just easier right now.
 		//fc.getExtensionFilters().add(new ExtensionFilter("Text files", "*.txt"));
 		File file = fc.showOpenDialog(view.getStage());
 		try {
@@ -31,7 +32,7 @@ public class LoadHandler<T> extends ButtonHandler<MouseEvent> {
 		} catch (IOException e) {
 			view.createMessageDialogue("Error!", e.getMessage(), AlertType.ERROR);
 		} catch (NullPointerException e) {
-			view.createMessageDialogue("No file", "No file selected", AlertType.INFORMATION);
+			//view.createMessageDialogue("No file", "No file selected", AlertType.INFORMATION); TODO: Just do nothing?
 		} catch (Exception e) {
 			view.createMessageDialogue("Error!",
 					"Something is wrong with the loaded file. Please check your formatting",
