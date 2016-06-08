@@ -58,6 +58,7 @@ public class TacticSolver extends Solver {
 		if (start != 0 && ct-start > timeout) {
 			return null;
 		}
+		
 		if (!run) {
 			return grid;
 		}
@@ -115,7 +116,7 @@ public class TacticSolver extends Solver {
 
 			g.set(field, x);
 
-			showGrid(g);
+			showField(field, x);
 
 			pGrid.newTransaction();
 
@@ -139,6 +140,9 @@ public class TacticSolver extends Solver {
 		}
 
 		g.set(field, 0);
+
+		hideField(field);
+		
 		pvs[field] = pv;
 		pq.insert(field, pv.possible());
 
@@ -152,11 +156,6 @@ public class TacticSolver extends Solver {
 		boolean ret = solve() == null && foundSolution;
 		foundSolution = true;
 		return ret;
-	}
-
-	protected void showGrid(Grid g) {
-		// This method does nothing but is overridden in GuiSolver to display
-		// the grid.
 	}
 	
 	public Grid solveWithTimeout(int t) {
@@ -172,6 +171,24 @@ public class TacticSolver extends Solver {
 		boolean ret = unique();
 		timeout = 0;
 		return ret;
+	}
+	
+	public boolean solvableWithTimeout(int t) { // TODO: Only used for testing board generation randomness. Maybe delete after?
+		start = System.currentTimeMillis();
+		timeout = t;	
+		boolean b = solvable();
+		timeout = 0;
+		return b;
+	}
+
+	protected void showField(int field, int val) {
+		// This method does nothing but is overridden in GuiSolver to display
+		// the grid.
+	}
+
+	protected void hideField(int field) {
+		// This method does nothing but is overridden in GuiSolver to display
+		// the grid.
 	}
 	
 }

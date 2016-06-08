@@ -120,8 +120,13 @@ public class SATSolver extends Solver {
 
 		s = s.trim();
 
+		final String UNSAT = "unsat";
 		final String SAT = "sat";
 		final String MODEL = "(model";
+		
+		if (s.startsWith(UNSAT)) {
+			return null;
+		}
 
 		if (s.startsWith(SAT)) {
 			s = s.substring(SAT.length());

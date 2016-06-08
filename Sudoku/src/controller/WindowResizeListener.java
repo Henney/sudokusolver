@@ -2,6 +2,9 @@ package controller;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import view.View;
 
 
@@ -24,17 +27,10 @@ public class WindowResizeListener implements ChangeListener<Number> {
 
 	@Override
 	public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-		double otherPropSize = -1;
-		if (prop == Property.Width) {
-			otherPropSize = view.getRootLayout().getHeight();
-		} else if (prop == Property.Height) {
-
-			otherPropSize = view.getRootLayout().getHeight();
+		int val = view.newSize();
+		if (val > 0) {
+			view.scaleSudoku((int)val, k);
 		}
-		
-		int propSize = (int) ((Double)newValue).doubleValue();
-		if (propSize > otherPropSize) return;
-		view.scaleSudoku(propSize, k);
 	}
 
 }

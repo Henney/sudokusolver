@@ -15,7 +15,7 @@ public class GuiTacticSolver extends TacticSolver {
 	}
 
 	@Override
-	protected void showGrid(Grid g) {
+	protected void showField(int field, int val) {
 		if (view.getSolveSpeed() == 0) {
 			return;
 		}
@@ -23,7 +23,7 @@ public class GuiTacticSolver extends TacticSolver {
 		Platform.runLater(new Runnable() {			
             @Override
             public void run() {
-            	view.setAndDisplayGrid(new UserGrid(g));
+            	view.setField(field, val);
             }
         });
 		try {
@@ -31,6 +31,11 @@ public class GuiTacticSolver extends TacticSolver {
 		} catch (InterruptedException e) {
 			cancel();
 		}
+	}
+
+	@Override
+	protected void hideField(int field) {
+		showField(field, 0);
 	}
 
 }

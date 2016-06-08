@@ -17,7 +17,7 @@ public abstract class Solver {
 	}
 
 	public boolean solvable() {
-		if (!grid.isLegal()) {
+		if (grid == null || !grid.isLegal()) {
 			return false;
 		}
 		

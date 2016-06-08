@@ -42,6 +42,7 @@ public class FetchHandler<T> extends ButtonHandler<MouseEvent> {
 			try {
 				grid = new UserGrid(new StringReader(WebScraper.getSudokuFromWeb(level)));
 				view.setAndDisplayGrid(grid);
+				view.resetSize();
 			} catch (NotFound e) {
 				view.createMessageDialogue("Error!",
 						"The website did not load properly, so no sudoku was fetched.",

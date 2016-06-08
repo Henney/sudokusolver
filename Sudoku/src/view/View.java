@@ -38,7 +38,11 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 
 public class View extends Application {
@@ -52,9 +56,9 @@ public class View extends Application {
 
 	private Stage primaryStage;
 	private AnchorPane rootLayout;
-	private AnchorPane gameLayout;
+	private HBox gameLayout;
 	
-	private SudokuGridPane sudokuPane;
+	private SudokuGridPane sudokuGrid;
 
 	UserGrid grid;
 
@@ -89,10 +93,9 @@ public class View extends Application {
 		loader.setLocation(View.class.getResource("Markup.fxml"));
 		rootLayout = (AnchorPane) loader.load();
 
-		gameLayout = (AnchorPane) rootLayout.lookup("#SudokuBoardPane");
+		gameLayout = (HBox) rootLayout.lookup("#SudokuBoardPane");
 		gameLayout.toBack();
 		setupSudoku(DEFAULT_K);
-		scaleSudoku(MIN_WINDOW_SIZE, DEFAULT_K);
 		setSizeChangedListeners(DEFAULT_K);
 
 		addButtonListeners(rootLayout);
@@ -131,31 +134,31 @@ public class View extends Application {
 		cancelButton.setOnMouseClicked(new CancelHandler<MouseEvent>(this));
 		Button saveButton = (Button) rootLayout.lookup("#SaveButton");
 		saveButton.setOnMouseClicked(new SaveHandler<MouseEvent>(this));
-		// TODO
 	}
 
 	private void setSizeChangedListeners(int k) {
+		BorderPane bp = (BorderPane) rootLayout.getChildren().get(0);
 		try {
-			rootLayout.widthProperty().removeListener(this.widthListener);
-			rootLayout.heightProperty().removeListener(this.heightListener);
+			bp.widthProperty().removeListener(this.widthListener);
+			bp.heightProperty().removeListener(this.heightListener);
 		} catch (NullPointerException e) {
 			// Do nothing
 		}
 
 		WindowResizeListener widthListener = new WindowResizeListener(this, k, WindowResizeListener.Property.Width);
-		rootLayout.widthProperty().addListener(widthListener);
+		bp.widthProperty().addListener(widthListener);
 		this.widthListener = widthListener;
 
 		WindowResizeListener heightListener = new WindowResizeListener(this, k, WindowResizeListener.Property.Height);
-		rootLayout.heightProperty().addListener(heightListener);
+		bp.heightProperty().addListener(heightListener);
 		this.heightListener = heightListener;
 	}
 
 	public void scaleSudoku(int size, int k) {
-		int buttonWidth = (size / (k * k + 1)) * 3 / 4;
-		Font font = new Font(buttonWidth/4);
+		int buttonWidth = size / (k*k+1);
+		Font font = new Font(buttonWidth/3);
 		
-		sudokuPane.scale(buttonWidth, font);
+		sudokuGrid.scale(buttonWidth, font);
 
 		GridPane numbers = (GridPane) gameLayout.getChildren().get(1);
 		for (Node cell : numbers.getChildren()) {
@@ -169,15 +172,15 @@ public class View extends Application {
 	}
 
 	private void setupSudoku(int k) {
-		((AnchorPane) gameLayout).getChildren().clear();
+		((HBox) gameLayout).getChildren().clear();
 
 		int pix = 30;
-		sudokuPane = new SudokuGridPane(grid);
+		sudokuGrid = new SudokuGridPane(grid);
 		GridPane numbers = new GridPane();
-		sudokuPane.setup();
-		gameLayout.getChildren().add(sudokuPane);
-		AnchorPane.setLeftAnchor(sudokuPane, 0.0);
-		sudokuPane.addEventHandler(KeyEvent.KEY_PRESSED, new InputHandler(sudokuPane));
+		sudokuGrid.setup();
+		gameLayout.getChildren().add(sudokuGrid);
+		AnchorPane.setLeftAnchor(sudokuGrid, 0.0);
+		sudokuGrid.addEventHandler(KeyEvent.KEY_PRESSED, new InputHandler(sudokuGrid));
 
 		for (int i = 1; i <= k * k; i++) {
 			numbers.addRow(i - 1);
@@ -186,7 +189,7 @@ public class View extends Application {
 			b.setMaxSize(pix, pix);
 			b.setAlignment(Pos.CENTER);
 			b.getStyleClass().add(BUTTON_CLASS);
-			b.setOnMouseClicked(new NumberFieldController<MouseEvent>(sudokuPane, i));
+			b.setOnMouseClicked(new NumberFieldController<MouseEvent>(sudokuGrid, i));
 			numbers.addColumn(0, b);
 		}
 		gameLayout.getChildren().add(numbers);
@@ -202,7 +205,13 @@ public class View extends Application {
 		setupSudoku(grid.k());
 		scaleSudoku((int)rootLayout.getHeight(), grid.k());
 		setSizeChangedListeners(grid.k());
-		sudokuPane.displayGrid();
+		sudokuGrid.displayGrid();
+	}
+	
+	public void displayGrid(UserGrid grid) {
+		this.grid = grid;
+		sudokuGrid.setGrid(grid);
+		sudokuGrid.displayGrid();
 	}
 	
 	public Grid getGrid() {
@@ -214,7 +223,6 @@ public class View extends Application {
 	}
 
 	public void solveSudoku(Method m) {
-		// TODO maybe move method somewhere else
 		if (!cancelSolveTask()) {
 			return;
 		}
@@ -243,7 +251,7 @@ public class View extends Application {
 		            		UserGrid ug = new UserGrid(solvedGrid);
 							Platform.runLater(new Runnable() {
 					            @Override public void run() {
-									setAndDisplayGrid(ug);
+									displayGrid(ug);
 					            	enableSlider();
 					            }
 					        });		            		
@@ -253,7 +261,7 @@ public class View extends Application {
 				            		createMessageDialogue("Error!",
 				            				"The given grid configuration is unsolvable.",
 				            				AlertType.ERROR);
-									setAndDisplayGrid(new UserGrid(cSolver.getGrid()));
+									displayGrid(new UserGrid(cSolver.getGrid()));
 									enableSlider();
 					            }
 					        });	
@@ -279,10 +287,11 @@ public class View extends Application {
 		if (solveTask == null || solveTask.isDone()) {
 			return true;
 		}
+		enableSlider();
 		cSolver.cancel();
 		boolean b = service.cancel();
 		if (!b) {
-			// TODO throw an exception in a window
+			// TODO throw an exception in a window?
 		}
 		return true;
 	}
@@ -332,5 +341,27 @@ public class View extends Application {
 		dialog.setContentText("Select a difficulty:");
 
 		return dialog.showAndWait();
+	}
+
+	public HBox getGameLayout() {
+		return gameLayout;
+	}
+	
+	public void resetSize() {
+		scaleSudoku(newSize(), grid.k());
+	}
+	
+	public int newSize() {
+		BorderPane bp = (BorderPane) rootLayout.getChildren().get(0);
+		int offset = (int) ((Pane)bp.getBottom()).getHeight() + 5*grid.k();
+		
+		double h = bp.getHeight()-offset;
+		double w = bp.getWidth();
+		double newValue = h < w ? h : w;
+		return (int)newValue;
+	}
+
+	public void setField(int field, int val) {
+		sudokuGrid.setFieldText(sudokuGrid.getField(field), String.valueOf(val));
 	}
 }

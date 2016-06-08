@@ -28,6 +28,10 @@ public class SudokuGridPane extends GridPane {
 	
 	public SudokuGridPane(UserGrid grid) {
 		super();
+		setGrid(grid);
+	}
+	
+	public void setGrid(UserGrid grid) {
 		this.grid = grid;
 		this.k = grid.k();
 		this.n = k*k;
@@ -114,10 +118,8 @@ public class SudokuGridPane extends GridPane {
 		for (Node cell : getChildren()) {
 			if (cell instanceof SudokuButton) {
 				int number = grid.get(i);
-				if (number != 0) {
-					setFieldText(((SudokuButton) cell), "");
-					setFieldText(((SudokuButton) cell), number+"");
-				}
+				setFieldText(((SudokuButton) cell), "");
+				setFieldText(((SudokuButton) cell), number+"");
 				i++;
 			}
 		}
@@ -160,7 +162,11 @@ public class SudokuGridPane extends GridPane {
 	}
 	
 	void setFieldText(SudokuButton field, String s) {
-		field.setText(s);
+		if (!s.equals("0")) {
+			field.setText(s);
+		} else {
+			field.setText("");
+		}
 		int index = field.getIndex();
 		Pair<Set<Integer>, Set<Integer>> conflicts;
 		if (s.isEmpty()) {

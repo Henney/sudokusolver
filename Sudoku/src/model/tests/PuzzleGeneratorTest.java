@@ -19,7 +19,7 @@ public class PuzzleGeneratorTest {
 		assertTrue(s.unique());
 		
 		g = s.solve();
-		
+
 		assertTrue(g.isSolved());
 		assertTrue(s.unique());
 	}
