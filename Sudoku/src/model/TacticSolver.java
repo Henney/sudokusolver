@@ -1,12 +1,9 @@
 package model;
 
 import model.tactics.AlwaysTactic;
-import model.tactics.BoxTactic;
 import model.tactics.ChoiceTactic;
-import model.tactics.ColTactic;
 import model.tactics.IncrementalTwinsTactic;
 import model.tactics.XWingTactic;
-import model.tactics.RowTactic;
 import model.tactics.TwinsTactic;
 import model.tactics.UniqueCandidateTactic;
 import model.tactics.UnsolvableException;
@@ -44,8 +41,7 @@ public class TacticSolver extends Solver {
 
 		pGrid = new PossibleValuesGrid(g, pvs, pq);
 
-		alwaysTactics = new AlwaysTactic[] { new RowTactic(g, pGrid), new ColTactic(g, pGrid),
-				new BoxTactic(g, pGrid), new IncrementalTwinsTactic(g, pGrid) };
+		alwaysTactics = new AlwaysTactic[] { new IncrementalTwinsTactic(g, pGrid) };
 
 		choiceTactics = new ChoiceTactic[] { new UniqueCandidateTactic(g, pGrid), new TwinsTactic(g, pGrid),
 				new XWingTactic(g, pGrid) };
@@ -120,6 +116,10 @@ public class TacticSolver extends Solver {
 
 			pGrid.newTransaction();
 
+			pGrid.setRowImpossible(field, x);
+			pGrid.setColImpossible(field, x);
+			pGrid.setBoxImpossible(field, x);
+			
 			for (AlwaysTactic t : alwaysTactics) {
 				t.apply(field, x);
 			}
