@@ -1,15 +1,12 @@
 package controller;
 
-import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import view.View;
 
-public class CancelHandler<T> implements EventHandler<MouseEvent> {
-	
-	View view;
+public class CancelHandler<T> extends ButtonHandler<MouseEvent> {
 	
 	public CancelHandler(View view) {
-		this.view = view;
+		super(view);
 	}
 
 	@Override

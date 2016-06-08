@@ -16,6 +16,10 @@ public class GuiTacticSolver extends TacticSolver {
 
 	@Override
 	protected void showGrid(Grid g) {
+		if (view.getSolveSpeed() == 0) {
+			return;
+		}
+		
 		Platform.runLater(new Runnable() {			
             @Override
             public void run() {
@@ -23,7 +27,7 @@ public class GuiTacticSolver extends TacticSolver {
             }
         });
 		try {
-			Thread.sleep(10);
+			Thread.sleep(view.getSolveSpeed());
 		} catch (InterruptedException e) {
 			cancel();
 		}

@@ -31,4 +31,8 @@ public abstract class Solver {
 		
 		return solve() != null;
 	}
+	
+	public Grid getGrid() {
+		return grid;
+	}
 }

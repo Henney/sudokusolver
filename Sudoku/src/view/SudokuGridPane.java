@@ -112,10 +112,11 @@ public class SudokuGridPane extends GridPane {
 		int i = 0;
 
 		for (Node cell : getChildren()) {
-			if (cell instanceof Button) {
+			if (cell instanceof SudokuButton) {
 				int number = grid.get(i);
 				if (number != 0) {
-					((Button) cell).setText(number + "");
+					setFieldText(((SudokuButton) cell), "");
+					setFieldText(((SudokuButton) cell), number+"");
 				}
 				i++;
 			}
@@ -155,8 +156,12 @@ public class SudokuGridPane extends GridPane {
 	}
 	
 	public void setSelectedFieldText(String s) {
-		selectedField.setText(s);
-		int index = selectedField.getIndex();
+		setFieldText(selectedField, s);
+	}
+	
+	void setFieldText(SudokuButton field, String s) {
+		field.setText(s);
+		int index = field.getIndex();
 		Pair<Set<Integer>, Set<Integer>> conflicts;
 		if (s.isEmpty()) {
 			conflicts = grid.set(index, 0);
@@ -177,7 +182,7 @@ public class SudokuGridPane extends GridPane {
 			setConflict(i, false);
 		}
 	}
-	
+
 	private void setConflict(int index, boolean conflict) {
 		getField(index).getStyleClass().remove(CONFLICT_CLASS);
 		if (conflict) getField(index).getStyleClass().add(CONFLICT_CLASS);

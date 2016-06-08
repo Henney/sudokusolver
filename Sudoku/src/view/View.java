@@ -1,16 +1,22 @@
 package view;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import controller.CancelHandler;
 import controller.FetchHandler;
+import controller.FinishHandler;
+import controller.GenerateHandler;
 import controller.InputHandler;
 import controller.LoadHandler;
 import controller.SolveHandler;
-import controller.SudokuFieldController;
 import controller.WindowResizeListener;
 import controller.NumberFieldController;
 import controller.SATHandler;
+import controller.SaveHandler;
+import controller.SolvableHandler;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Service;
@@ -27,20 +33,22 @@ import model.UserGrid;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 
 public class View extends Application {
 	
-	Solver cSolver;
-	Service<UserGrid> s;
-	Task<UserGrid>  solveTask;
-	public enum Method { Constraint, SAT};
+	private Solver cSolver;
+	private Service<UserGrid> service;
+	private Task<UserGrid> solveTask;
+	private int solveSpeed = SpeedListener.MAX_DELAY;
+	
+	public enum Method { Tactic, SAT };
 
 	private Stage primaryStage;
 	private AnchorPane rootLayout;
@@ -82,28 +90,48 @@ public class View extends Application {
 		rootLayout = (AnchorPane) loader.load();
 
 		gameLayout = (AnchorPane) rootLayout.lookup("#SudokuBoardPane");
+		gameLayout.toBack();
 		setupSudoku(DEFAULT_K);
 		scaleSudoku(MIN_WINDOW_SIZE, DEFAULT_K);
 		setSizeChangedListeners(DEFAULT_K);
 
-		// Find buttons and set their listeners
-		Button loadButton = (Button) rootLayout.lookup("#LoadButton");
-		loadButton.setOnMouseClicked(new LoadHandler<MouseEvent>(this));
-		Button saveButton = (Button) rootLayout.lookup("#SaveButton");
-		// TODO
-		Button fetchButton = (Button) rootLayout.lookup("#FetchButton");
-		fetchButton.setOnMouseClicked(new FetchHandler<MouseEvent>(this));
-		Button solveButton = (Button) rootLayout.lookup("#SolveButton");
-		solveButton.setOnMouseClicked(new SolveHandler<MouseEvent>(this));
-		Button SATButton = (Button) rootLayout.lookup("#SATButton");
-		SATButton.setOnMouseClicked(new SATHandler<MouseEvent>(this));
-		Button cancelButton = (Button) rootLayout.lookup("#CancelButton");
-		cancelButton.setOnMouseClicked(new CancelHandler<MouseEvent>(this));
+		addButtonListeners(rootLayout);
+		
+		Slider speedSlider = (Slider) rootLayout.lookup("#SpeedSlider");
+		speedSlider.valueProperty().addListener(new SpeedListener<Number>(this));
+		// Set min and max amount of numbers input per second when solving
+		speedSlider.setMin(1.0);
+		speedSlider.setMax(100.0);
 
 		// Show the scene containing the root layout.
 		Scene scene = new Scene(rootLayout);
 		scene.getStylesheets().add(getClass().getResource("stylesheets/application.css").toExternalForm());
 		primaryStage.setScene(scene);
+	}
+
+	private void addButtonListeners(AnchorPane rootLayout2) {
+		// Find buttons and set their listeners
+		Button generateButton = (Button) rootLayout.lookup("#GenerateButton");
+		generateButton.setOnMouseClicked(new GenerateHandler<MouseEvent>(this));
+		Button fetchButton = (Button) rootLayout.lookup("#FetchButton");
+		fetchButton.setOnMouseClicked(new FetchHandler<MouseEvent>(this));
+		Button loadButton = (Button) rootLayout.lookup("#LoadButton");
+		loadButton.setOnMouseClicked(new LoadHandler<MouseEvent>(this));
+		
+		Button solveButton = (Button) rootLayout.lookup("#SolveButton");
+		solveButton.setOnMouseClicked(new SolveHandler<MouseEvent>(this));
+		Button SATButton = (Button) rootLayout.lookup("#SATButton");
+		SATButton.setOnMouseClicked(new SATHandler<MouseEvent>(this));
+		Button finishButton = (Button) rootLayout.lookup("#FinishButton");
+		finishButton.setOnMouseClicked(new FinishHandler<MouseEvent>(this));
+
+		Button solvableButton = (Button) rootLayout.lookup("#SolvableButton");
+		solvableButton.setOnMouseClicked(new SolvableHandler<MouseEvent>(this));
+		Button cancelButton = (Button) rootLayout.lookup("#CancelButton");
+		cancelButton.setOnMouseClicked(new CancelHandler<MouseEvent>(this));
+		Button saveButton = (Button) rootLayout.lookup("#SaveButton");
+		saveButton.setOnMouseClicked(new SaveHandler<MouseEvent>(this));
+		// TODO
 	}
 
 	private void setSizeChangedListeners(int k) {
@@ -176,18 +204,22 @@ public class View extends Application {
 		setSizeChangedListeners(grid.k());
 		sudokuPane.displayGrid();
 	}
+	
+	public Grid getGrid() {
+		return grid;
+	}
 
 	public AnchorPane getRootLayout() {
 		return this.rootLayout;
 	}
 
 	public void solveSudoku(Method m) {
-		
+		// TODO maybe move method somewhere else
 		if (!cancelSolveTask()) {
 			return;
 		}
 		
-		s = new Service<UserGrid>() {
+		service = new Service<UserGrid>() {
 
 			@Override
 			protected Task<UserGrid> createTask() {
@@ -197,7 +229,7 @@ public class View extends Application {
 					protected UserGrid call() throws Exception {
 						Grid solvedGrid = null;
 						switch (m) {
-						case Constraint:
+						case Tactic:
 							cSolver = new GuiTacticSolver(new Grid(grid), View.this);
 							solvedGrid = cSolver.solve();
 							break;
@@ -206,20 +238,41 @@ public class View extends Application {
 							solvedGrid = cSolver.solve();
 							break;
 						}
-						UserGrid ug = new UserGrid(solvedGrid);
-						Platform.runLater(new Runnable() {
-				            @Override public void run() {
-								setAndDisplayGrid(ug);
-				            }
-				        });
-						return ug;
+		            	
+		            	if (solvedGrid != null) {
+		            		UserGrid ug = new UserGrid(solvedGrid);
+							Platform.runLater(new Runnable() {
+					            @Override public void run() {
+									setAndDisplayGrid(ug);
+					            	enableSlider();
+					            }
+					        });		            		
+		            	} else {
+							Platform.runLater(new Runnable() {
+					            @Override public void run() {
+				            		createMessageDialogue("Error!",
+				            				"The given grid configuration is unsolvable.",
+				            				AlertType.ERROR);
+									setAndDisplayGrid(new UserGrid(cSolver.getGrid()));
+									enableSlider();
+					            }
+					        });	
+		            	}
+						
+						return null;
 					}
 				};
 				return solveTask;
 			}
 		};
 		
-		s.restart();
+		service.start();
+	}
+	
+	public void enableSlider() {
+		Slider sld = (Slider) primaryStage.getScene().lookup("#SpeedSlider");
+		sld.disableProperty().set(false);
+		sld.setValue(sld.getValue());		
 	}
 	
 	public boolean cancelSolveTask() {
@@ -227,7 +280,7 @@ public class View extends Application {
 			return true;
 		}
 		cSolver.cancel();
-		boolean b = s.cancel();
+		boolean b = service.cancel();
 		if (!b) {
 			// TODO throw an exception in a window
 		}
@@ -236,5 +289,48 @@ public class View extends Application {
 
 	public static void main(String[] args) {
 		launch(args);
+	}
+
+	public int getSolveSpeed() {
+		return solveSpeed;
+	}
+
+	public void setSolveSpeed(int s) {
+		solveSpeed = s;
+	}
+	
+	public Alert createMessageDialogue(String title, String msg, AlertType type) {
+		Alert alert = new Alert(type);
+		alert.initOwner(primaryStage);
+		alert.setTitle(title);
+		alert.setHeaderText(null);
+		alert.setContentText(msg);
+		alert.showAndWait();
+		return alert;
+	}
+	
+	public Optional<String> createGenerateDialog() {
+		new TextInputDialog();
+		TextInputDialog dialog = new TextInputDialog(String.valueOf(DEFAULT_K));
+		dialog.initOwner(primaryStage);
+		dialog.setTitle("Generate sudoku");
+		dialog.setHeaderText(null);
+		dialog.setContentText("Please enter size k (2 <= k <= 6):");
+		return dialog.showAndWait();
+	}
+	
+	public Optional<String> createFetchDialog() {
+		List<String> choices = new ArrayList<>();
+		choices.add("Easy");
+		choices.add("Medium");
+		choices.add("Hard");
+		choices.add("Evil");
+
+		ChoiceDialog<String> dialog = new ChoiceDialog<>("Medium", choices);
+		dialog.setTitle("Difficulty");
+		dialog.setHeaderText(null);
+		dialog.setContentText("Select a difficulty:");
+
+		return dialog.showAndWait();
 	}
 }
