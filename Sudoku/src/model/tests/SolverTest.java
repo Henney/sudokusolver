@@ -210,6 +210,11 @@ public class SolverTest {
 		solveSudoku("hexadoku1");
 	}
 	
+	@Test
+	public void solveGeneratedHexadoku() throws IOException {
+		solveSudoku("hexadokus/hexadoku1");
+	}
+	
 //	@Test
 	public void solveHeptadoku1() throws IOException {
 		solveSudoku("heptadoku1");
