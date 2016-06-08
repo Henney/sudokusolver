@@ -54,7 +54,7 @@ public class SATSolver extends Solver {
 	}
 
 	public Grid solveHelper() throws IOException {
-		File tmp = File.createTempFile("sudoku", "z3");
+		File tmp = File.createTempFile("sudoku", "smt2");
 		tmp.deleteOnExit();
 
 		FileWriter f = new FileWriter(tmp);
