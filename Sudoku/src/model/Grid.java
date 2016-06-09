@@ -5,7 +5,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import model.util.BoxIterator;

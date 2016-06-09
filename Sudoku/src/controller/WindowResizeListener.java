@@ -2,27 +2,17 @@ package controller;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import view.View;
 
 
 public class WindowResizeListener implements ChangeListener<Number> {
 	
-
-	public enum Property {
-		Width, Height;
-	}
-	
 	private View view;
 	private int k;
-	private Property prop;
 	
-	public WindowResizeListener(View view, int k, Property prop) {
+	public WindowResizeListener(View view, int k) {
 		this.view = view;
-		this.k = k;	
-		this.prop = prop;
+		this.k = k;
 	}
 
 	@Override

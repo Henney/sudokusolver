@@ -58,12 +58,12 @@ public class XWingTactic extends ChoiceTactic {
 								
 				for (int field = idx1*inc(!isRow); field < lim2(!isRow, idx1); field += inc(isRow)) {
 					if (field == f1 || field == f3) continue;
-					pGrid.updateField(field, val);
+					pGrid.setImpossible(field, val);
 				}
 				
 				for (int field = idx2*inc(!isRow); field < lim2(!isRow, idx2); field += inc(isRow)) {
 					if (field == f2 || field == f4) continue;
-					pGrid.updateField(field, val);
+					pGrid.setImpossible(field, val);
 				}
 			}
 			buck.clear();

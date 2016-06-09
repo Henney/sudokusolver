@@ -3,8 +3,6 @@ package model;
 import model.tactics.AlwaysTactic;
 import model.tactics.ChoiceTactic;
 import model.tactics.IncrementalTwinsTactic;
-import model.tactics.XWingTactic;
-import model.tactics.TwinsTactic;
 import model.tactics.UniqueCandidateTactic;
 import model.tactics.UnsolvableException;
 import model.util.IntPriorityQueue;
@@ -44,8 +42,8 @@ public class TacticSolver extends Solver {
 
 		alwaysTactics = new AlwaysTactic[] { new IncrementalTwinsTactic(g, pGrid) };
 
-		choiceTactics = new ChoiceTactic[] { new UniqueCandidateTactic(g, pGrid), new TwinsTactic(g, pGrid)/*,
-				new XWingTactic(g, pGrid)*/ };
+		choiceTactics = new ChoiceTactic[] { new UniqueCandidateTactic(g, pGrid) /*, new TwinsTactic(g, pGrid),
+				new XWingTactic(g, pGrid) */ };
 		
 		return solveHelper(g);
 	}

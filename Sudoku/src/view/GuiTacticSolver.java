@@ -3,7 +3,6 @@ package view;
 import javafx.application.Platform;
 import model.Grid;
 import model.TacticSolver;
-import model.UserGrid;
 
 public class GuiTacticSolver extends TacticSolver {
 

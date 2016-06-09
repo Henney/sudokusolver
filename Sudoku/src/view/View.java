@@ -28,7 +28,6 @@ import javafx.stage.Window;
 import model.Grid;
 import model.SATSolver;
 import model.Solver;
-import model.TacticSolver;
 import model.UserGrid;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -42,7 +41,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 
 public class View extends Application {
@@ -145,11 +143,11 @@ public class View extends Application {
 			// Do nothing
 		}
 
-		WindowResizeListener widthListener = new WindowResizeListener(this, k, WindowResizeListener.Property.Width);
+		WindowResizeListener widthListener = new WindowResizeListener(this, k);
 		bp.widthProperty().addListener(widthListener);
 		this.widthListener = widthListener;
 
-		WindowResizeListener heightListener = new WindowResizeListener(this, k, WindowResizeListener.Property.Height);
+		WindowResizeListener heightListener = new WindowResizeListener(this, k);
 		bp.heightProperty().addListener(heightListener);
 		this.heightListener = heightListener;
 	}

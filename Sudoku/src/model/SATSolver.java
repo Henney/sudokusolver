@@ -9,7 +9,6 @@ import java.io.InputStreamReader;
 import java.io.Writer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class SATSolver extends Solver {
 
