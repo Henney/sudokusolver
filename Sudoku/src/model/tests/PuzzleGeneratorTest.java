@@ -16,6 +16,8 @@ public class PuzzleGeneratorTest {
 		TacticSolver s = new TacticSolver(g);
 		
 		assertFalse(g.isSolved());
+		if (!s.unique())
+			System.out.println(g);
 		assertTrue(s.unique());
 		
 		g = s.solve();
@@ -38,14 +40,14 @@ public class PuzzleGeneratorTest {
 		}
 	}
 	
-	@Test
+//	@Test
 	public void generate4() {
 		for (int i = 0; i < 1; i++) {
 			generalTest(4);
 		}
 	}
 	
-//	@Test
+	@Test
 	public void generate5() {
 		for (int i = 0; i < 1; i++) {
 			generalTest(5);

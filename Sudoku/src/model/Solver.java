@@ -3,6 +3,9 @@ package model;
 public abstract class Solver {
 	
 	protected Grid grid;
+
+	protected int timeout = 0;
+	protected long start;
 	
 	protected volatile boolean run = true;
 	
@@ -11,6 +14,14 @@ public abstract class Solver {
 	}
 
 	public abstract Grid solve();
+	
+	public Grid solveWithTimeout(int t) {
+		start = System.currentTimeMillis();
+		timeout = t;	
+		Grid g = solve();
+		timeout = 0;
+		return g;
+	}
 	
 	public void cancel() {
 		run = false;
@@ -30,6 +41,14 @@ public abstract class Solver {
 		}
 		
 		return solve() != null;
+	}
+	
+	public boolean solvableWithTimeout(int t) {
+		this.timeout = t;
+		this.start = System.currentTimeMillis();
+		boolean b = solvable();
+		this.timeout = 0;
+		return b;
 	}
 	
 	public Grid getGrid() {

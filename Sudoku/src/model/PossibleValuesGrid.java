@@ -61,7 +61,7 @@ public class PossibleValuesGrid {
 		}
 	}
 	
-	public boolean updateField(int i, int x) {
+	public boolean setImpossible(int i, int x) {
 		if (pvs[i] != null && pvs[i].set(x, false)) {
 			countChanged++;
 			changed.push(new Pair<Integer, Integer>(i, x));
@@ -78,7 +78,7 @@ public class PossibleValuesGrid {
 		final int startField = row * n;
 		
 		for (int c = 0; c < n; c++) {
-			updateField(startField + c, value);
+			setImpossible(startField + c, value);
 		}
 	}
 	
@@ -87,7 +87,7 @@ public class PossibleValuesGrid {
 		final int n = grid.size();
 			
 		for (int r = 0; r < n; r++) {
-			updateField(r * n + col, value);
+			setImpossible(r * n + col, value);
 		}
 	}
 	
@@ -104,7 +104,7 @@ public class PossibleValuesGrid {
 			int rn = r * n;
 
 			for (int c = boxCol; c < boxCol + k; c++) {
-				updateField(rn+c, value);
+				setImpossible(rn+c, value);
 			}
 		}
 	}
@@ -125,11 +125,11 @@ public class PossibleValuesGrid {
 	
 	public void setOnlyPossible(int field, int value) {
 		for (int i = 1; i < value; i++) {
-			updateField(field, i);
+			setImpossible(field, i);
 		}
 		
 		for (int i = value+1; i <= grid.size(); i++) {
-			updateField(field, i);
+			setImpossible(field, i);
 		}
 	}
 	

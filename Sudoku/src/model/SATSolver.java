@@ -12,19 +12,22 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class SATSolver extends Solver {
+
+	public Process process;
 	
 	public SATSolver(Grid g) {
 		super(g);
 	}
-
-	public Process process;
 	
+	@Override
 	public Grid solve() {
 		try {
 			return solveHelper();
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
+		} catch (IllegalArgumentException e) {
+			return null; // Probably timed out
 		}
 	}
 	
@@ -33,7 +36,6 @@ public class SATSolver extends Solver {
 		super.cancel();
 		
 		Thread t = new Thread(new Runnable() {
-
 			@Override
 			public void run() {
 				while (process == null) {
@@ -65,16 +67,25 @@ public class SATSolver extends Solver {
 		f.write("(get-model)");
 
 		f.close();
-
-		ProcessBuilder pb = new ProcessBuilder("z3", tmp.getAbsolutePath());
+		
+		String os = System.getProperty("os.name");
+		String memString = (os.toLowerCase().contains("windows") ? "/" : "-") + "memory:4096";
+		
+		ProcessBuilder pb = new ProcessBuilder("z3", memString, tmp.getAbsolutePath());
 		process = pb.start();
 
 		InputStream in = process.getInputStream();
 		BufferedReader b = new BufferedReader(new InputStreamReader(in));
 
-		String out = b.lines().collect(Collectors.joining("\n"));
+		StringBuilder sb = new StringBuilder();
+		String line;
+		while ((line = b.readLine()) != null &&
+				(System.currentTimeMillis() < start + timeout || timeout == 0)) {
+			sb.append(line);
+		}
+		//String out = b.lines().collect(Collectors.joining("\n"));
 
-		return parseModel(grid.k(), out);
+		return parseModel(grid.k(), sb.toString());
 	}
 
 	public void generateRules(final int k, Writer w) throws IOException {
@@ -138,7 +149,7 @@ public class SATSolver extends Solver {
 			s = s.substring(0, s.length() - 1);
 			s = s.trim();
 		} else {
-			System.out.println(s.substring(0, Math.min(s.length(), 100)));
+//			System.out.println(s.substring(0, Math.min(s.length(), 100)));
 			throw new IllegalArgumentException("Given string is not a model.");
 		}
 

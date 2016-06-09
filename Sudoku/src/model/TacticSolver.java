@@ -14,11 +14,9 @@ public class TacticSolver extends Solver {
 	private IntPriorityQueue pq;
 	private PossibleValues[] pvs;
 	private PossibleValuesGrid pGrid;
-	
-	boolean foundSolution = true;
-	int timeout = 0;
-	long start;
 
+	private boolean foundSolution = true;
+	
 	private AlwaysTactic[] alwaysTactics;
 	private ChoiceTactic[] choiceTactics;
 	
@@ -27,6 +25,9 @@ public class TacticSolver extends Solver {
 	}
 
 	public Grid solve() {
+		if (grid == null) {
+			return null;
+		}
 		Grid g = new Grid(grid);
 		
 		this.pq = new IntPriorityQueue(g.numberOfFields(), g.size());
@@ -43,8 +44,8 @@ public class TacticSolver extends Solver {
 
 		alwaysTactics = new AlwaysTactic[] { new IncrementalTwinsTactic(g, pGrid) };
 
-		choiceTactics = new ChoiceTactic[] { new UniqueCandidateTactic(g, pGrid), new TwinsTactic(g, pGrid),
-				new XWingTactic(g, pGrid) };
+		choiceTactics = new ChoiceTactic[] { new UniqueCandidateTactic(g, pGrid), new TwinsTactic(g, pGrid)/*,
+				new XWingTactic(g, pGrid)*/ };
 		
 		return solveHelper(g);
 	}
@@ -71,7 +72,7 @@ public class TacticSolver extends Solver {
 
 		try {
 			int changesMadeLast = -1;
-			while (pGrid.changesMadeInTransaction() != changesMadeLast) {
+			while (pq.valuesWithPrio(1).isEmpty() && pGrid.changesMadeInTransaction() != changesMadeLast) {
 				changesMadeLast = pGrid.changesMadeInTransaction();
 
 				for (ChoiceTactic t : choiceTactics) {
@@ -157,28 +158,12 @@ public class TacticSolver extends Solver {
 		foundSolution = true;
 		return ret;
 	}
-	
-	public Grid solveWithTimeout(int t) {
-		start = System.currentTimeMillis();
-		timeout = t;	
-		Grid g = solve();
-		timeout = 0;
-		return g;
-	}
 
 	public boolean uniqueWithTimeout(int t) {
 		timeout = t;
 		boolean ret = unique();
 		timeout = 0;
 		return ret;
-	}
-	
-	public boolean solvableWithTimeout(int t) { // TODO: Only used for testing board generation randomness. Maybe delete after?
-		start = System.currentTimeMillis();
-		timeout = t;	
-		boolean b = solvable();
-		timeout = 0;
-		return b;
 	}
 
 	protected void showField(int field, int val) {

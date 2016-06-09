@@ -1,59 +1,62 @@
 package model;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
-import model.tactics.AlwaysTactic;
-import model.tactics.BoxTactic;
-import model.tactics.ColTactic;
-import model.tactics.IncrementalTwinsTactic;
-import model.tactics.RowTactic;
 import model.util.IntPriorityQueue;
+import model.util.Pair;
+import model.util.SolvableCallable;
 
 public class PuzzleGenerator {
 	
 	public static Grid generate(int k) {
-		LinkedList<Integer> fields = randomIntList(k);
-		Grid g = randomBoard(new Grid(k), fields);
+		Grid g = randomBoard(k);
 		
-		fields = randomIntList(k);
-		minimise(g, fields);
-		
+		minimise(g);
+
 		return g;
 	}
-	
-	private static LinkedList<Integer> randomIntList(int k) {
-		int n = k*k;
-		LinkedList<Integer> fields = new LinkedList<Integer>();
-		for (int i = 0; i < n*n; i++) {
-			fields.add(i);
-		}
-		Collections.shuffle(fields);
-		return fields;
-	}
 
-	private static Grid randomBoard(Grid g, LinkedList<Integer> fields) {
-		int timeout = g.k()*100;
+	private static Grid randomBoard(int k) {
+		Grid g = new Grid(k);
 		
-		PossibleValues[] pvs;
-		IntPriorityQueue pq;
-		PossibleValuesGrid pGrid;
-		AlwaysTactic[] alwaysTactics;
+		int timeout = 100;
+		ExecutorService es1 = Executors.newFixedThreadPool(1);
+		ExecutorService es2 = Executors.newFixedThreadPool(1);
+		
+		int randAmount = 0;
+		switch(g.k()) {
+		case 2: randAmount = 3; break;
+		case 3: randAmount = 15; break;
+		case 4: randAmount = 49; break;
+		default: randAmount = 73; break; // k = 5+
+		}
+
+		TacticSolver s1;
+		
+		Pair<Grid, LinkedList<Integer>> pair = fillRandom(g, randAmount);
+		g = pair.fst;
+		LinkedList<Integer> fields = pair.snd;
+
+		PossibleValues[] pvs = g.findPossibleValues();
+		IntPriorityQueue pq = new IntPriorityQueue(g.numberOfFields(), g.size());
+		for (int i = 0; i < pvs.length; i++) {
+			if (pvs[i] != null) {
+				pq.insert(i, pvs[i].possible());
+			}
+		}
+		PossibleValuesGrid pGrid = new PossibleValuesGrid(g, pvs, pq);
 		
 		while (!fields.isEmpty()) {
-			pvs = g.findPossibleValues();
-			pq = new IntPriorityQueue(g.numberOfFields(), g.size());
-			for (int i = 0; i < pvs.length; i++) {
-				if (pvs[i] != null) {
-					pq.insert(i, pvs[i].possible());
-				}
-			}
-			pGrid = new PossibleValuesGrid(g, pvs, pq);
-			alwaysTactics = new AlwaysTactic[] { new RowTactic(g, pGrid), new ColTactic(g, pGrid),
-							new BoxTactic(g, pGrid) };
-
 			int field = fields.remove();
-			int[] origPos = pvs[field].possibilities();
+			int[] origPos = Arrays.copyOf(pvs[field].possibilities(), pvs[field].possibilities().length);
 			
 			while (true) {
 				if (pvs[field].possible() == 0) {
@@ -67,13 +70,45 @@ public class PuzzleGenerator {
 				int val = pvs[field].possibilities()[idx];
 				
 				g.set(field, val);
-				TacticSolver s = new TacticSolver(g);
-				if (s.solveWithTimeout(timeout) != null) {  // TODO: do we need to run tactics to remove possibilities?
-					for (AlwaysTactic t : alwaysTactics) {
-						t.apply(field, val);
+				s1 = new TacticSolver(g);
+				SATSolver s2 = new SATSolver(g);
+				
+				Future<Boolean> task1 = es1.submit(new SolvableCallable(s1, timeout));
+				Future<Boolean> task2 = es2.submit(new SolvableCallable(s2, timeout));
+				
+				while (!task1.isDone() && !task2.isDone()) {
+				}
+
+				boolean solvable = false;
+				try {
+					solvable = task1.get();
+					if (task1.isDone() && task2.isDone()) {
+						solvable = task1.get() || task2.get();
+					} else if (task1.isDone()) {
+						solvable = task1.get();
+					} else {
+						solvable = task2.get();
 					}
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				s1.cancel();
+				s2.cancel();
+				task1.cancel(true);
+				task2.cancel(true);
+				
+				if (solvable) {
+					pGrid.setBoxImpossible(field, val);
+					pGrid.setColImpossible(field, val);
+					pGrid.setRowImpossible(field, val);
 					break;
 				}
+				
 				pvs[field].set(val, false);
 				g.set(field, 0);
 			}
@@ -82,7 +117,48 @@ public class PuzzleGenerator {
 		return g;
 	}
 
-	private static Grid minimise(Grid g, LinkedList<Integer> fields) {
+	private static Pair<Grid, LinkedList<Integer>> fillRandom(Grid g, int randAmount) {
+		LinkedList<Integer> fields;
+		Solver s;
+		Grid newG;
+		do {
+			Grid rG = new Grid(g);
+			PossibleValues[] pvs = rG.findPossibleValues();
+			IntPriorityQueue pq = new IntPriorityQueue(rG.numberOfFields(), rG.size());
+			for (int i = 0; i < pvs.length; i++) {
+				if (pvs[i] != null) {
+					pq.insert(i, pvs[i].possible());
+				}
+			}
+			PossibleValuesGrid pGrid = new PossibleValuesGrid(rG, pvs, pq);
+			
+			fields = randomIntList(g.numberOfFields());
+			
+			for (int i = 0; i < randAmount; i++) {
+				int field = fields.remove();
+				
+				if (pvs[field].possible() == 0) {
+					rG = null;
+					break;
+				}
+				
+				int idx = (int) (Math.random()*pvs[field].possible());
+				int val = pvs[field].possibilities()[idx];
+				
+				rG.set(field, val);
+				pGrid.setBoxImpossible(field, val);
+				pGrid.setRowImpossible(field, val);
+				pGrid.setColImpossible(field, val);
+			}
+			newG = rG;
+			s = new TacticSolver(rG);
+		} while (!s.solvable());
+		
+		return new Pair<Grid, LinkedList<Integer>>(newG, fields);
+	}
+
+	private static Grid minimise(Grid g) {
+		LinkedList<Integer> fields = randomIntList(g.numberOfFields());
 		int timeout = g.k()*100;
 		while (!fields.isEmpty()) {
 			int field = fields.remove();
@@ -101,6 +177,15 @@ public class PuzzleGenerator {
 			}
 		}
 		return g;
+	}
+	
+	private static LinkedList<Integer> randomIntList(int amount) {
+		LinkedList<Integer> fields = new LinkedList<Integer>();
+		for (int i = 0; i < amount; i++) {
+			fields.add(i);
+		}
+		Collections.shuffle(fields);
+		return fields;
 	}
 	
 }
