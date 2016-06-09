@@ -8,7 +8,6 @@ import java.io.IOException;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 import model.UserGrid;
 import view.View;
 

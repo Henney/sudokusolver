@@ -2,8 +2,6 @@ package view;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
-import javafx.scene.input.MouseEvent;
 
 public class SpeedListener<T> implements ChangeListener<Number> {
 

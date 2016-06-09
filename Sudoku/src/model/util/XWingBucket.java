@@ -9,6 +9,7 @@ public class XWingBucket {
 	private ArrayDeque<Pair<Pair<Integer, Integer>,
 	  						Pair<Integer, Integer>>> best;
 
+	@SuppressWarnings("unchecked")
 	public XWingBucket(int size) {
 		this.size = size;
 		this.bucket = new ArrayDeque[size][size];

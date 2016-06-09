@@ -7,14 +7,8 @@ import java.util.Optional;
 import com.jaunt.NotFound;
 import com.jaunt.ResponseException;
 
-import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import model.UserGrid;
 import model.WebScraper;
 import view.View;

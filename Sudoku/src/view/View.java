@@ -28,7 +28,6 @@ import javafx.stage.Window;
 import model.Grid;
 import model.SATSolver;
 import model.Solver;
-import model.TacticSolver;
 import model.UserGrid;
 import javafx.scene.Node;
 import javafx.scene.Scene;

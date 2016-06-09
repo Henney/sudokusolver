@@ -1,8 +1,6 @@
 package model;
 
 import java.util.ArrayDeque;
-import java.util.Stack;
-
 import model.util.IntLinkedList;
 import model.util.IntPriorityQueue;
 import model.util.Pair;

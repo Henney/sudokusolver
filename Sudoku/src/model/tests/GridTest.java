@@ -3,15 +3,10 @@ package model.tests;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.Set;
-
 import org.junit.Test;
 
 import model.Grid;
-import model.UserGrid;
-import model.util.Pair;
 
 public class GridTest {
 

@@ -9,7 +9,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseEvent;
 import model.Grid;
 import model.PuzzleGenerator;
-import model.TacticSolver;
 import model.UserGrid;
 import view.View;
 

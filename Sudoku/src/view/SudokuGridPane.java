@@ -10,7 +10,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
-import model.Grid;
 import model.UserGrid;
 import model.util.Pair;
 

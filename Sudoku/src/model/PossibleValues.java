@@ -3,9 +3,6 @@ package model;
 import java.util.HashSet;
 import java.util.Set;
 
-import model.util.Pair;
-
-import java.util.ArrayDeque;
 import java.util.Arrays;
 
 public class PossibleValues {

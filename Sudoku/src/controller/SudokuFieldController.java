@@ -1,11 +1,9 @@
 package controller;
 
 import javafx.event.EventHandler;
-import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import view.SudokuButton;
 import view.SudokuGridPane;
-import view.View;
 
 public class SudokuFieldController<T> implements EventHandler<MouseEvent> {
 	

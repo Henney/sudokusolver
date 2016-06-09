@@ -7,8 +7,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.StringTokenizer;
-
 import org.junit.Test;
 
 import model.Grid;
@@ -33,8 +31,6 @@ public class SolverTest {
 		
 
 		Grid grid = new Grid(input);
-		
-		TacticSolver solver = new TacticSolver(grid);
 		
 		PossibleValues[] pvs = grid.findPossibleValues();
 		
