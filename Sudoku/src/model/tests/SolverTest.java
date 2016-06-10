@@ -34,6 +34,8 @@ public class SolverTest {
 		
 		PossibleValues[] pvs = grid.findPossibleValues();
 		
+		pvs[0].toString();
+		
 		Integer[][] expected = {
 				{ 2 }, null, { 6 }, null, { 4 }, { 2, 7 }, null, { 9 }, { 4, 5, 9 },
 				null, { 3, 8 }, null, null, { 1, 4 }, { 2, 8 }, null, { 3 }, { 1, 4 },
@@ -90,6 +92,7 @@ public class SolverTest {
 	
 	public void solveSudoku(String filename) throws IOException {
 		Grid g = new Grid(new FileReader("puzzles/" + filename + ".txt"));
+		g.toString();
 		
 		assertFalse(g.isSolved());
 		

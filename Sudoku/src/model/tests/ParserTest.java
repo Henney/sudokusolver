@@ -24,6 +24,8 @@ public class ParserTest {
 				"3;4;1;2" + "\n" +
 				"4;1;2;3" + "\n" ;
 		
+		new Parser();
+		
 		Pair<int[], Integer> parsed = Parser.parseGrid(new StringReader(input));
 		
 		int[] expected =
@@ -69,5 +71,55 @@ public class ParserTest {
 		assertArrayEquals(parsed.fst, expected);
 		assertEquals(parsed.snd.intValue(), 3);
 	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void errorFirstLine() throws IOException {
+		String input =
+				".;1;.;3;.;.;8;.;." + "\n" +
+				"5;.;9;6;.;.;7;.;." + "\n" +
+				"7;.;4;.;9;5;.;2;." + "\n" +
+				"4;.;.;.;.;.;1;.;." + "\n" +
+				".;2;8;.;7;1;.;6;3" + "\n" +
+				".;.;.;2;.;4;9;5;." + "\n" +
+				"6;.;3;.;.;9;.;.;7" + "\n" +
+				".;.;.;4;2;.;5;1;6" + "\n" +
+				".;5;2;.;8;.;.;4;." ;
+		
+		Parser.parseGrid(new StringReader(input));
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void errorMissingColumns() throws IOException {
+		String input =
+				"3\n" +
+				".;1;.;3;.;.;8;.;." + "\n" +
+				"5;.;9;6;.;.;7;.;." + "\n" +
+				"7;.;4;.;9;5;.;2;." + "\n" +
+				"4;.;.;.;.;.;" + "\n" +
+				".;2;8;.;7;1;.;6;3" + "\n" +
+				".;.;.;2;.;4;9;5;." + "\n" +
+				"6;.;3;.;.;9;.;.;7" + "\n" +
+				".;.;.;4;2;.;5;1;6" + "\n" +
+				".;5;2;.;8;.;.;4;." ;
+		
+		Parser.parseGrid(new StringReader(input));
+	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void errorIllegalCharacter() throws IOException {
+		String input =
+				"3\n" +
+				".;1;.;3;.;.;8;.;." + "\n" +
+				"5;.;9;6;.;.;7;.;." + "\n" +
+				"7;.;4;.;M;5;.;2;." + "\n" +
+				"4;.;.;.;.;.;1;.;." + "\n" +
+				".;2;8;.;7;1;.;6;3" + "\n" +
+				".;.;.;2;.;D;9;5;." + "\n" +
+				"6;.;3;.;.;9;.;.;7" + "\n" +
+				".;.;.;4;2;.;5;1;6" + "\n" +
+				".;5;2;.;8;.;.;4;." ;
+		
+		Parser.parseGrid(new StringReader(input));
+	}
+	
 }

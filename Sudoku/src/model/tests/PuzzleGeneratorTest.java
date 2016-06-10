@@ -40,7 +40,7 @@ public class PuzzleGeneratorTest {
 		}
 	}
 	
-//	@Test
+	@Test
 	public void generate4() {
 		for (int i = 0; i < 1; i++) {
 			generalTest(4);

@@ -42,9 +42,5 @@ public class BoxIterator implements Iterable<Integer> {
             return ret;
         }
 
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
 	};}
 }

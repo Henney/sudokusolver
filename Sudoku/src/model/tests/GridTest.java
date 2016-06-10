@@ -27,6 +27,8 @@ public class GridTest {
 		Grid g = new Grid(input);
 		
 		assertTrue(g.isLegal());
+		
+		g.toString();
 	}
 	
 	@Test
