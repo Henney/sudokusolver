@@ -12,5 +12,5 @@
 }
 
 .selected {
-	-fx-effect: innershadow( three-pass-box , rgba(0,0,255.0,.5) , 2, 1, 0, 0);
+	-fx-effect: innershadow( three-pass-box , rgba(0,0,255.0,.2) , 4, 1, 0, 0);
 }
