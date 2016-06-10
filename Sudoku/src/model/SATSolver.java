@@ -34,24 +34,11 @@ public class SATSolver extends Solver {
 	public void cancel() {
 		super.cancel();
 		
-		Thread t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				while (process == null) {
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-				process.destroyForcibly();
-				process = null;
-			}
-			
-		});
+		if (process != null) {
+			process.destroyForcibly();
+			process = null;
+		}
 		
-		t.setDaemon(true);
-		t.start();
 	}
 
 	public Grid solveHelper() throws IOException {
@@ -70,6 +57,8 @@ public class SATSolver extends Solver {
 		String os = System.getProperty("os.name");
 		String memString = (os.toLowerCase().contains("windows") ? "/" : "-") + "memory:4096";
 		
+		if (!run) return null;
+		
 		ProcessBuilder pb = new ProcessBuilder("z3", memString, tmp.getAbsolutePath());
 		process = pb.start();
 
@@ -78,11 +67,13 @@ public class SATSolver extends Solver {
 
 		StringBuilder sb = new StringBuilder();
 		String line;
-		while ((line = b.readLine()) != null &&
+		while (run &&
+				(line = b.readLine()) != null &&
 				(System.currentTimeMillis() < start + timeout || timeout == 0)) {
 			sb.append(line);
 		}
-		//String out = b.lines().collect(Collectors.joining("\n"));
+		
+		if (!run) return null;
 
 		return parseModel(grid.k(), sb.toString());
 	}
