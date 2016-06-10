@@ -10,14 +10,17 @@ public class Parser {
 
 	public static final String SEPARATOR = ";";
 	public static final String EMPTY = ".";
-	
-	// TODO: throw exceptions for wrong input
 
 	public static Pair<int[], Integer> parseGrid(Reader input) throws IOException {
 
 		BufferedReader in = new BufferedReader(input);
 
-		int k = Integer.parseInt(in.readLine());
+		int k;
+		try {
+			k = Integer.parseInt(in.readLine());
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException("First line in file should be the number k.");
+		}
 
 		int n = k * k;
 
@@ -28,7 +31,7 @@ public class Parser {
 		for (int i = 0; i < n; i++) {
 			String[] fields = in.readLine().split(SEPARATOR);
 			if (fields.length != n) {
-				System.err.println("Error: Not enough columns in row: " + (i + 1));
+				throw new IllegalArgumentException("Not enough columns in row: " + (i + 1));
 			}
 
 			for (int j = 0; j < fields.length; j++) {
@@ -39,8 +42,7 @@ public class Parser {
 						int number = Integer.parseInt(fields[j]);
 						grid[currentField] = number;
 					} catch (NumberFormatException e) {
-						// TODO: Handle error
-						System.err.println("Error: Illegal character in grid: " + fields[j]);
+						throw new IllegalArgumentException("Illegal character in grid: " + fields[j]);
 					}
 
 				currentField++;

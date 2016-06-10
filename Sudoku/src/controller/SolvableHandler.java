@@ -21,7 +21,7 @@ public class SolvableHandler<T> extends ButtonHandler<MouseEvent> {
 			protected Boolean call() throws Exception {					
 				Platform.runLater(new Runnable() {
 		            @Override public void run() {
-						Alert alert = view.createMessageDialogue("Solvable? running",
+						Alert alert = view.createMessageDialog("Solvable? running",
 								"We are calculating the solvability of the current puzzle.\nPlease wait!",
 								AlertType.INFORMATION);
 
@@ -32,7 +32,7 @@ public class SolvableHandler<T> extends ButtonHandler<MouseEvent> {
 								"The current grid can be solved!" :
 									"Unfortunately, this grid cannot be solved.";
 						alert.close();								
-						view.createMessageDialogue("Is the current grid solvable?", msg, AlertType.INFORMATION);
+						view.createMessageDialog("Is the current grid solvable?", msg, AlertType.INFORMATION);
 		            }
 		        });
 				return true;

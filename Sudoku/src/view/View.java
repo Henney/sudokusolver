@@ -230,6 +230,9 @@ public class View extends Application {
 
 	public void solveSudoku(Method m) {
 		if (!cancelSolveTask()) {
+			createMessageDialog("Error",
+					"Could not cancel the current solving process",
+					AlertType.ERROR);
 			return;
 		}
 		
@@ -264,7 +267,7 @@ public class View extends Application {
 		            	} else {
 							Platform.runLater(new Runnable() {
 					            @Override public void run() {
-				            		createMessageDialogue("Error!",
+				            		createMessageDialog("Error!",
 				            				"The given grid configuration is unsolvable.",
 				            				AlertType.ERROR);
 									displayGrid(new UserGrid(cSolver.getGrid()));
@@ -295,11 +298,7 @@ public class View extends Application {
 		}
 		enableSlider();
 		cSolver.cancel();
-		boolean b = service.cancel();
-		if (!b) {
-			// TODO throw an exception in a window?
-		}
-		return true;
+		return service.cancel();
 	}
 
 	public static void main(String[] args) {
@@ -318,7 +317,7 @@ public class View extends Application {
 		solveSpeed = speed;
 	}
 	
-	public Alert createMessageDialogue(String title, String msg, AlertType type) {
+	public Alert createMessageDialog(String title, String msg, AlertType type) {
 		Alert alert = new Alert(type);
 		alert.initOwner(primaryStage);
 		alert.setTitle(title);

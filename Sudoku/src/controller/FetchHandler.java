@@ -37,15 +37,15 @@ public class FetchHandler<T> extends ButtonHandler<MouseEvent> {
 				grid = new UserGrid(new StringReader(WebScraper.getSudokuFromWeb(level)));
 				view.setAndDisplayGrid(grid);
 			} catch (NotFound e) {
-				view.createMessageDialogue("Error!",
+				view.createMessageDialog("Error!",
 						"The website did not load properly, so no sudoku was fetched.",
 						AlertType.ERROR);
 			} catch (ResponseException e) {
-				view.createMessageDialogue("Error!",
+				view.createMessageDialog("Error!",
 						"Connection to the server timed out.",
 						AlertType.ERROR);
 			} catch (IOException e) {
-				view.createMessageDialogue("Error!",
+				view.createMessageDialog("Error!",
 						"Something went wrong...",
 						AlertType.ERROR);
 				e.printStackTrace();

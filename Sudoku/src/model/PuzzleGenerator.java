@@ -88,10 +88,10 @@ public class PuzzleGenerator {
 						solvable = task2.get();
 					}
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+					// Shouldn't happen
 					e.printStackTrace();
 				} catch (ExecutionException e) {
-					// TODO Auto-generated catch block
+					// Shouldn't happen
 					e.printStackTrace();
 				}
 				
