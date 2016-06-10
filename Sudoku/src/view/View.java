@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.swing.event.DocumentEvent.EventType;
-
 import controller.CancelHandler;
 import controller.ClearHandler;
 import controller.FetchHandler;

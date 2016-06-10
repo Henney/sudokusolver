@@ -1,7 +1,6 @@
 package model.tactics;
 
 import java.util.ArrayDeque;
-import java.util.function.BiFunction;
 
 import model.Grid;
 import model.PossibleValues;
@@ -56,12 +55,12 @@ public class IncrementalTwinsTactic extends AlwaysTactic {
 			head = head.getNext();
 		}
 		
-		iterate(rows, (f, x) -> { pGrid.setRowImpossible(f, x); return null; });
-		iterate(cols, (f, x) -> { pGrid.setColImpossible(f, x); return null; });
-		iterate(boxs, (f, x) -> { pGrid.setBoxImpossible(f, x); return null; });
+		iterate(rows);
+		iterate(cols);
+		iterate(boxs);
 	}
 	
-	private void iterate(ArrayDeque<Integer> bucket, BiFunction<Integer, Integer, Void> setImpossible) {
+	private void iterate(ArrayDeque<Integer> bucket) {
 		while (!bucket.isEmpty()) {
 			int f1 = bucket.pop();
 			PossibleValues p1 = pvs[f1];
@@ -77,8 +76,20 @@ public class IncrementalTwinsTactic extends AlwaysTactic {
 					pvs[f1] = null;
 					pvs[f2] = null;
 		
-					setImpossible.apply(f1, x);
-					setImpossible.apply(f1, y);
+					if (grid.rowFor(f1) == grid.rowFor(f2)) {
+						pGrid.setRowImpossible(f1, x);
+						pGrid.setRowImpossible(f1, y);
+					}
+
+					if (grid.colFor(f1) == grid.colFor(f2)) {
+						pGrid.setColImpossible(f1, x);
+						pGrid.setColImpossible(f1, y);
+					}
+					
+					if (grid.boxFor(f1) == grid.boxFor(f2)) {
+						pGrid.setBoxImpossible(f1, x);
+						pGrid.setBoxImpossible(f1, y);
+					}
 					
 					pvs[f1] = p1;
 					pvs[f2] = p2;
