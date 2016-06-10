@@ -31,7 +31,7 @@ public class GenerateHandler<T> extends ButtonHandler<MouseEvent> {
 				}
 			});
 		} catch (IllegalArgumentException e) {
-			view.createMessageDialogue("Syntax error", "k must be an integer between 2 and 6", AlertType.ERROR);
+			view.createMessageDialog("Syntax error", "k must be an integer between 2 and 6", AlertType.ERROR);
 		}
 	}
 	
@@ -41,7 +41,7 @@ public class GenerateHandler<T> extends ButtonHandler<MouseEvent> {
 			protected Boolean call() throws Exception {					
 				Platform.runLater(new Runnable() {
 		            @Override public void run() {
-						Alert alert = view.createMessageDialogue("Generating puzzle",
+						Alert alert = view.createMessageDialog("Generating puzzle",
 								"We are generating your puzzle.\nThis may take a while",
 								AlertType.INFORMATION);
 						
@@ -50,9 +50,8 @@ public class GenerateHandler<T> extends ButtonHandler<MouseEvent> {
 						alert.close();
 						
 						view.setAndDisplayGrid(new UserGrid(g));
-						view.resetSize();
 						
-						view.createMessageDialogue("Puzzle generated",
+						view.createMessageDialog("Puzzle generated",
 								"Your puzzle has been created and will be loaded to the grid.",
 								AlertType.INFORMATION);
 		            }

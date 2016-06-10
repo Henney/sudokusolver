@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.swing.event.DocumentEvent.EventType;
+
 import controller.CancelHandler;
+import controller.ClearHandler;
 import controller.FetchHandler;
 import controller.FinishHandler;
 import controller.GenerateHandler;
@@ -22,6 +25,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
@@ -131,6 +135,8 @@ public class View extends Application {
 		solvableButton.setOnMouseClicked(new SolvableHandler<MouseEvent>(this));
 		Button cancelButton = (Button) rootLayout.lookup("#CancelButton");
 		cancelButton.setOnMouseClicked(new CancelHandler<MouseEvent>(this));
+		Button clearButton = (Button) rootLayout.lookup("#ClearButton");
+		clearButton.setOnMouseClicked(new ClearHandler<MouseEvent>(this));
 		Button saveButton = (Button) rootLayout.lookup("#SaveButton");
 		saveButton.setOnMouseClicked(new SaveHandler<MouseEvent>(this));
 	}
@@ -205,6 +211,7 @@ public class View extends Application {
 		scaleSudoku((int)rootLayout.getHeight(), grid.k());
 		setSizeChangedListeners(grid.k());
 		sudokuGrid.displayGrid(true);
+		resetSize();
 	}
 	
 	public void displayGrid(UserGrid grid) {
@@ -223,6 +230,9 @@ public class View extends Application {
 
 	public void solveSudoku(Method m) {
 		if (!cancelSolveTask()) {
+			createMessageDialog("Error",
+					"Could not cancel the current solving process",
+					AlertType.ERROR);
 			return;
 		}
 		
@@ -257,7 +267,7 @@ public class View extends Application {
 		            	} else {
 							Platform.runLater(new Runnable() {
 					            @Override public void run() {
-				            		createMessageDialogue("Error!",
+				            		createMessageDialog("Error!",
 				            				"The given grid configuration is unsolvable.",
 				            				AlertType.ERROR);
 									displayGrid(new UserGrid(cSolver.getGrid()));
@@ -279,7 +289,7 @@ public class View extends Application {
 	public void enableSlider() {
 		Slider sld = (Slider) primaryStage.getScene().lookup("#SpeedSlider");
 		sld.disableProperty().set(false);
-		sld.setValue(sld.getValue());
+		calcSolveSpeed(sld.getValue());
 	}
 	
 	public boolean cancelSolveTask() {
@@ -288,11 +298,7 @@ public class View extends Application {
 		}
 		enableSlider();
 		cSolver.cancel();
-		boolean b = service.cancel();
-		if (!b) {
-			// TODO throw an exception in a window?
-		}
-		return true;
+		return service.cancel();
 	}
 
 	public static void main(String[] args) {
@@ -302,12 +308,16 @@ public class View extends Application {
 	public int getSolveSpeed() {
 		return solveSpeed;
 	}
+	
+	public void calcSolveSpeed(double newValue) {
+		setSolveSpeed((int)(1./newValue*SpeedListener.MAX_DELAY));
+	}
 
-	public void setSolveSpeed(int s) {
-		solveSpeed = s;
+	public void setSolveSpeed(int speed) {
+		solveSpeed = speed;
 	}
 	
-	public Alert createMessageDialogue(String title, String msg, AlertType type) {
+	public Alert createMessageDialog(String title, String msg, AlertType type) {
 		Alert alert = new Alert(type);
 		alert.initOwner(primaryStage);
 		alert.setTitle(title);
