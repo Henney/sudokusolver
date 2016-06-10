@@ -1,5 +1,6 @@
 package model.tests;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileReader;
@@ -39,13 +40,13 @@ public class UserGridTest {
 
 		assertTrue(grid.set(10, 1).fst.isEmpty());
 		
-		assertTrue(grid.set(0, 1).fst.size() == 2);
-		assertTrue(grid.set(16, 1).fst.size() == 2);
-		assertTrue(grid.set(28, 1).fst.size() == 2);
+		assertEquals(2, grid.set(0, 1).fst.size());
+		assertEquals(2, grid.set(16, 1).fst.size());
+		assertEquals(2, grid.set(28, 1).fst.size());
 
 		Pair<Set<Integer>, Set<Integer>> cr = grid.set(10, 2);
-		assertTrue(cr.fst.size() == 0);
-		assertTrue(cr.snd.size() == 4);
+		assertEquals(0, cr.fst.size());
+		assertEquals(3, cr.snd.size());
 		
 	}
 	

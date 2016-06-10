@@ -34,7 +34,9 @@ public class IntPriorityQueue {
 	}
 
 	public int extractMin() {
-		assert !isEmpty();
+		if (isEmpty()) {
+			throw new IllegalStateException("Extracting from empty queue.");
+		}
 		
 		while (next < queue.length && queue[next].isEmpty()) {
 			next++;

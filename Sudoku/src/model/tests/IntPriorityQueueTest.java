@@ -47,4 +47,10 @@ public class IntPriorityQueueTest {
 		}
 	}
 	
+	@Test(expected=IllegalStateException.class)
+	public void emptyQueueThrowsException() {
+		IntPriorityQueue pq = new IntPriorityQueue(3*3, 3);
+		pq.extractMin();
+	}
+	
 }

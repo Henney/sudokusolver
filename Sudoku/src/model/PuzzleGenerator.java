@@ -12,7 +12,7 @@ import model.util.IntPriorityQueue;
 import model.util.Pair;
 import model.util.SolvableCallable;
 
-public class PuzzleGenerator {
+public class PuzzleGenerator {	
 	
 	public static Grid generate(int k) {
 		Grid g = randomBoard(k);
@@ -23,11 +23,12 @@ public class PuzzleGenerator {
 	}
 
 	private static Grid randomBoard(int k) {
+		ExecutorService es1 = Executors.newFixedThreadPool(1);
+		ExecutorService es2 = Executors.newFixedThreadPool(1);
+		
 		Grid g = new Grid(k);
 		
 		int timeout = 100;
-		ExecutorService es1 = Executors.newFixedThreadPool(1);
-		ExecutorService es2 = Executors.newFixedThreadPool(1);
 		
 		int randAmount = 0;
 		switch(g.k()) {
@@ -111,6 +112,9 @@ public class PuzzleGenerator {
 				g.set(field, 0);
 			}
 		}
+		
+		es1.shutdown();
+		es2.shutdown();
 		
 		return g;
 	}
