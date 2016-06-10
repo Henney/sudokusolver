@@ -105,10 +105,6 @@ public class UserGrid extends Grid {
 					resolved.add(b.peek());
 				}
 			}
-			
-			if (r.size() == 1 && c.size() == 1 && b.size() == 1) {
-				resolved.add(i);
-			}
 		}
 
 		if (val == 0) {

@@ -12,6 +12,7 @@ import controller.GenerateHandler;
 import controller.InputHandler;
 import controller.LoadHandler;
 import controller.SolveHandler;
+import controller.SpeedListener;
 import controller.WindowResizeListener;
 import controller.NumberFieldController;
 import controller.SATHandler;
@@ -203,13 +204,13 @@ public class View extends Application {
 		setupSudoku(grid.k());
 		scaleSudoku((int)rootLayout.getHeight(), grid.k());
 		setSizeChangedListeners(grid.k());
-		sudokuGrid.displayGrid();
+		sudokuGrid.displayGrid(true);
 	}
 	
 	public void displayGrid(UserGrid grid) {
 		this.grid = grid;
 		sudokuGrid.setGrid(grid);
-		sudokuGrid.displayGrid();
+		sudokuGrid.displayGrid(false);
 	}
 	
 	public Grid getGrid() {
@@ -278,7 +279,7 @@ public class View extends Application {
 	public void enableSlider() {
 		Slider sld = (Slider) primaryStage.getScene().lookup("#SpeedSlider");
 		sld.disableProperty().set(false);
-		sld.setValue(sld.getValue());		
+		sld.setValue(sld.getValue());
 	}
 	
 	public boolean cancelSolveTask() {

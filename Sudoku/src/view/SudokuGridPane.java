@@ -24,6 +24,7 @@ public class SudokuGridPane extends GridPane {
 	// css strings
 	static final String CONFLICT_CLASS = "conflict";
 	static final String SELECTED_CLASS = "selected";
+	static final String GIVEN_CLASS = "given";
 	
 	public SudokuGridPane(UserGrid grid) {
 		super();
@@ -111,7 +112,7 @@ public class SudokuGridPane extends GridPane {
 		}
 	}
 
-	void displayGrid() {
+	void displayGrid(boolean changeGiven) {
 		int i = 0;
 
 		for (Node cell : getChildren()) {
@@ -119,6 +120,13 @@ public class SudokuGridPane extends GridPane {
 				int number = grid.get(i);
 				setFieldText(((SudokuButton) cell), "");
 				setFieldText(((SudokuButton) cell), number+"");
+				
+				if (number != 0 && changeGiven) {
+					cell.getStyleClass().remove(GIVEN_CLASS);
+					cell.getStyleClass().add(GIVEN_CLASS);
+					cell.setDisable(true);
+				}
+				
 				i++;
 			}
 		}
@@ -161,17 +169,25 @@ public class SudokuGridPane extends GridPane {
 	}
 	
 	void setFieldText(SudokuButton field, String s) {
+		if (field.isDisabled()) {
+			return;
+		}
+		
 		if (!s.equals("0")) {
 			field.setText(s);
 		} else {
 			field.setText("");
 		}
+		
 		int index = field.getIndex();
+
 		Pair<Set<Integer>, Set<Integer>> conflicts;
 		if (s.isEmpty()) {
 			conflicts = grid.set(index, 0);
 			setConflict(index, false);
 		} else {
+			setConflict(index, false);
+			
 			int value = Integer.parseInt(s);
 			if (value <= n) {
 				conflicts = grid.set(index, value);
@@ -183,6 +199,7 @@ public class SudokuGridPane extends GridPane {
 		for (int i : conflicts.fst) {
 			setConflict(i, true);
 		}
+		
 		for (int i : conflicts.snd) {
 			setConflict(i, false);
 		}
@@ -194,7 +211,7 @@ public class SudokuGridPane extends GridPane {
 	}
 
 	public void inputNumber(int number) {
-		if (selectedField != null) {
+		if (selectedField != null && !selectedField.isDisabled()) {
 			selectedField.setText("");
 			inputNumberNoDelete(number);
 		}

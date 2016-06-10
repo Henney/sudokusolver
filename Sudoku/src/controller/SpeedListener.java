@@ -1,7 +1,8 @@
-package view;
+package controller;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import view.View;
 
 public class SpeedListener<T> implements ChangeListener<Number> {
 
