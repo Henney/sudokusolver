@@ -26,7 +26,6 @@ public class LoadHandler<T> extends ButtonHandler<MouseEvent> {
 		try {
 			UserGrid grid = new UserGrid(new FileReader(file));
 			view.setAndDisplayGrid(grid);
-			view.resetSize();
 		} catch (FileNotFoundException e) {
 			view.createMessageDialogue("Error!", "The file doesn't exist!", AlertType.ERROR);
 		} catch (IOException e) {

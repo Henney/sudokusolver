@@ -16,8 +16,8 @@
                   <HBox alignment="CENTER" prefHeight="31.0" prefWidth="580.0" spacing="10.0">
                      <children>
                         <Button id="GenerateButton" alignment="CENTER" contentDisplay="TOP" minWidth="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="136.0" text="Generate sudoku" textAlignment="CENTER" />
-                        <Button id="FetchButton" alignment="CENTER" minWidth="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="123.0" text="Fetch online" textAlignment="CENTER" />
-                        <Button id="LoadButton" alignment="CENTER" contentDisplay="TOP" minWidth="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="123.0" text="Load board" textAlignment="CENTER" />
+                        <Button id="FetchButton" alignment="CENTER" minWidth="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="101.0" text="Fetch online" textAlignment="CENTER" />
+                        <Button id="LoadButton" alignment="CENTER" contentDisplay="TOP" minWidth="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="98.0" text="Load board" textAlignment="CENTER" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER" prefHeight="31.0" prefWidth="580.0" spacing="10.0">
@@ -30,9 +30,10 @@
                   </HBox>
                   <HBox alignment="CENTER" prefHeight="31.0" prefWidth="580.0" spacing="10.0">
                      <children>
-                        <Button id="SolvableButton" alignment="CENTER" minWidth="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="123.0" text="Solvable?" textAlignment="CENTER" />
+                        <Button id="SolvableButton" alignment="CENTER" minWidth="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="84.0" text="Solvable?" textAlignment="CENTER" />
                         <Button id="CancelButton" alignment="CENTER" minWidth="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="102.0" text="Cancel solve" textAlignment="CENTER" />
-                        <Button id="SaveButton" alignment="CENTER" minWidth="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="123.0" text="Save board" textAlignment="CENTER" />
+                        <Button id="ClearButton" mnemonicParsing="false" text="Clear" />
+                        <Button id="SaveButton" alignment="CENTER" minWidth="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="95.0" text="Save board" textAlignment="CENTER" />
                      </children>
                   </HBox>
                </children>

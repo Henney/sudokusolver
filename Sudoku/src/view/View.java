@@ -5,13 +5,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.swing.event.DocumentEvent.EventType;
+
 import controller.CancelHandler;
+import controller.ClearHandler;
 import controller.FetchHandler;
 import controller.FinishHandler;
 import controller.GenerateHandler;
 import controller.InputHandler;
 import controller.LoadHandler;
 import controller.SolveHandler;
+import controller.SpeedListener;
 import controller.WindowResizeListener;
 import controller.NumberFieldController;
 import controller.SATHandler;
@@ -21,6 +25,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
@@ -130,6 +135,8 @@ public class View extends Application {
 		solvableButton.setOnMouseClicked(new SolvableHandler<MouseEvent>(this));
 		Button cancelButton = (Button) rootLayout.lookup("#CancelButton");
 		cancelButton.setOnMouseClicked(new CancelHandler<MouseEvent>(this));
+		Button clearButton = (Button) rootLayout.lookup("#ClearButton");
+		clearButton.setOnMouseClicked(new ClearHandler<MouseEvent>(this));
 		Button saveButton = (Button) rootLayout.lookup("#SaveButton");
 		saveButton.setOnMouseClicked(new SaveHandler<MouseEvent>(this));
 	}
@@ -203,13 +210,14 @@ public class View extends Application {
 		setupSudoku(grid.k());
 		scaleSudoku((int)rootLayout.getHeight(), grid.k());
 		setSizeChangedListeners(grid.k());
-		sudokuGrid.displayGrid();
+		sudokuGrid.displayGrid(true);
+		resetSize();
 	}
 	
 	public void displayGrid(UserGrid grid) {
 		this.grid = grid;
 		sudokuGrid.setGrid(grid);
-		sudokuGrid.displayGrid();
+		sudokuGrid.displayGrid(false);
 	}
 	
 	public Grid getGrid() {
@@ -278,7 +286,7 @@ public class View extends Application {
 	public void enableSlider() {
 		Slider sld = (Slider) primaryStage.getScene().lookup("#SpeedSlider");
 		sld.disableProperty().set(false);
-		sld.setValue(sld.getValue());		
+		calcSolveSpeed(sld.getValue());
 	}
 	
 	public boolean cancelSolveTask() {
@@ -301,9 +309,13 @@ public class View extends Application {
 	public int getSolveSpeed() {
 		return solveSpeed;
 	}
+	
+	public void calcSolveSpeed(double newValue) {
+		setSolveSpeed((int)(1./newValue*SpeedListener.MAX_DELAY));
+	}
 
-	public void setSolveSpeed(int s) {
-		solveSpeed = s;
+	public void setSolveSpeed(int speed) {
+		solveSpeed = speed;
 	}
 	
 	public Alert createMessageDialogue(String title, String msg, AlertType type) {

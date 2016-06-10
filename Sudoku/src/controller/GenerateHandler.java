@@ -50,7 +50,6 @@ public class GenerateHandler<T> extends ButtonHandler<MouseEvent> {
 						alert.close();
 						
 						view.setAndDisplayGrid(new UserGrid(g));
-						view.resetSize();
 						
 						view.createMessageDialogue("Puzzle generated",
 								"Your puzzle has been created and will be loaded to the grid.",
