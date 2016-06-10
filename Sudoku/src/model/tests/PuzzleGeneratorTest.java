@@ -26,7 +26,7 @@ public class PuzzleGeneratorTest {
 		assertTrue(s.unique());
 	}
 	
-//	@Test
+	@Test
 	public void generate2() {
 		for (int i = 0; i < 100; i++) {
 			generalTest(2);
@@ -40,7 +40,7 @@ public class PuzzleGeneratorTest {
 		}
 	}
 	
-//	@Test
+	@Test
 	public void generate4() {
 		for (int i = 0; i < 1; i++) {
 			generalTest(4);

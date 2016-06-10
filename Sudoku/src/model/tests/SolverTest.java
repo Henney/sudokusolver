@@ -62,6 +62,25 @@ public class SolverTest {
 	}
 	
 	@Test
+	public void invalidBoard() throws IOException {
+		String input = 
+				"3\n" +
+				"3;7;5;2;1;4;8;9;6;\n" +
+				"1;2;8;6;9;3;4;7;5;\n" +
+				"9;6;4;8;5;7;2;1;3;\n" +
+				"8;5;2;3;4;1;7;6;9;\n" +
+				"4;1;9;7;2;6;5;3;8;\n" +
+				"7;3;6;9;8;5;1;4;2;\n" +
+				"6;4;1;5;3;2;9;8;7;\n" +
+				"5;8;3;1;7;9;6;2;7;\n" +
+				"2;9;7;4;6;8;3;5;1;";
+		
+		Grid g = new Grid(input);
+		assertFalse(g.isLegal());
+		assertFalse(g.isSolved());
+	}
+	
+	@Test
 	public void solveExample() throws IOException {
 		String input =
 				"3\n" +

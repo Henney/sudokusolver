@@ -62,6 +62,7 @@ public class PossibleValuesGrid {
 	public boolean setImpossible(int i, int x) {
 		if (pvs[i] != null && pvs[i].set(x, false)) {
 			countChanged++;
+//			System.out.println("Changed: " + i + " removed " + x); // TODO remove
 			changed.push(new Pair<Integer, Integer>(i, x));
 			pq.changePrio(i, pvs[i].possible());
 			return true;

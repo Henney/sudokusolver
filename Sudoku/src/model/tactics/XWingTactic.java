@@ -54,16 +54,18 @@ public class XWingTactic extends ChoiceTactic {
 				int f3 = x.snd.fst;
 				int f4 = x.snd.snd;
 				int idx1 = isRow ? grid.colFor(f1) : grid.rowFor(f1);
-				int idx2 = isRow ? grid.colFor(f2) : grid.rowFor(f2);
+				int idx2 = isRow ? grid.colFor(f2) : grid.rowFor(f3);
 								
-				for (int field = idx1*inc(!isRow); field < lim2(!isRow, idx1); field += inc(isRow)) {
-					if (field == f1 || field == f3) continue;
-					pGrid.setImpossible(field, val);
+				for (int f = idx1*inc(!isRow); f < lim2(!isRow, idx1*inc(!isRow)); f += inc(isRow)) {
+					if (!(f == f1 || f == f2 || f == f3 || f == f4)) {
+						pGrid.setImpossible(f, val);
+					}
 				}
 				
-				for (int field = idx2*inc(!isRow); field < lim2(!isRow, idx2); field += inc(isRow)) {
-					if (field == f2 || field == f4) continue;
-					pGrid.setImpossible(field, val);
+				for (int f = idx2*inc(!isRow); f < lim2(!isRow, idx2*inc(!isRow)); f += inc(isRow)) {
+					if (!(f == f1 || f == f2 || f == f3 || f == f4)) {
+						pGrid.setImpossible(f, val);
+					}
 				}
 			}
 			buck.clear();
