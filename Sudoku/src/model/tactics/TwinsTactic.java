@@ -1,8 +1,6 @@
 package model.tactics;
 
 import java.util.ArrayDeque;
-import java.util.function.BiFunction;
-
 import model.Grid;
 import model.PossibleValues;
 import model.PossibleValuesGrid;

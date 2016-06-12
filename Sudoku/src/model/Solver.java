@@ -44,10 +44,10 @@ public abstract class Solver {
 	}
 	
 	public boolean solvableWithTimeout(int t) {
-		this.timeout = t;
-		this.start = System.currentTimeMillis();
+		timeout = t;
+		start = System.currentTimeMillis();
 		boolean b = solvable();
-		this.timeout = 0;
+		timeout = 0;
 		return b;
 	}
 	

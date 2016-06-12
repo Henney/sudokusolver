@@ -3,6 +3,7 @@ package model.tests;
 import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -12,7 +13,7 @@ import model.Grid;
 
 public class SATTest {
 
-//	@Test
+	@Test
 	public void solveExample() throws IOException {
 		String input = "3\n" + ".;1;.;3;.;.;8;.;." + "\n" + "5;.;9;6;.;.;7;.;." + "\n" + "7;.;4;.;9;5;.;2;." + "\n"
 				+ "4;.;.;.;.;.;1;.;." + "\n" + ".;2;8;.;7;1;.;6;3" + "\n" + ".;.;.;2;.;4;9;5;." + "\n"
@@ -73,5 +74,68 @@ public class SATTest {
 			assertTrue(solved.isSolved());
 		}
 	}
+	
+	@Test
+	public void solvability() throws IOException {
+		String input =
+				"3\n" +
+				"1;.;.;.;.;.;.;.;." + "\n" +
+				".;2;.;.;.;.;.;.;." + "\n" +
+				".;.;3;.;.;.;.;.;." + "\n" +
+				"4;.;.;.;.;.;.;.;." + "\n" +
+				"5;.;.;.;.;.;.;.;." + "\n" +
+				"6;.;.;.;.;.;.;.;." + "\n" +
+				"7;.;.;.;.;.;.;.;." + "\n" +
+				"8;.;.;.;.;.;.;.;." + "\n" +
+				"9;.;.;.;.;.;.;.;." ;
+		
+		
+		Grid g = new Grid(input);
+		SATSolver s = new SATSolver(g);
+		
+		assertFalse(s.solvable());
+		
+		s = new SATSolver(null);
+		assertFalse(s.solvable());
+		
+		s = new SATSolver(new Grid(4));
+		assertTrue(s.solvable());
+	}
+	
+	@Test
+	public void timeouts() throws FileNotFoundException, IOException {
+		Grid[] grids = { new Grid(new FileReader("puzzles/sudoku_norvig_impossible.txt")),
+				new Grid(new FileReader("puzzles/sudoku_norvig_hardest.txt")),
+				new Grid(new FileReader("puzzles/tetradoku1.txt"))
+		};
+		
+		Grid g = grids[0];
+		SATSolver s = new SATSolver(g);
+		int t = 2000;
+		
+		assertFalse(g.isSolved());
 
+		assertNull(s.solveWithTimeout(t));
+		assertFalse(s.solvableWithTimeout(t));
+		
+		g = grids[1];
+		s = new SATSolver(g);
+		
+		assertFalse(g.isSolved());
+		assertTrue(s.solveWithTimeout(t).isSolved());
+		assertTrue(s.solvableWithTimeout(t));
+		
+		g = grids[2];
+		s = new SATSolver(g);
+		
+		assertFalse(g.isSolved());
+
+		assertTrue(s.solveWithTimeout(t).isSolved());
+		assertTrue(s.solvableWithTimeout(t));
+		
+		t = 1;
+		
+		assertNull(s.solveWithTimeout(t));
+		assertFalse(s.solvableWithTimeout(t));
+	}
 }

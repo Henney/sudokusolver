@@ -9,7 +9,6 @@ import org.junit.Test;
 import model.Grid;
 import model.PossibleValues;
 import model.PossibleValuesGrid;
-import model.tactics.IncrementalTwinsTactic;
 import model.tactics.TwinsTactic;
 import model.tactics.UnsolvableException;
 import model.util.IntPriorityQueue;

@@ -6,7 +6,6 @@ import model.tactics.IncrementalTwinsTactic;
 import model.tactics.TwinsTactic;
 import model.tactics.UniqueCandidateTactic;
 import model.tactics.UnsolvableException;
-import model.tactics.XWingTactic;
 import model.util.IntPriorityQueue;
 
 public class TacticSolver extends Solver {

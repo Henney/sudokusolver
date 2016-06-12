@@ -3,6 +3,7 @@ package model.tests;
 import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
@@ -11,6 +12,7 @@ import org.junit.Test;
 
 import model.Grid;
 import model.PossibleValues;
+import model.Solver;
 import model.TacticSolver;
 
 public class SolverTest {
@@ -310,7 +312,28 @@ public class SolverTest {
 	}
 	
 	@Test
-	public void noPossibleFieldsExampleIsUnsolvable() throws IOException {
+	public void uniqueness() throws FileNotFoundException, IOException {
+		Grid[] grids = { new Grid(new FileReader("puzzles/sudoku_norvig_impossible.txt")),
+				new Grid(new FileReader("puzzles/sudoku_norvig_hardest.txt")),
+				null,
+				new Grid(new FileReader("puzzles/pentadoku1.txt"))
+		};
+		
+		TacticSolver s = new TacticSolver(grids[0]);
+		assertFalse(s.unique());
+		
+		s = new TacticSolver(grids[1]);
+		assertFalse(s.unique());
+		
+		s = new TacticSolver(grids[2]);
+		assertFalse(s.unique());
+		
+		s = new TacticSolver(grids[3]);
+		assertTrue(s.unique());		
+	}
+	
+	@Test
+	public void solvability() throws IOException {
 		String input =
 				"3\n" +
 				"1;.;.;.;.;.;.;.;." + "\n" +
@@ -324,10 +347,59 @@ public class SolverTest {
 				"9;.;.;.;.;.;.;.;." ;
 		
 		
-		Grid grid = new Grid(input);
-		TacticSolver solver = new TacticSolver(grid);
+		Grid g = new Grid(input);
+		Solver s = new TacticSolver(g);
+		assertEquals(g, s.getGrid());
 		
-		assertFalse(solver.solvable());
+		assertFalse(s.solvable());
+		
+		s = new TacticSolver(null);
+		assertFalse(s.solvable());
+		
+		s = new TacticSolver(new Grid(4));
+		assertTrue(s.solvable());
+	}
+	
+	@Test
+	public void timeouts() throws FileNotFoundException, IOException {
+		Grid[] grids = { new Grid(new FileReader("puzzles/sudoku_norvig_impossible.txt")),
+				new Grid(new FileReader("puzzles/sudoku_norvig_hardest.txt")),
+				new Grid(new FileReader("puzzles/pentadoku1.txt"))
+		};
+		
+		Grid g = grids[0];
+		TacticSolver s = new TacticSolver(g);
+		int t = 500;
+		
+		assertFalse(g.isSolved());
+
+		assertNull(s.solveWithTimeout(t));
+		assertFalse(s.uniqueWithTimeout(t));
+		assertFalse(s.solvableWithTimeout(t));
+		
+		g = grids[1];
+		s = new TacticSolver(g);
+		
+		assertFalse(g.isSolved());
+
+		assertTrue(s.solveWithTimeout(t).isSolved());
+		assertFalse(s.uniqueWithTimeout(t));
+		assertTrue(s.solvableWithTimeout(t));
+		
+		g = grids[2];
+		s = new TacticSolver(g);
+		
+		assertFalse(g.isSolved());
+
+		assertTrue(s.solveWithTimeout(t).isSolved());
+		assertTrue(s.uniqueWithTimeout(t));
+		assertTrue(s.solvableWithTimeout(t));
+		
+		t = 1;
+		
+		assertNull(s.solveWithTimeout(t));
+		assertFalse(s.uniqueWithTimeout(t));
+		assertFalse(s.solvableWithTimeout(t));
 	}
 	
 }

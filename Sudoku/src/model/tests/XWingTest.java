@@ -11,7 +11,6 @@ import org.junit.Test;
 import model.Grid;
 import model.PossibleValues;
 import model.PossibleValuesGrid;
-import model.tactics.ChoiceTactic;
 import model.tactics.UnsolvableException;
 import model.tactics.XWingTactic;
 import model.util.IntPriorityQueue;

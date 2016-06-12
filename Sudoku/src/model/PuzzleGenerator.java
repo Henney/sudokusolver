@@ -128,9 +128,7 @@ public class PuzzleGenerator {
 			PossibleValues[] pvs = rG.findPossibleValues();
 			IntPriorityQueue pq = new IntPriorityQueue(rG.numberOfFields(), rG.size());
 			for (int i = 0; i < pvs.length; i++) {
-				if (pvs[i] != null) {
-					pq.insert(i, pvs[i].possible());
-				}
+				pq.insert(i, pvs[i].possible());
 			}
 			PossibleValuesGrid pGrid = new PossibleValuesGrid(rG, pvs, pq);
 			

@@ -4,8 +4,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.util.ArrayList;
-
 import org.junit.Test;
 
 import model.Grid;
@@ -19,7 +17,6 @@ public class UniqueCandidateTests {
 
 	@Test
 	public void removePos() throws IOException {
-
 		String input =
 				"3\n" +
 				".;2;3;.;.;.;.;.;.;\n" +

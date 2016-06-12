@@ -56,23 +56,24 @@ public class SATSolver extends Solver {
 		
 		String os = System.getProperty("os.name");
 		String memString = (os.toLowerCase().contains("windows") ? "/" : "-") + "memory:4096";
-		
+
 		if (!run) return null;
 		
 		ProcessBuilder pb = new ProcessBuilder("z3", memString, tmp.getAbsolutePath());
 		process = pb.start();
-
+		
 		InputStream in = process.getInputStream();
 		BufferedReader b = new BufferedReader(new InputStreamReader(in));
 
 		StringBuilder sb = new StringBuilder();
 		String line;
+
 		while (run &&
 				(line = b.readLine()) != null &&
-				(System.currentTimeMillis() < start + timeout || timeout == 0)) {
+				(System.currentTimeMillis() - start < timeout || timeout == 0)) {
 			sb.append(line);
 		}
-		
+
 		if (!run) return null;
 
 		return parseModel(grid.k(), sb.toString());
