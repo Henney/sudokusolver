@@ -81,14 +81,14 @@ public class TwinsTactic extends ChoiceTactic {
 				boxes[box].add(field);
 			}
 
-			updateBucket(rows, (field, x) -> { pGrid.setRowImpossible(field, x); return null; });
-			updateBucket(cols, (field, x) -> { pGrid.setColImpossible(field, x); return null; });
-			updateBucket(boxes, (field, x) -> { pGrid.setBoxImpossible(field, x); return null; });
+			updateBucket(rows);
+			updateBucket(cols);
+			updateBucket(boxes);
 		}
 
 	}
 
-	private void updateBucket(ArrayDeque<Integer>[] bucket, BiFunction<Integer, Integer, Void> setImpossible) throws UnsolvableException {
+	private void updateBucket(ArrayDeque<Integer>[] bucket) throws UnsolvableException {
 				for (int i = 0; i < bucket.length; i++) {
 			if (bucket[i].size() < 2) {
 				continue;
@@ -108,8 +108,20 @@ public class TwinsTactic extends ChoiceTactic {
 				pvs[f1] = null;
 				pvs[f2] = null;
 
-				setImpossible.apply(f1, x);
-				setImpossible.apply(f1, y);
+				if (grid.rowFor(f1) == grid.rowFor(f2)) {
+					pGrid.setRowImpossible(f1, x);
+					pGrid.setRowImpossible(f1, y);
+				}
+
+				if (grid.colFor(f1) == grid.colFor(f2)) {
+					pGrid.setColImpossible(f1, x);
+					pGrid.setColImpossible(f1, y);
+				}
+				
+				if (grid.boxFor(f1) == grid.boxFor(f2)) {
+					pGrid.setBoxImpossible(f1, x);
+					pGrid.setBoxImpossible(f1, y);
+				}
 
 				pvs[f1] = pv1;
 				pvs[f2] = pv2;

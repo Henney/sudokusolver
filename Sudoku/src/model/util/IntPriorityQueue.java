@@ -7,9 +7,9 @@ public class IntPriorityQueue {
 	private int next;
 	private int size;
 
-	public IntPriorityQueue(int maxValue, int maxPrio) {
+	public IntPriorityQueue(int maxSize, int maxPrio) {
 		queue = new IntLinkedList[maxPrio + 1];
-		nodes = new Node[maxValue + 1];
+		nodes = new Node[maxSize + 1];
 
 		for (int i = 0; i <= maxPrio; i++) {
 			queue[i] = new IntLinkedList();

@@ -303,7 +303,6 @@ public class Grid {
 		
 		for (int i = 0; i < numberOfFields(); i++) {
 			if (get(i) != g.get(i)) {
-				System.out.println("Returned false at " + i);
 				return false;
 			}
 		}

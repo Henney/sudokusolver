@@ -31,10 +31,6 @@ public class ColIterator implements Iterable<Integer> {
                 return ret;
             }
 
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
 		};
 	}
 }

@@ -48,6 +48,8 @@ public class UserGridTest {
 		assertEquals(0, cr.fst.size());
 		assertEquals(3, cr.snd.size());
 		
+		cr.toString();
+		
 	}
 	
 	@Test
