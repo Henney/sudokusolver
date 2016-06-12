@@ -89,10 +89,8 @@ public class XWingTest {
 		for (int i = sc; i < g.numberOfFields(); i += g.size()) {
 			if (!fields.contains(i) && pvs[i] != null && pvs[i].get(val)){
 				x++;
-				System.out.print("i: " + i + " ");
 			}
 		}
-		System.out.println();
 		return x;
 	}
 	
@@ -139,7 +137,6 @@ public class XWingTest {
 
 			assertTrue(pvs[field].get(val));
 			int x = getPosFromRow(g, pvs, fields, field, val);
-			System.out.println(x);
 			assertTrue(x > 0);
 		}
 		
@@ -148,16 +145,6 @@ public class XWingTest {
 		}
 		
 		XWingTactic xw = new XWingTactic(g, pg);
-
-		int n = 0;
-		for (PossibleValues p : pvs) {
-			try {
-				n+=p.possible();
-			} catch (Exception e) {
-				
-			}
-		}
-		System.out.println("n: " + n);
 		
 		try {
 			xw.apply();
@@ -168,31 +155,18 @@ public class XWingTest {
 		for (int field : fields) {
 			assertTrue(pvs[field].get(val));
 			int x = getPosFromRow(g, pvs, fields, field, val);
-			System.out.println(x);
 			assertTrue(x == 0);
 		}
-		
-		n = 0;
-		for (PossibleValues p : pvs) {
-			try {
-				n+=p.possible();
-			} catch (Exception e) {
-				
-			}
-		}
-		System.out.println("n: " + n);
 	}
 
 	private int getPosFromRow(Grid g, PossibleValues[] pvs, List<Integer> fields, int field, int val) {
 		int sr = g.rowFor(field)*g.size();
 		int x = 0;
 		for (int i = sr; i < sr+g.size(); i++) {
-			System.out.print("i: " + i + " ");
 			if (!fields.contains(i) && pvs[i] != null && pvs[i].get(val)){
 				x++;
 			}
 		}
-		System.out.println();
 		return x;
 	}
 }
