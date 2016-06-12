@@ -54,7 +54,7 @@ public class XWingTactic extends ChoiceTactic {
 				int f3 = x.snd.fst;
 				int f4 = x.snd.snd;
 				int idx1 = isRow ? grid.colFor(f1) : grid.rowFor(f1);
-				int idx2 = isRow ? grid.colFor(f2) : grid.rowFor(f3);
+				int idx2 = isRow ? grid.colFor(f4) : grid.rowFor(f4);
 								
 				for (int f = idx1*inc(!isRow); f < lim2(!isRow, idx1*inc(!isRow)); f += inc(isRow)) {
 					if (!(f == f1 || f == f2 || f == f3 || f == f4)) {
