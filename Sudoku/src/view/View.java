@@ -14,6 +14,7 @@ import controller.InputHandler;
 import controller.LoadHandler;
 import controller.SolveHandler;
 import controller.SpeedListener;
+import controller.UniqueHandler;
 import controller.WindowResizeListener;
 import controller.NumberFieldController;
 import controller.SATHandler;
@@ -130,6 +131,8 @@ public class View extends Application {
 
 		Button solvableButton = (Button) rootLayout.lookup("#SolvableButton");
 		solvableButton.setOnMouseClicked(new SolvableHandler<MouseEvent>(this));
+		Button uniqueButton = (Button) rootLayout.lookup("#UniqueButton");
+		uniqueButton.setOnMouseClicked(new UniqueHandler<MouseEvent>(this));
 		Button cancelButton = (Button) rootLayout.lookup("#CancelButton");
 		cancelButton.setOnMouseClicked(new CancelHandler<MouseEvent>(this));
 		Button clearButton = (Button) rootLayout.lookup("#ClearButton");
