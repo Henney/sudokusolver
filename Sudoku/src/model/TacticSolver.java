@@ -44,7 +44,7 @@ public class TacticSolver extends Solver {
 
 		alwaysTactics = new AlwaysTactic[] { new IncrementalTwinsTactic(g, pGrid) };
 
-		choiceTactics = new ChoiceTactic[] { new UniqueCandidateTactic(g, pGrid), new TwinsTactic(g, pGrid) /*,
+		choiceTactics = new ChoiceTactic[] { new UniqueCandidateTactic(g, pGrid)/*, new TwinsTactic(g, pGrid),
 				new XWingTactic(g, pGrid) */ };
 		
 		return solveHelper(g);
