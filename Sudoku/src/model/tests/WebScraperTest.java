@@ -13,7 +13,6 @@ import com.jaunt.NotFound;
 import com.jaunt.ResponseException;
 
 import model.Grid;
-import model.Parser;
 import model.WebScraper;
 
 public class WebScraperTest {

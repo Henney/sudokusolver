@@ -96,7 +96,6 @@ public class PossibleValues {
 	}
 	
 	public int[] possibilities() {
-		if (numberPossible == 0) System.out.println("Something is wrong. Nothing possible");
 		int[] p = new int[numberPossible];
 		int n = 0;
 		for (int i = 1; i < possible.length; i++) {

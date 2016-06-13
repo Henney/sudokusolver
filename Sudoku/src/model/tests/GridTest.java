@@ -88,4 +88,14 @@ public class GridTest {
 		assertFalse(g.isLegal());
 	}
 
+	@Test
+	public void equality() {
+		Grid g = new Grid(3);
+		assertFalse(g.equals(new int[3]));
+		assertFalse(g.equals(new Grid(4)));
+		Grid g2 = new Grid(g);
+		assertTrue(g.equals(g2));
+		g2.set(20, 1);
+		assertFalse(g.equals(g2));
+	}
 }

@@ -15,27 +15,17 @@ import model.Writer;
 public class WriterTest {
 	
 	public void write(String loc) throws FileNotFoundException, IOException {
-		String n1 = "sudoku1.txt";
-		String n2 = "tetradoku1.txt";
+		String[] puz = { "didoku1.txt", "sudoku1.txt", "sudoku2.txt", "tetradoku1.txt", "pentadoku1.txt",
+				"hexadoku1.txt", "heptadoku1.txt", "octadoku1.txt", "enneadoku1.txt", "decadoku1.txt" };
 		
-		Grid g1 = new Grid(new FileReader("puzzles/" + n1));
-		Grid g2 = new Grid(new FileReader("puzzles/" + n2));
-
-		assertNotNull(g1);
-		assertNotNull(g2);
-		
-		File f1 = Writer.writeToFile(g1, loc);
-		File f2 = Writer.writeToFile(g2, loc);
-		
-
-		assertNotNull(f1);
-		assertNotNull(f2);
-		
-		Grid g1_ = new Grid(new FileReader(f1.getPath()));
-		Grid g2_ = new Grid(new FileReader(f2.getPath()));
-
-		assertTrue(g1.equals(g1_));
-		assertTrue(g2.equals(g2_));
+		for (String s : puz) {
+			Grid g = new Grid(new FileReader("puzzles/" + s));
+			assertNotNull(g);			
+			File f = Writer.writeToFile(g, loc);
+			assertNotNull(f);			
+			Grid g1_ = new Grid(new FileReader(f.getPath()));
+			assertTrue(g.equals(g1_));
+		}
 		
 	}
 	
@@ -62,7 +52,6 @@ public class WriterTest {
 				}
 			}
 		}
-
 		return dir.delete();
 	}
 

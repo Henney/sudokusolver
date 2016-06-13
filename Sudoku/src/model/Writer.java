@@ -8,12 +8,6 @@ import java.io.OutputStreamWriter;
 
 public class Writer {
 	
-	public static final String DEFAULT_PATH = "puzzles/";
-
-	public static File writeToFile(Grid g) {
-		return writeToFile(g, DEFAULT_PATH);
-	}
-	
 	public static File writeToFile(Grid g, String loc) {
 		int k = g.k();
 		
@@ -42,7 +36,11 @@ public class Writer {
 		} while (f.exists());
 
 		if (!f.getParentFile().exists() && !f.getParentFile().mkdirs()) {
-			return null;
+			try {
+				throw new IOException("The file could not be created. Something went wrong while creating the required folders.");
+			} catch (IOException e) {
+				e.printStackTrace(); // TODO: is this good or how should we handle it?
+			}
 		}
 				
 		try {
