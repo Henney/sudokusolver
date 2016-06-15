@@ -200,6 +200,12 @@ public class SATSolver extends Solver {
 		if (!run) return null;
 		writeToProcess(0);
 		
+		try {
+		w.close();
+		} catch (IOException e) {
+			// Ignore
+		}
+		
 		return readModel();
 	}
 
