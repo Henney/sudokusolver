@@ -31,6 +31,7 @@
                   <HBox alignment="CENTER" prefHeight="31.0" prefWidth="580.0" spacing="10.0">
                      <children>
                         <Button id="SolvableButton" alignment="CENTER" minWidth="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="84.0" text="Solvable?" textAlignment="CENTER" />
+                        <Button id="UniqueButton" alignment="CENTER" minWidth="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="75.0" text="Unique?" textAlignment="CENTER" />
                         <Button id="CancelButton" alignment="CENTER" minWidth="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="102.0" text="Cancel solve" textAlignment="CENTER" />
                         <Button id="ClearButton" mnemonicParsing="false" text="Clear" />
                         <Button id="SaveButton" alignment="CENTER" minWidth="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="95.0" text="Save board" textAlignment="CENTER" />
