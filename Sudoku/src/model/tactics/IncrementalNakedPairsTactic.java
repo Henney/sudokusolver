@@ -7,7 +7,7 @@ import model.PossibleValues;
 import model.PossibleValuesGrid;
 import model.util.Node;
 
-public class IncrementalTwinsTactic extends AlwaysTactic {
+public class IncrementalNakedPairsTactic extends AlwaysTactic {
 
 	private PossibleValues[] pvs;
 
@@ -15,7 +15,7 @@ public class IncrementalTwinsTactic extends AlwaysTactic {
 	private ArrayDeque<Integer> cols;
 	private ArrayDeque<Integer> boxs;
 
-	public IncrementalTwinsTactic(Grid grid, PossibleValuesGrid pGrid) {
+	public IncrementalNakedPairsTactic(Grid grid, PossibleValuesGrid pGrid) {
 		super(grid, pGrid);
 
 		pvs = pGrid.getPossibleValues();

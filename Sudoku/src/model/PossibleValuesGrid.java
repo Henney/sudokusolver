@@ -11,7 +11,6 @@ public class PossibleValuesGrid {
 	private IntPriorityQueue pq;
 	private PossibleValues[] pvs;
 	private ArrayDeque<Pair<Integer, Integer>> changed;
-	
 	private int countChanged = 0;
 	private ArrayDeque<Integer> changedHistory;
 

@@ -1,21 +1,67 @@
 package model;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class SATSolver extends Solver {
 
 	public Process process;
+	private final int k;
+	private final int n;
+	private final int numberOfVariables;
+	private final int numberOfClauses;
+	
+	private class Variable {
+		final int row, col, val;
+		
+		public Variable(int r, int c, int v) {
+			row = r;
+			col = c;
+			val = v;
+		}
+	}
+	
+	private int counter;
+	private Variable[] variables;
+	private int[][][] counters;
 	
 	public SATSolver(Grid g) {
 		super(g);
+		
+		if (g == null) {
+			numberOfClauses = -1;
+			numberOfVariables = -1;
+			k = -1;
+			n = -1;
+			return;
+		}
+		
+		k = g.k();
+		n = g.size();
+		
+		final int k4 = k*k*k*k;
+		final int k6 = k4*k*k;
+		
+		numberOfVariables = n*n*n;
+		final int numberOfRuleClauses = n*(k6 - k4 + 3*n*n*n - 3*n*n + 6*n) / 2;
+		
+		int givenVariables = 0;
+		
+		for (int i = 0; i < grid.numberOfFields(); i++) {
+			if (grid.get(i) != 0) {
+				givenVariables++;
+			}
+		}
+		
+		numberOfClauses = numberOfRuleClauses + givenVariables;
+		
+		variables = new Variable[numberOfVariables+1];
+		counters = new int[n+1][n+1][n+1];
 	}
 	
 	@Override
@@ -41,64 +87,80 @@ public class SATSolver extends Solver {
 		
 	}
 
-	public Grid solveHelper() throws IOException {
-		File tmp = File.createTempFile("sudoku", "smt2");
-		tmp.deleteOnExit();
+	public Grid solveHelper() throws IOException {			
+		if (!run) return null;
 
-		FileWriter f = new FileWriter(tmp);
-
-		generateRules(grid.k(), f);
-		generateGiven(f);
-		f.write("(check-sat)\n");
-		f.write("(get-model)");
-
-		f.close();
+		// -m option 4096 or higher?
 		
-		String os = System.getProperty("os.name");
-		String memString = (os.toLowerCase().contains("windows") ? "/" : "-") + "memory:4096";
+		ProcessBuilder pb = new ProcessBuilder("plingeling");
+		process = pb.start();
+		
+		OutputStream out = process.getOutputStream();
+		OutputStreamWriter w = new OutputStreamWriter(out, "UTF-8");
 
+		w.write("p cnf " + numberOfVariables + " " + numberOfClauses + "\n");
+		
+		generateRules(w);
 		if (!run) return null;
 		
-		ProcessBuilder pb = new ProcessBuilder("z3", memString, tmp.getAbsolutePath());
-		process = pb.start();
+		generateGiven(w);
+		if (!run) return null;
+		
+		w.close();
 		
 		InputStream in = process.getInputStream();
 		BufferedReader b = new BufferedReader(new InputStreamReader(in));
 
-		StringBuilder sb = new StringBuilder();
 		String line;
-
-		while (run &&
-				(line = b.readLine()) != null &&
-				(System.currentTimeMillis() - start < timeout || timeout == 0)) {
-			sb.append(line);
+		Grid ret = new Grid(k); // TODO: new grid?
+		
+		while (run && (line = b.readLine()) != null) {
+			if (timeout != 0 && System.currentTimeMillis() - start > timeout) {
+				return null;
+			}
+			
+			if (line.startsWith("s")) {
+				if (!line.startsWith("s SATISFIABLE")) {
+					return null;
+				}
+			}
+			
+			if (line.startsWith("v")) {
+				line = line.substring(2);
+				
+				for (String v : line.split(" ")) {
+					final int c = Integer.parseInt(v);
+					
+					if (c > 0) {
+						Variable var = variables[c];
+						ret.set(var.row-1, var.col-1, var.val);
+					}
+				}
+			}
 		}
-
-		if (!run) return null;
-
-		return parseModel(grid.k(), sb.toString());
+		
+		return ret;
 	}
 
-	public void generateRules(final int k, Writer w) throws IOException {
-		declareConstants(k, w);
+	public void generateRules(Writer w) throws IOException {
 		if (!run) return;
 
 		// Necessary constraints
-		atLeastOneInEachField(k, w);
+		atLeastOneInEachField(w);
 		if (!run) return;
-		onceInRows(k, w);
+		onceInRows(w);
 		if (!run) return;
-		onceInCols(k, w);
+		onceInCols(w);
 		if (!run) return;
-		onceInBoxes(k, w);
+		onceInBoxes(w);
 		if (!run) return;
 
 		// Redundant but helpful constraints
-		atMostOneInEach(k, w);
+		atMostOneInEach(w);
 		if (!run) return;
-		atLeastOnceInEachRow(k, w);
+		atLeastOnceInEachRow(w);
 		if (!run) return;
-		atLeastOnceInEachCol(k, w);
+		atLeastOnceInEachCol(w);
 		// atLeastOnceInEachBox is not helpful
 	}
 
@@ -108,194 +170,91 @@ public class SATSolver extends Solver {
 				int i = grid.get(x, y);
 
 				if (i != 0) {
-					w.write("(assert " + makeConstant(x + 1, y + 1, i) + ")\n");
+					w.write(makeConstant(x + 1, y + 1, i) + " 0\n");
 				}
 			}
 		}
 	}
 
-	public Grid parseModel(final int k, String s) {
-		/*
-		 * INPUT: sat (model (define-fun s6_2_7 () Bool true) (define-fun s4_5_3
-		 * () Bool true) ...)
-		 */
-
-		s = s.trim();
-
-		final String UNSAT = "unsat";
-		final String SAT = "sat";
-		final String MODEL = "(model";
+	private int makeConstant(int row, int col, int val) {
+		if (counters[row][col][val] == 0) {
+			counter++;
+			counters[row][col][val] = counter;
+			variables[counter] = new Variable(row, col, val);
+		}
 		
-		if (s.startsWith(UNSAT)) {
-			return null;
-		}
-
-		if (s.startsWith(SAT)) {
-			s = s.substring(SAT.length());
-			s = s.trim();
-		}
-
-		if (s.startsWith(MODEL)) {
-			s = s.substring(MODEL.length());
-			s = s.substring(0, s.length() - 1);
-			s = s.trim();
-		} else {
-//			System.out.println(s.substring(0, Math.min(s.length(), 100)));
-			throw new IllegalArgumentException("Given string is not a model.");
-		}
-
-		Pattern p = Pattern
-				.compile("\\s*\\(define-fun\\s+s(?<row>\\d+)_(?<col>\\d+)_(?<value>\\d+)\\s+\\(\\)\\s+Bool\\s+true\\)");
-		Matcher m = p.matcher(s);
-
-		Grid grid = new Grid(k);
-
-		while (m.find()) {
-			int row = Integer.parseInt(m.group("row"));
-			int col = Integer.parseInt(m.group("col"));
-			int val = Integer.parseInt(m.group("value"));
-
-			grid.set(row - 1, col - 1, val);
-		}
-
-		return grid;
+		return counters[row][col][val];
 	}
 
-	private void startAssert(Writer w) throws IOException {
-		w.write("(assert\n");
-	}
-
-	private void endAssert(Writer w) throws IOException {
-		w.write(")\n\n");
-	}
-
-	private String makeConstant(int row, int col, int val) {
-		return "s" + row + "_" + col + "_" + val;
-	}
-
-	private void declareConstants(final int k, Writer w) throws IOException {
-		final int n = k * k;
-
+	private void atLeastOneInEachField(Writer w) throws IOException {
 		for (int x = 1; x <= n; x++) {
 			for (int y = 1; y <= n; y++) {
-				for (int i = 1; i <= n; i++) {
-					w.write("(declare-const " + makeConstant(x, y, i) + " Bool)\n");
-				}
-			}
-		}
-
-		w.write("\n");
-	}
-
-	private void atLeastOneInEachField(final int k, Writer w) throws IOException {
-		final int n = k * k;
-
-		startAssert(w);
-
-		w.write("(and\n  ");
-		for (int x = 1; x <= n; x++) {
-			for (int y = 1; y <= n; y++) {
-				w.write("(or ");
 				for (int z = 1; z <= n; z++) {
 					w.write(makeConstant(x, y, z) + " ");
 				}
-				w.write(")\n  ");
+				w.write(" 0\n");
 			}
 		}
-		w.write(")\n");
-
-		endAssert(w);
 	}
 
-	private void onceInRows(final int k, Writer w) throws IOException {
-		final int n = k * k;
-
-		startAssert(w);
-
-		w.write("(and\n  ");
-
+	private void onceInRows(Writer w) throws IOException {
 		for (int y = 1; y <= n; y++) {
 			for (int z = 1; z <= n; z++) {
 				for (int x = 1; x <= n - 1; x++) {
 					for (int i = x + 1; i <= n; i++) {
-						w.write("(or (not " + makeConstant(x, y, z) + ") (not " + makeConstant(i, y, z) + "))\n  ");
+						w.write("-" + makeConstant(x, y, z) + " -" + makeConstant(i, y, z) + " 0\n");
 					}
 				}
 			}
 		}
-		w.write(")\n");
-
-		endAssert(w);
 	}
 
-	private void onceInCols(final int k, Writer w) throws IOException {
-		final int n = k * k;
-
-		startAssert(w);
-
-		w.write("(and\n  ");
-
+	private void onceInCols(Writer w) throws IOException {
 		for (int x = 1; x <= n; x++) {
 			for (int z = 1; z <= n; z++) {
 				for (int y = 1; y <= n - 1; y++) {
 					for (int i = y + 1; i <= n; i++) {
-						w.write("(or (not " + makeConstant(x, y, z) + ") (not " + makeConstant(x, i, z) + "))\n  ");
+						w.write("-" + makeConstant(x, y, z) + " -" + makeConstant(x, i, z) + " 0\n");
 					}
 				}
 			}
 		}
-		w.write(")\n");
-
-		endAssert(w);
 	}
 
-	private void onceInBoxes(final int k, Writer w) throws IOException {
-		onceInBoxes1(k, w);
-		onceInBoxes2(k, w);
+	private void onceInBoxes(Writer w) throws IOException {
+		onceInBoxes1(w);
+		onceInBoxes2(w);
 	}
 
-	private void onceInBoxes1(final int k, Writer w) throws IOException {
-		final int n = k * k;
-
-		startAssert(w);
-
-		w.write("(and\n  ");
+	private void onceInBoxes1(Writer w) throws IOException {
 		for (int z = 1; z <= n; z++) {
 			for (int i = 0; i < k; i++) {
 				for (int j = 0; j < k; j++) {
 					for (int x = 1; x <= k; x++) {
-						for (int y = 1; y < k; y++) {
+						for (int y = 1; y <= k; y++) {
 							for (int m = y + 1; m <= k; m++) {
-								String a = makeConstant(k * i + x, k * j + y, z);
-								String b = makeConstant(k * i + x, k * j + m, z);
-								w.write("(or (not " + a + ") (not " + b + "))\n  ");
+								int a = makeConstant(k * i + x, k * j + y, z);
+								int b = makeConstant(k * i + x, k * j + m, z);
+								w.write("-" + a + " -" + b + " 0\n");
 							}
 						}
 					}
 				}
 			}
 		}
-		w.write(")\n");
-
-		endAssert(w);
 	}
 
-	private void onceInBoxes2(final int k, Writer w) throws IOException {
-		final int n = k * k;
-
-		startAssert(w);
-
-		w.write("(and\n  ");
+	private void onceInBoxes2(Writer w) throws IOException {
 		for (int z = 1; z <= n; z++) {
 			for (int i = 0; i < k; i++) {
 				for (int j = 0; j < k; j++) {
-					for (int x = 1; x < k; x++) {
+					for (int x = 1; x <= k; x++) {
 						for (int y = 1; y <= k; y++) {
 							for (int m = x + 1; m <= k; m++) {
 								for (int l = 1; l <= k; l++) {
-									String a = makeConstant(k * i + x, k * j + y, z);
-									String b = makeConstant(k * i + m, k * j + l, z);
-									w.write("(or (not " + a + ") (not " + b + "))\n  ");
+									int a = makeConstant(k * i + x, k * j + y, z);
+									int b = makeConstant(k * i + m, k * j + l, z);
+									w.write("-" + a + " -" + b + " 0\n");
 								}
 							}
 						}
@@ -303,69 +262,40 @@ public class SATSolver extends Solver {
 				}
 			}
 		}
-		w.write(")\n");
-
-		endAssert(w);
 	}
 
-	private void atMostOneInEach(final int k, Writer w) throws IOException {
-		final int n = k * k;
-
-		startAssert(w);
-
-		w.write("(and\n  ");
+	private void atMostOneInEach(Writer w) throws IOException {
 		for (int x = 1; x <= n; x++) {
 			for (int y = 1; y <= n; y++) {
 				for (int z = 1; z <= n - 1; z++) {
 					for (int i = z + 1; i <= n; i++) {
-						w.write("(or (not " + makeConstant(x, y, z) + ") (not " + makeConstant(x, y, i) + "))\n  ");
+						w.write("-" + makeConstant(x, y, z) + " -" + makeConstant(x, y, i) + " 0\n");
 					}
 				}
 			}
 		}
-		w.write(")\n");
-
-		endAssert(w);
 	}
 
-	private void atLeastOnceInEachRow(final int k, Writer w) throws IOException {
-		final int n = k * k;
-
-		startAssert(w);
-
-		w.write("(and\n  ");
+	private void atLeastOnceInEachRow(Writer w) throws IOException {
 		for (int y = 1; y <= n; y++) {
 			for (int z = 1; z <= n; z++) {
-				w.write("(or ");
 				for (int x = 1; x <= n; x++) {
 					w.write(makeConstant(x, y, z) + " ");
 				}
-				w.write(")\n  ");
+				w.write("0\n");
 			}
 		}
-		w.write(")\n");
-
-		endAssert(w);
 	}
 
-	private void atLeastOnceInEachCol(final int k, Writer w) throws IOException {
-		final int n = k * k;
-
-		startAssert(w);
-
-		w.write("(and\n  ");
+	private void atLeastOnceInEachCol(Writer w) throws IOException {
 		for (int x = 1; x <= n; x++) {
 			for (int z = 1; z <= n; z++) {
-				w.write("(or ");
 				for (int y = 1; y <= n; y++) {
 					w.write(makeConstant(x, y, z) + " ");
 				}
-				w.write(")\n  ");
+				w.write("0\n");
 			}
 		}
-		w.write(")\n");
-
-		endAssert(w);
 	}
 
 }

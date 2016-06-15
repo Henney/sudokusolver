@@ -6,7 +6,7 @@ import model.PossibleValues;
 import model.PossibleValuesGrid;
 import model.util.Node;
 
-public class TwinsTactic extends ChoiceTactic {
+public class NakedPairsTactic extends ChoiceTactic {
 
 	private PossibleValues[] pvs;
 
@@ -16,7 +16,7 @@ public class TwinsTactic extends ChoiceTactic {
 	private ArrayDeque<Integer>[] boxes;
 
 	@SuppressWarnings("unchecked")
-	public TwinsTactic(Grid grid, PossibleValuesGrid pGrid) {
+	public NakedPairsTactic(Grid grid, PossibleValuesGrid pGrid) {
 		super(grid, pGrid);
 
 		pvs = pGrid.getPossibleValues();

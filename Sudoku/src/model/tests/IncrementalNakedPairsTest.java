@@ -9,13 +9,13 @@ import org.junit.Test;
 import model.Grid;
 import model.PossibleValues;
 import model.PossibleValuesGrid;
-import model.tactics.IncrementalTwinsTactic;
+import model.tactics.IncrementalNakedPairsTactic;
 import model.util.IntPriorityQueue;
 
-public class IncrementalTwinsTest {
+public class IncrementalNakedPairsTest {
 
 	@Test
-	public void incrementalTwinsColTest() throws IOException {
+	public void incrementalNakedPairsColTest() throws IOException {
 		String input =
 				"2\n" +
 				"1;.;.;.\n" +
@@ -37,7 +37,7 @@ public class IncrementalTwinsTest {
 		
 		PossibleValuesGrid pGrid = new PossibleValuesGrid(g, pvs, pq);
 		
-		IncrementalTwinsTactic tac = new IncrementalTwinsTactic(g, pGrid);
+		IncrementalNakedPairsTactic tac = new IncrementalNakedPairsTactic(g, pGrid);
 		
 		assertTrue(pvs[9].get(3));
 		assertTrue(pvs[9].get(4));
@@ -58,7 +58,7 @@ public class IncrementalTwinsTest {
 	
 	
 	@Test
-	public void incrementalTwinsRowTest() throws IOException {
+	public void incrementalNakedPairsRowTest() throws IOException {
 		String input =
 				"2\n" +
 				"1;2;.;.\n" +
@@ -80,7 +80,7 @@ public class IncrementalTwinsTest {
 		
 		PossibleValuesGrid pGrid = new PossibleValuesGrid(g, pvs, pq);
 		
-		IncrementalTwinsTactic tac = new IncrementalTwinsTactic(g, pGrid);
+		IncrementalNakedPairsTactic tac = new IncrementalNakedPairsTactic(g, pGrid);
 		
 		assertTrue(pvs[6].get(3));
 		assertTrue(pvs[6].get(4));
@@ -100,7 +100,7 @@ public class IncrementalTwinsTest {
 	}
 	
 	@Test
-	public void incrementalTwinsBoxTest() throws IOException {
+	public void incrementalNakedPairsBoxTest() throws IOException {
 		String input =
 				"2\n" +
 				"1;.;.;.\n" +
@@ -122,7 +122,7 @@ public class IncrementalTwinsTest {
 		
 		PossibleValuesGrid pGrid = new PossibleValuesGrid(g, pvs, pq);
 		
-		IncrementalTwinsTactic tac = new IncrementalTwinsTactic(g, pGrid);
+		IncrementalNakedPairsTactic tac = new IncrementalNakedPairsTactic(g, pGrid);
 		
 		assertTrue(pvs[4].get(3));
 		assertTrue(pvs[4].get(4));
