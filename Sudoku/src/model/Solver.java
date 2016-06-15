@@ -5,7 +5,7 @@ public abstract class Solver {
 	protected Grid grid;
 
 	protected int timeout = 0;
-	protected long start;
+	protected long start = 0;
 	
 	protected volatile boolean run = true;
 	
@@ -19,6 +19,7 @@ public abstract class Solver {
 		start = System.currentTimeMillis();
 		timeout = t;	
 		Grid g = solve();
+		start = 0;
 		timeout = 0;
 		return g;
 	}
@@ -44,9 +45,10 @@ public abstract class Solver {
 	}
 	
 	public boolean solvableWithTimeout(int t) {
-		timeout = t;
 		start = System.currentTimeMillis();
+		timeout = t;
 		boolean b = solvable();
+		start = 0;
 		timeout = 0;
 		return b;
 	}

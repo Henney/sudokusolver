@@ -157,8 +157,10 @@ public class TacticSolver extends Solver {
 	}
 
 	public boolean uniqueWithTimeout(int t) {
+		start = System.currentTimeMillis();
 		timeout = t;
 		boolean ret = unique();
+		start = 0;
 		timeout = 0;
 		return ret;
 	}
