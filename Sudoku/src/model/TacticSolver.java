@@ -149,17 +149,11 @@ public class TacticSolver extends Solver {
 		return null;
 	}
 	
+	@Override
 	public boolean unique() {
 		foundSolution = false;
 		boolean ret = solve() == null && foundSolution;
 		foundSolution = true;
-		return ret;
-	}
-
-	public boolean uniqueWithTimeout(int t) {
-		timeout = t;
-		boolean ret = unique();
-		timeout = 0;
 		return ret;
 	}
 

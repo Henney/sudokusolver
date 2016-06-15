@@ -10,7 +10,10 @@ import java.io.Writer;
 
 public class SATSolver extends Solver {
 
+	private final String SOLVER_COMMAND = "plingeling";
+	
 	public Process process;
+	private Writer w;
 	private final int k;
 	private final int n;
 	private final int numberOfVariables;
@@ -34,8 +37,8 @@ public class SATSolver extends Solver {
 		super(g);
 		
 		if (g == null) {
-			numberOfClauses = -1;
 			numberOfVariables = -1;
+			numberOfClauses = -1;
 			k = -1;
 			n = -1;
 			return;
@@ -84,43 +87,89 @@ public class SATSolver extends Solver {
 			process.destroyForcibly();
 			process = null;
 		}
-		
 	}
+	
+	@Override
+	public boolean unique() {
+		try {
+			return unique_helper();
+		} catch (IOException e) {
+			return false;
+		}
+	}
+	
+	private boolean unique_helper() throws IOException {
+		if (grid == null) {
+			return false;
+		}
 
-	public Grid solveHelper() throws IOException {			
-		if (!run) return null;
-
-		// -m option 4096 or higher?
+		Grid solved = solveHelper();
 		
-		ProcessBuilder pb = new ProcessBuilder("plingeling");
+		if (solved == null) {
+			return false;
+		}
+
+		if (!run) return false;
+		startProcess();
+		
+		if (!run) return false;
+		writeToProcess(1);
+		
+		if (!run) return false;
+		for (int row = 0; row < solved.size(); row++) {
+			for (int col = 0; col < solved.size(); col++) {
+				int val = solved.get(row, col);
+				
+				write("-" + makeConstant(row+1, col+1, val) + " ");
+			}
+		}
+		
+		write("0\n");
+
+		w.close();
+		
+		if (!run) return false;
+		Grid second = readModel();
+		
+		return second == null;
+	}
+	
+	private void startProcess() throws IOException {
+		ProcessBuilder pb = new ProcessBuilder(SOLVER_COMMAND);
 		process = pb.start();
 		
 		OutputStream out = process.getOutputStream();
-		OutputStreamWriter w = new OutputStreamWriter(out, "UTF-8");
-
-		w.write("p cnf " + numberOfVariables + " " + numberOfClauses + "\n");
+		w = new OutputStreamWriter(out, "UTF-8");
+	}
+	
+	private void writeToProcess(int extraClauses) throws IOException {
+		write("p cnf " + numberOfVariables + " " + (numberOfClauses+extraClauses) + "\n");
 		
-		generateRules(w);
-		if (!run) return null;
+		if (!run) return;
 		
-		generateGiven(w);
-		if (!run) return null;
+		generateRules();
 		
-		w.close();
+		if (!run) return;
 		
+		generateGiven();
+	}
+	
+	private Grid readModel() throws IOException {
 		InputStream in = process.getInputStream();
 		BufferedReader b = new BufferedReader(new InputStreamReader(in));
 
 		String line;
-		Grid ret = new Grid(k); // TODO: new grid?
+		Grid ret = new Grid(k);
 		
 		while (run && (line = b.readLine()) != null) {
 			if (timeout != 0 && System.currentTimeMillis() - start > timeout) {
+				b.close();
 				return null;
 			}
 			
 			if (line.startsWith("s")) {
 				if (!line.startsWith("s SATISFIABLE")) {
+					b.close();
 					return null;
 				}
 			}
@@ -139,38 +188,58 @@ public class SATSolver extends Solver {
 			}
 		}
 		
+		b.close();
+		
 		return ret;
 	}
 
-	public void generateRules(Writer w) throws IOException {
+	public Grid solveHelper() throws IOException {			
+		if (!run) return null;
+		startProcess();
+		
+		if (!run) return null;
+		writeToProcess(0);
+		
+		return readModel();
+	}
+
+	public void generateRules() throws IOException {
 		if (!run) return;
 
 		// Necessary constraints
-		atLeastOneInEachField(w);
+		atLeastOneInEachField();
 		if (!run) return;
-		onceInRows(w);
+		onceInRows();
 		if (!run) return;
-		onceInCols(w);
+		onceInCols();
 		if (!run) return;
-		onceInBoxes(w);
+		onceInBoxes();
 		if (!run) return;
 
 		// Redundant but helpful constraints
-		atMostOneInEach(w);
+		atMostOneInEach();
 		if (!run) return;
-		atLeastOnceInEachRow(w);
+		atLeastOnceInEachRow();
 		if (!run) return;
-		atLeastOnceInEachCol(w);
+		atLeastOnceInEachCol();
 		// atLeastOnceInEachBox is not helpful
 	}
+	
+	private void write(String str) {
+		try {
+			w.write(str);
+		} catch (IOException e) {
+			// Ignore
+		}
+	}
 
-	public void generateGiven(Writer w) throws IOException {
+	public void generateGiven() throws IOException {
 		for (int x = 0; x < grid.size(); x++) {
 			for (int y = 0; y < grid.size(); y++) {
 				int i = grid.get(x, y);
 
 				if (i != 0) {
-					w.write(makeConstant(x + 1, y + 1, i) + " 0\n");
+					write(makeConstant(x + 1, y + 1, i) + " 0\n");
 				}
 			}
 		}
@@ -186,47 +255,47 @@ public class SATSolver extends Solver {
 		return counters[row][col][val];
 	}
 
-	private void atLeastOneInEachField(Writer w) throws IOException {
+	private void atLeastOneInEachField() throws IOException {
 		for (int x = 1; x <= n; x++) {
 			for (int y = 1; y <= n; y++) {
 				for (int z = 1; z <= n; z++) {
-					w.write(makeConstant(x, y, z) + " ");
+					write(makeConstant(x, y, z) + " ");
 				}
-				w.write(" 0\n");
+				write(" 0\n");
 			}
 		}
 	}
 
-	private void onceInRows(Writer w) throws IOException {
+	private void onceInRows() throws IOException {
 		for (int y = 1; y <= n; y++) {
 			for (int z = 1; z <= n; z++) {
 				for (int x = 1; x <= n - 1; x++) {
 					for (int i = x + 1; i <= n; i++) {
-						w.write("-" + makeConstant(x, y, z) + " -" + makeConstant(i, y, z) + " 0\n");
+						write("-" + makeConstant(x, y, z) + " -" + makeConstant(i, y, z) + " 0\n");
 					}
 				}
 			}
 		}
 	}
 
-	private void onceInCols(Writer w) throws IOException {
+	private void onceInCols() throws IOException {
 		for (int x = 1; x <= n; x++) {
 			for (int z = 1; z <= n; z++) {
 				for (int y = 1; y <= n - 1; y++) {
 					for (int i = y + 1; i <= n; i++) {
-						w.write("-" + makeConstant(x, y, z) + " -" + makeConstant(x, i, z) + " 0\n");
+						write("-" + makeConstant(x, y, z) + " -" + makeConstant(x, i, z) + " 0\n");
 					}
 				}
 			}
 		}
 	}
 
-	private void onceInBoxes(Writer w) throws IOException {
-		onceInBoxes1(w);
-		onceInBoxes2(w);
+	private void onceInBoxes() throws IOException {
+		onceInBoxes1();
+		onceInBoxes2();
 	}
 
-	private void onceInBoxes1(Writer w) throws IOException {
+	private void onceInBoxes1() throws IOException {
 		for (int z = 1; z <= n; z++) {
 			for (int i = 0; i < k; i++) {
 				for (int j = 0; j < k; j++) {
@@ -235,7 +304,7 @@ public class SATSolver extends Solver {
 							for (int m = y + 1; m <= k; m++) {
 								int a = makeConstant(k * i + x, k * j + y, z);
 								int b = makeConstant(k * i + x, k * j + m, z);
-								w.write("-" + a + " -" + b + " 0\n");
+								write("-" + a + " -" + b + " 0\n");
 							}
 						}
 					}
@@ -244,7 +313,7 @@ public class SATSolver extends Solver {
 		}
 	}
 
-	private void onceInBoxes2(Writer w) throws IOException {
+	private void onceInBoxes2() throws IOException {
 		for (int z = 1; z <= n; z++) {
 			for (int i = 0; i < k; i++) {
 				for (int j = 0; j < k; j++) {
@@ -254,7 +323,7 @@ public class SATSolver extends Solver {
 								for (int l = 1; l <= k; l++) {
 									int a = makeConstant(k * i + x, k * j + y, z);
 									int b = makeConstant(k * i + m, k * j + l, z);
-									w.write("-" + a + " -" + b + " 0\n");
+									write("-" + a + " -" + b + " 0\n");
 								}
 							}
 						}
@@ -264,36 +333,36 @@ public class SATSolver extends Solver {
 		}
 	}
 
-	private void atMostOneInEach(Writer w) throws IOException {
+	private void atMostOneInEach() throws IOException {
 		for (int x = 1; x <= n; x++) {
 			for (int y = 1; y <= n; y++) {
 				for (int z = 1; z <= n - 1; z++) {
 					for (int i = z + 1; i <= n; i++) {
-						w.write("-" + makeConstant(x, y, z) + " -" + makeConstant(x, y, i) + " 0\n");
+						write("-" + makeConstant(x, y, z) + " -" + makeConstant(x, y, i) + " 0\n");
 					}
 				}
 			}
 		}
 	}
 
-	private void atLeastOnceInEachRow(Writer w) throws IOException {
+	private void atLeastOnceInEachRow() throws IOException {
 		for (int y = 1; y <= n; y++) {
 			for (int z = 1; z <= n; z++) {
 				for (int x = 1; x <= n; x++) {
-					w.write(makeConstant(x, y, z) + " ");
+					write(makeConstant(x, y, z) + " ");
 				}
-				w.write("0\n");
+				write("0\n");
 			}
 		}
 	}
 
-	private void atLeastOnceInEachCol(Writer w) throws IOException {
+	private void atLeastOnceInEachCol() throws IOException {
 		for (int x = 1; x <= n; x++) {
 			for (int z = 1; z <= n; z++) {
 				for (int y = 1; y <= n; y++) {
-					w.write(makeConstant(x, y, z) + " ");
+					write(makeConstant(x, y, z) + " ");
 				}
-				w.write("0\n");
+				write("0\n");
 			}
 		}
 	}
