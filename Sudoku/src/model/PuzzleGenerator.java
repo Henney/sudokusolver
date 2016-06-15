@@ -3,6 +3,7 @@ package model;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,7 +15,13 @@ import model.util.SolvableCallable;
 
 public class PuzzleGenerator {	
 	
+	static Random generateGenerator;
+	static Random minimiseGenerator;
+	
 	public static Grid generate(int k) {
+		generateGenerator = new Random();
+		minimiseGenerator = new Random();
+		
 		Grid g = randomBoard(k);
 		
 		minimise(g);
@@ -32,10 +39,10 @@ public class PuzzleGenerator {
 		
 		int randAmount = 0;
 		switch(g.k()) {
-		case 2: randAmount = 3; break;
-		case 3: randAmount = 15; break;
-		case 4: randAmount = 49; break;
-		default: randAmount = 73; break; // k = 5+
+		case 2: randAmount = 5; break;
+		case 3: randAmount = 22; break;
+		case 4: randAmount = 80; break;
+		default: randAmount = 173; break; // k = 5+
 		}
 
 		TacticSolver s1;
@@ -65,7 +72,7 @@ public class PuzzleGenerator {
 					}
 				}
 				
-				int idx = (int) (Math.random()*pvs[field].possible());
+				int idx = (int) (generateGenerator.nextDouble()*pvs[field].possible());
 				int val = pvs[field].possibilities()[idx];
 				
 				g.set(field, val);
@@ -132,7 +139,7 @@ public class PuzzleGenerator {
 			}
 			PossibleValuesGrid pGrid = new PossibleValuesGrid(rG, pvs, pq);
 			
-			fields = randomIntList(g.numberOfFields());
+			fields = randomIntList(g.numberOfFields(), generateGenerator);
 			
 			for (int i = 0; i < randAmount; i++) {
 				int field = fields.remove();
@@ -142,7 +149,7 @@ public class PuzzleGenerator {
 					break;
 				}
 				
-				int idx = (int) (Math.random()*pvs[field].possible());
+				int idx = (int) (generateGenerator.nextDouble()*pvs[field].possible());
 				int val = pvs[field].possibilities()[idx];
 				
 				rG.set(field, val);
@@ -158,7 +165,7 @@ public class PuzzleGenerator {
 	}
 
 	private static Grid minimise(Grid g) {
-		LinkedList<Integer> fields = randomIntList(g.numberOfFields());
+		LinkedList<Integer> fields = randomIntList(g.numberOfFields(), minimiseGenerator);
 		int timeout = g.k()*100;
 		while (!fields.isEmpty()) {
 			int field = fields.remove();
@@ -179,12 +186,12 @@ public class PuzzleGenerator {
 		return g;
 	}
 	
-	private static LinkedList<Integer> randomIntList(int amount) {
+	private static LinkedList<Integer> randomIntList(int amount, Random rand) {
 		LinkedList<Integer> fields = new LinkedList<Integer>();
 		for (int i = 0; i < amount; i++) {
 			fields.add(i);
 		}
-		Collections.shuffle(fields);
+		Collections.shuffle(fields, rand);
 		return fields;
 	}
 	

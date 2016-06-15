@@ -9,14 +9,14 @@ import org.junit.Test;
 import model.Grid;
 import model.PossibleValues;
 import model.PossibleValuesGrid;
-import model.tactics.TwinsTactic;
+import model.tactics.NakedPairsTactic;
 import model.tactics.UnsolvableException;
 import model.util.IntPriorityQueue;
 
-public class TwinsTest {
+public class NakedPairsTest {
 
 	@Test
-	public void twinsColTest() throws IOException, UnsolvableException {
+	public void nakedPairsColTest() throws IOException, UnsolvableException {
 		String input =
 				"2\n" +
 				"1;.;.;.\n" +
@@ -38,7 +38,7 @@ public class TwinsTest {
 		
 		PossibleValuesGrid pGrid = new PossibleValuesGrid(g, pvs, pq);
 		
-		TwinsTactic tac = new TwinsTactic(g, pGrid);
+		NakedPairsTactic tac = new NakedPairsTactic(g, pGrid);
 		
 		assertTrue(pvs[9].get(3));
 		assertTrue(pvs[9].get(4));
@@ -59,7 +59,7 @@ public class TwinsTest {
 	
 	
 	@Test
-	public void twinsRowTest() throws IOException, UnsolvableException {
+	public void nakedPairsRowTest() throws IOException, UnsolvableException {
 		String input =
 				"2\n" +
 				"1;2;.;.\n" +
@@ -81,7 +81,7 @@ public class TwinsTest {
 		
 		PossibleValuesGrid pGrid = new PossibleValuesGrid(g, pvs, pq);
 		
-		TwinsTactic tac = new TwinsTactic(g, pGrid);
+		NakedPairsTactic tac = new NakedPairsTactic(g, pGrid);
 		
 		assertTrue(pvs[6].get(3));
 		assertTrue(pvs[6].get(4));
@@ -101,7 +101,7 @@ public class TwinsTest {
 	}
 	
 	@Test
-	public void twinsBoxTest() throws IOException, UnsolvableException {
+	public void nakedPairsBoxTest() throws IOException, UnsolvableException {
 		String input =
 				"2\n" +
 				"1;.;.;.\n" +
@@ -123,7 +123,7 @@ public class TwinsTest {
 		
 		PossibleValuesGrid pGrid = new PossibleValuesGrid(g, pvs, pq);
 		
-		TwinsTactic tac = new TwinsTactic(g, pGrid);
+		NakedPairsTactic tac = new NakedPairsTactic(g, pGrid);
 		
 		assertTrue(pvs[4].get(3));
 		assertTrue(pvs[4].get(4));

@@ -9,10 +9,30 @@ import java.io.IOException;
 
 import org.junit.Test;
 import model.SATSolver;
+import model.TacticSolver;
 import model.Grid;
+import model.SATSolver;
 
 public class SATTest {
 
+	@Test
+	public void solve2() throws IOException {
+		String input =
+				"2\n" +
+				"1;2;.;.\n" +
+				".;.;.;.\n" +
+				".;3;.;.\n" +
+				".;.;.;4\n";
+
+		Grid grid = new Grid(input);
+
+		SATSolver solver = new SATSolver(grid);
+		Grid solved = solver.solve();
+		
+		assertNotNull(solved);
+		assertTrue(solved.isSolved());
+	}
+	
 	@Test
 	public void solveExample() throws IOException {
 		String input = "3\n" + ".;1;.;3;.;.;8;.;." + "\n" + "5;.;9;6;.;.;7;.;." + "\n" + "7;.;4;.;9;5;.;2;." + "\n"
@@ -21,8 +41,9 @@ public class SATTest {
 
 		Grid grid = new Grid(input);
 
-		Grid solved = new SATSolver(grid).solve();
-
+		SATSolver solver = new SATSolver(grid);
+		Grid solved = solver.solve();
+		
 		assertTrue(solved != null);
 		assertTrue(solved.isSolved());
 	}
@@ -38,6 +59,42 @@ public class SATTest {
 	}
 	
 //	@Test
+	public void solveHeptadoku() throws IOException {
+		Grid g = new Grid(new FileReader("puzzles/heptadoku1.txt"));
+		assertFalse(g.isSolved());
+		Grid solved = new SATSolver(g).solve();
+		assertNotNull(solved);
+		assertTrue(solved.isSolved());
+	}
+	
+//	@Test
+	public void solveOctadoku() throws IOException {
+		Grid g = new Grid(new FileReader("puzzles/octadoku1.txt"));
+		assertFalse(g.isSolved());
+		Grid solved = new SATSolver(g).solve();
+		assertNotNull(solved);
+		assertTrue(solved.isSolved());
+	}
+	
+//	@Test
+	public void solveEnneadoku() throws IOException {
+		Grid g = new Grid(new FileReader("puzzles/enneadoku1.txt"));
+		assertFalse(g.isSolved());
+		Grid solved = new SATSolver(g).solve();
+		assertNotNull(solved);
+		assertTrue(solved.isSolved());
+	}
+	
+//	@Test
+	public void solveDecadoku() throws IOException {
+		Grid g = new Grid(new FileReader("puzzles/decadoku1.txt"));
+		assertFalse(g.isSolved());
+		Grid solved = new SATSolver(g).solve();
+		assertNotNull(solved);
+		assertTrue(solved.isSolved());
+	}
+	
+	@Test
 	public void solveTop95() throws IOException {
 		FileReader f = new FileReader("puzzles/top95.txt");
 		BufferedReader b = new BufferedReader(f);

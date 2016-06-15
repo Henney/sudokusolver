@@ -32,13 +32,13 @@ public abstract class Solver {
 			return false;
 		}
 		
-		PossibleValues[] ps = grid.findPossibleValues();
-		
-		for (int i = 0; i < ps.length; i++) {
-			if (grid.get(i) == 0 && ps[i].possible() == 0) {
-				return false;
-			}
-		}
+//		PossibleValues[] ps = grid.findPossibleValues();
+//		
+//		for (int i = 0; i < ps.length; i++) {
+//			if (grid.get(i) == 0 && ps[i].possible() == 0) {
+//				return false;
+//			}
+//		}
 		
 		return solve() != null;
 	}
