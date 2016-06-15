@@ -268,7 +268,8 @@ public class View extends Application {
 							Platform.runLater(new Runnable() {
 					            @Override public void run() {
 				            		createMessageDialog("Error!",
-				            				"The given grid configuration is unsolvable.",
+				            				"The given grid configuration is unsolvable.\n" +
+				            		"If you tried to SAT solve it is possible that Plingeling is not setup correctly.",
 				            				AlertType.ERROR);
 									displayGrid(new UserGrid(cSolver.getGrid()));
 									enableSlider();

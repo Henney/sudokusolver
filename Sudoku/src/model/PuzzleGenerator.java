@@ -42,7 +42,7 @@ public class PuzzleGenerator {
 		case 2: randAmount = 5; break;
 		case 3: randAmount = 22; break;
 		case 4: randAmount = 80; break;
-		default: randAmount = 173; break; // k = 5+
+		default: randAmount = 181; break; // k = 5+
 		}
 
 		TacticSolver s1;

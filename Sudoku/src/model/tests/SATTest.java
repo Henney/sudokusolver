@@ -9,9 +9,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 import model.SATSolver;
-import model.TacticSolver;
 import model.Grid;
-import model.SATSolver;
 
 public class SATTest {
 

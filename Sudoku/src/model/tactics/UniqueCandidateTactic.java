@@ -34,7 +34,7 @@ public class UniqueCandidateTactic extends ChoiceTactic {
 	}
 
 	@Override
-@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void apply() throws UnsolvableException {
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
