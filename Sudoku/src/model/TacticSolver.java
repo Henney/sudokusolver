@@ -157,6 +157,7 @@ public class TacticSolver extends Solver {
 		return ret;
 	}
 
+
 	protected void showField(int field, int val) {
 		// This method does nothing but is overridden in GuiSolver to display
 		// the grid.
