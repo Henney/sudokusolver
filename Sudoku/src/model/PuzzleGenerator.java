@@ -152,9 +152,9 @@ public class PuzzleGenerator {
 			}
 			newG = rG;
 			s = new TacticSolver(rG);
-		} while (!s.solvable());
+		} while (!s.solvableWithTimeout(g.k()*1000));
 		// TODO: use both SAT and tactics here to determine solvability?
-		
+
 		return new Pair<Grid, LinkedList<Integer>>(newG, fields);
 	}
 
