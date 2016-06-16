@@ -9,6 +9,8 @@ import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.Writer;
 
+import org.junit.Test;
+
 import com.jaunt.NotFound;
 import com.jaunt.ResponseException;
 
@@ -20,7 +22,7 @@ public class WebScraperTest {
 //	@Test
 	public void webscraperk3() throws NotFound, ResponseException, IOException {
 
-		String input = WebScraper.getSudokuFromWeb(1);
+		String input = WebScraper.getSudokuFromWeb(2);
 		Grid g = null;
 		try {
 			g = new Grid(new StringReader(input));

@@ -13,7 +13,7 @@ import model.tactics.UniqueCandidateTactic;
 import model.tactics.UnsolvableException;
 import model.util.IntPriorityQueue;
 
-public class UniqueCandidateTests {
+public class UniqueCandidateTest {
 
 	@Test
 	public void removePos() throws IOException {

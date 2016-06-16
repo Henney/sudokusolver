@@ -186,7 +186,7 @@ public class PuzzleGenerator {
 		return g;
 	}
 	
-	private static LinkedList<Integer> randomIntList(int amount, Random rand) {
+	private static LinkedList<Integer> randomIntList(int amount, Random rand) { // TODO: ArrayDeque?
 		LinkedList<Integer> fields = new LinkedList<Integer>();
 		for (int i = 0; i < amount; i++) {
 			fields.add(i);

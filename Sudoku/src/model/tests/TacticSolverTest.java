@@ -15,7 +15,7 @@ import model.PossibleValues;
 import model.Solver;
 import model.TacticSolver;
 
-public class SolverTest {
+public class TacticSolverTest {
 
 	@Test
 	public void findPossible3() throws IOException {
@@ -111,8 +111,12 @@ public class SolverTest {
 		assertTrue(solved.isSolved());
 	}
 	
-	public void solveSudoku(String filename) throws IOException {
-		Grid g = new Grid(new FileReader("puzzles/" + filename + ".txt"));
+	public static void addTxtSolve(String filename) throws IOException {
+		solveSudoku("puzzles/" + filename + ".txt");
+	}
+	
+	public static void solveSudoku(String filename) throws IOException {
+		Grid g = new Grid(new FileReader(filename));
 		g.toString();
 		
 		assertFalse(g.isSolved());
@@ -132,127 +136,131 @@ public class SolverTest {
 	
 	@Test
 	public void solveSudoku1() throws IOException {
-		solveSudoku("sudoku1");
+		addTxtSolve("sudoku1");
 	}
 	
 	@Test
 	public void solveSudoku2() throws IOException {
-		solveSudoku("sudoku2");
+		addTxtSolve("sudoku2");
 	}
 	
 	@Test
 	public void solveSudoku3() throws IOException {
-		solveSudoku("sudoku3");
+		addTxtSolve("sudoku3");
 	}
 	
 	@Test
 	public void solveSudoku4() throws IOException {
-		solveSudoku("sudoku4");
+		addTxtSolve("sudoku4");
 	}
 	
 	@Test
 	public void solveSudoku5() throws IOException {
-		solveSudoku("sudoku5");
+		addTxtSolve("sudoku5");
 	}
 	
 	@Test
 	public void solveSudoku6() throws IOException {
-		solveSudoku("sudoku6");
+		addTxtSolve("sudoku6");
 	}
 	
 	@Test
 	public void solveEvil1() throws IOException {
-		solveSudoku("sudoku_evil1");
+		addTxtSolve("sudoku_evil1");
 	}
 
 	@Test
 	public void solveEvil2() throws IOException {
-		solveSudoku("sudoku_evil2");
+		addTxtSolve("sudoku_evil2");
 	}
 	
 	@Test
 	public void solveEvil3() throws IOException {
-		solveSudoku("sudoku_evil3");
+		addTxtSolve("sudoku_evil3");
 	}
 	
 	@Test
 	public void solveEvil4() throws IOException {
-		solveSudoku("sudoku_evil4");
+		addTxtSolve("sudoku_evil4");
 	}
 	
 	@Test
 	public void solveExtreme1() throws IOException {
-		solveSudoku("sudoku_extreme1");
+		addTxtSolve("sudoku_extreme1");
 	}
 
 	@Test
 	public void solveWorldsHardest() throws IOException {
 		// From http://www.telegraph.co.uk/news/science/science-news/9359579/Worlds-hardest-sudoku-can-you-crack-it.html
 		
-		solveSudoku("sudoku_hardest_telegraph");
+		addTxtSolve("sudoku_hardest_telegraph");
 	}
 	
 	@Test
 	public void solveNorvigHardest() throws IOException {
-		solveSudoku("sudoku_norvig_hardest");
+		addTxtSolve("sudoku_norvig_hardest");
 	}
 	
-	@Test
-	public void solveNorvigImpossible() throws IOException {
-		Grid g = new Grid(new FileReader("puzzles/sudoku_norvig_impossible.txt"));
+	public static void solveImpossible(String filename) throws FileNotFoundException, IOException {
+		Grid g = new Grid(new FileReader(filename));
 		assertFalse(g.isSolved());
 		Grid solved = new TacticSolver(g).solve();
 		assertTrue(solved == null);
 	}
 	
 	@Test
+	public void solveNorvigImpossible() throws IOException {
+		solveImpossible("puzzles/sudoku_norvig_impossible.txt");
+	}
+	
+	@Test
 	public void solveTetradoku1() throws IOException {
-		solveSudoku("tetradoku1");
+		addTxtSolve("tetradoku1");
 	}
 	
 	@Test
 	public void solveTetradoku2() throws IOException {
-		solveSudoku("tetradoku2");
+		addTxtSolve("tetradoku2");
 	}
 	
 	@Test
 	public void solveTetradoku3() throws IOException {
-		solveSudoku("tetradoku3");
+		addTxtSolve("tetradoku3");
 	}
 	
 	@Test
 	public void solvePentadoku1() throws IOException {
-		solveSudoku("pentadoku1");
+		addTxtSolve("pentadoku1");
 	}
 	
 	@Test
 	public void solveHexadoku1() throws IOException {
-		solveSudoku("hexadoku1");
+		addTxtSolve("hexadoku1");
 	}
 	
 	@Test
 	public void solveGeneratedHexadoku() throws IOException {
-		solveSudoku("hexadokus/hexadoku1");
+		addTxtSolve("hexadokus/hexadoku1");
 	}
 	
 //	@Test
 	public void solveHeptadoku1() throws IOException {
-		solveSudoku("heptadoku1");
+		addTxtSolve("heptadoku1");
 	}
 	
 	@Test
 	public void solveOctadoku1() throws IOException {
-		solveSudoku("octadoku1");
+		addTxtSolve("octadoku1");
 	}
 	
 	@Test
 	public void solveEnneadoku1() throws IOException {
-		solveSudoku("enneadoku1");
+		addTxtSolve("enneadoku1");
 	}
 	
 //	@Test
 	public void solveDecadoku1() throws IOException {
-		solveSudoku("decadoku1");
+		addTxtSolve("decadoku1");
 	}
 	
 	@Test
