@@ -45,8 +45,6 @@ public class PuzzleGenerator {
 		default: randAmount = 181; break; // k = 5+
 		}
 
-		TacticSolver s1;
-		
 		Pair<Grid, LinkedList<Integer>> pair = fillRandom(g, randAmount);
 		g = pair.fst;
 		LinkedList<Integer> fields = pair.snd;
@@ -76,7 +74,7 @@ public class PuzzleGenerator {
 				int val = pvs[field].possibilities()[idx];
 				
 				g.set(field, val);
-				s1 = new TacticSolver(g);
+				TacticSolver s1 = new TacticSolver(g);
 				SATSolver s2 = new SATSolver(g);
 				
 				Future<Boolean> task1 = es1.submit(new SolvableCallable(s1, timeout));
@@ -109,9 +107,7 @@ public class PuzzleGenerator {
 				task2.cancel(true);
 				
 				if (solvable) {
-					pGrid.setBoxImpossible(field, val);
-					pGrid.setColImpossible(field, val);
-					pGrid.setRowImpossible(field, val);
+					pGrid.setConnectedImpossible(field, val);
 					break;
 				}
 				

@@ -1,5 +1,7 @@
 package model;
 
+import java.io.IOException;
+
 public abstract class Solver {
 	
 	protected Grid grid;
@@ -33,13 +35,13 @@ public abstract class Solver {
 			return false;
 		}
 		
-//		PossibleValues[] ps = grid.findPossibleValues();
-//		
-//		for (int i = 0; i < ps.length; i++) {
-//			if (grid.get(i) == 0 && ps[i].possible() == 0) {
-//				return false;
-//			}
-//		}
+		PossibleValues[] ps = grid.findPossibleValues();
+		
+		for (int i = 0; i < ps.length; i++) {
+			if (grid.get(i) == 0 && ps[i].possible() == 0) {
+				return false;
+			}
+		}
 		
 		return solve() != null;
 	}
@@ -51,6 +53,17 @@ public abstract class Solver {
 		start = 0;
 		timeout = 0;
 		return b;
+	}
+	
+	public abstract boolean unique();
+	
+	public boolean uniqueWithTimeout(int t) {
+		start = System.currentTimeMillis();
+		timeout = t;
+		boolean ret = unique();
+		start = 0;
+		timeout = 0;
+		return ret;
 	}
 	
 	public Grid getGrid() {

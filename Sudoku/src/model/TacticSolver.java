@@ -149,6 +149,7 @@ public class TacticSolver extends Solver {
 		return null;
 	}
 	
+	@Override
 	public boolean unique() {
 		foundSolution = false;
 		boolean ret = solve() == null && foundSolution;
@@ -156,14 +157,6 @@ public class TacticSolver extends Solver {
 		return ret;
 	}
 
-	public boolean uniqueWithTimeout(int t) {
-		start = System.currentTimeMillis();
-		timeout = t;
-		boolean ret = unique();
-		start = 0;
-		timeout = 0;
-		return ret;
-	}
 
 	protected void showField(int field, int val) {
 		// This method does nothing but is overridden in GuiSolver to display
