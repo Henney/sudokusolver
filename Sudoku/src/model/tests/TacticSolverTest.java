@@ -321,6 +321,11 @@ public class TacticSolverTest {
 	
 	@Test
 	public void uniqueness() throws FileNotFoundException, IOException {
+		String str = "2\n" +
+				".;.;.;.\n" +
+				".;.;.;.\n" +
+				".;.;.;.\n" +
+				".;.;.;.";
 		Grid[] grids = { new Grid(new FileReader("puzzles/sudoku_norvig_impossible.txt")),
 				new Grid(new FileReader("puzzles/sudoku_norvig_hardest.txt")),
 				null,
@@ -337,7 +342,10 @@ public class TacticSolverTest {
 		assertFalse(s.unique());
 		
 		s = new TacticSolver(grids[3]);
-		assertTrue(s.unique());		
+		assertTrue(s.unique());
+		
+		s = new TacticSolver(grids[4]);
+		assertFalse(s.unique());
 	}
 	
 	@Test

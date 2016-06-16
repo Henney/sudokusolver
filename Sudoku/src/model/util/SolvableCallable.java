@@ -16,7 +16,6 @@ public class SolvableCallable implements Callable<Boolean> {
 	
 	@Override
 	public Boolean call() throws Exception {
-//		return s.solvable();
 		return s.solvableWithTimeout(timeout);
 	}
 }

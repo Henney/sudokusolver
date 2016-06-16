@@ -10,15 +10,12 @@ import model.TacticSolver;
 
 public class PuzzleGeneratorTest {
 
-	public void generalTest(int k, long seed) {
+	public void generalTest(int k, long seed) { // TODO remove seed
 		Grid g = PuzzleGenerator.generate(k, seed);
 		
 		TacticSolver s = new TacticSolver(g);
 		
 		assertFalse(g.isSolved());
-		if (!s.unique()) {
-			System.out.println(g);
-		}
 		assertTrue(s.unique());
 		
 		g = s.solve();
@@ -51,7 +48,7 @@ public class PuzzleGeneratorTest {
 //	@Test
 //	public void generate5() {
 //		for (int i = 0; i < 1; i++) {
-//			generalTest(5);
+//			generalTest(5, i+100);
 //		}
 //	}
 }

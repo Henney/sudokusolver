@@ -35,13 +35,10 @@ public abstract class Solver {
 		
 		for (int i = 0; i < ps.length; i++) {
 			if (grid.get(i) == 0 && ps[i].possible() == 0) {
-				System.out.println("No possible for: " + i);
 				return false;
 			}
 		}
-		
-		System.out.println("starting solver");
-		
+				
 		Grid solved = solve();
 		return solved != null && solved.isSolved();
 	}
