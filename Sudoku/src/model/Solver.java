@@ -6,6 +6,7 @@ public abstract class Solver {
 
 	protected int timeout = 0;
 	protected long start = 0;
+	protected boolean timeoutHappened = false;
 	
 	protected volatile boolean run = true;
 	
@@ -35,12 +36,9 @@ public abstract class Solver {
 		
 		for (int i = 0; i < ps.length; i++) {
 			if (grid.get(i) == 0 && ps[i].possible() == 0) {
-				System.out.println("No possible for: " + i);
 				return false;
 			}
 		}
-		
-		System.out.println("starting solver");
 		
 		Grid solved = solve();
 		return solved != null && solved.isSolved();
@@ -65,6 +63,7 @@ public abstract class Solver {
 	private void startTimeout(int t) {
 		start = System.currentTimeMillis();
 		timeout = t;
+		timeoutHappened = false;
 	}
 	
 	private void endTimeout() {

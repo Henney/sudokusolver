@@ -131,7 +131,7 @@ public class SATSolver extends Solver {
 		if (!run) return false;
 		Grid second = readModel();
 		
-		return second == null;
+		return second == null && !timeoutHappened;
 	}
 	
 	private void startProcess() throws IOException {
@@ -164,6 +164,7 @@ public class SATSolver extends Solver {
 		while (run && (line = b.readLine()) != null) {
 			if (timeout != 0 && System.currentTimeMillis() - start > timeout) {
 				b.close();
+				timeoutHappened = true;
 				return null;
 			}
 			

@@ -75,7 +75,7 @@ public class PuzzleGenerator {
 				int idx = (int) (generateGenerator.nextDouble()*pvs[field].possible());
 				int val = pvs[field].possibilities()[idx];
 
-				System.out.println("Field: " + field + " trying val: " + val + " Timeout: " + timeout);
+//				System.out.println("Field: " + field + " trying val: " + val + " Timeout: " + timeout);
 				
 				g.set(field, val);
 				TacticSolver s1 = new TacticSolver(g);
