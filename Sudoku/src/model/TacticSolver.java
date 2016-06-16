@@ -53,6 +53,7 @@ public class TacticSolver extends Solver {
 	private Grid solveHelper(Grid g) {
 		long ct = System.currentTimeMillis();
 		if (start != 0 && ct-start > timeout) {
+			timeoutHappened = true;
 			return null;
 		}
 		
