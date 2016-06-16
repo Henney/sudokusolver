@@ -1,7 +1,5 @@
 package model;
 
-import java.io.IOException;
-
 public abstract class Solver {
 	
 	protected Grid grid;
@@ -18,11 +16,9 @@ public abstract class Solver {
 	public abstract Grid solve();
 	
 	public Grid solveWithTimeout(int t) {
-		start = System.currentTimeMillis();
-		timeout = t;	
+		startTimeout(t);
 		Grid g = solve();
-		start = 0;
-		timeout = 0;
+		endTimeout();
 		return g;
 	}
 	
@@ -39,31 +35,41 @@ public abstract class Solver {
 		
 		for (int i = 0; i < ps.length; i++) {
 			if (grid.get(i) == 0 && ps[i].possible() == 0) {
+				System.out.println("No possible for: " + i);
 				return false;
 			}
 		}
 		
-		return solve() != null;
+		System.out.println("starting solver");
+		
+		Grid solved = solve();
+		return solved != null && solved.isSolved();
 	}
 	
 	public boolean solvableWithTimeout(int t) {
-		start = System.currentTimeMillis();
-		timeout = t;
+		startTimeout(t);
 		boolean b = solvable();
-		start = 0;
-		timeout = 0;
+		endTimeout();
 		return b;
 	}
 	
 	public abstract boolean unique();
 	
 	public boolean uniqueWithTimeout(int t) {
+		startTimeout(t);
+		boolean ret = unique();
+		endTimeout();
+		return ret;
+	}
+	
+	private void startTimeout(int t) {
 		start = System.currentTimeMillis();
 		timeout = t;
-		boolean ret = unique();
+	}
+	
+	private void endTimeout() {
 		start = 0;
 		timeout = 0;
-		return ret;
 	}
 	
 	public Grid getGrid() {

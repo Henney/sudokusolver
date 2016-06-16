@@ -2,12 +2,8 @@ package model.tests;
 
 import static org.junit.Assert.*;
 
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.StringReader;
-import java.io.Writer;
 
 import org.junit.Test;
 
@@ -15,14 +11,15 @@ import com.jaunt.NotFound;
 import com.jaunt.ResponseException;
 
 import model.Grid;
+import model.TacticSolver;
 import model.WebScraper;
 
 public class WebScraperTest {
 
-//	@Test
+	@Test
 	public void webscraperk3() throws NotFound, ResponseException, IOException {
 
-		String input = WebScraper.getSudokuFromWeb(2);
+		String input = WebScraper.getSudokuFromWeb(4);
 		Grid g = null;
 		try {
 			g = new Grid(new StringReader(input));
@@ -31,15 +28,8 @@ public class WebScraperTest {
 		}
 		assertNotNull(g);
 		assertFalse(g.isSolved());
-	}
-	
-//	@Test
-	public void getSudoku() throws NotFound, ResponseException, IOException {
-		String input = WebScraper.getSudokuFromWeb(1);
-		
-		try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-	              new FileOutputStream("puzzles/evil4.txt"), "utf-8"))) {
-		   writer.write(input);
-		}
+		TacticSolver s = new TacticSolver(g);
+		assertTrue(s.solvable());
+		assertTrue(s.unique());
 	}
 }

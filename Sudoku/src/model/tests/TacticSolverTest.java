@@ -377,7 +377,7 @@ public class TacticSolverTest {
 		
 		Grid g = grids[0];
 		TacticSolver s = new TacticSolver(g);
-		int t = 500;
+		int t = 1000;
 		
 		assertFalse(g.isSolved());
 

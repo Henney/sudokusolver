@@ -18,12 +18,15 @@ public class PuzzleGenerator {
 	static Random generateGenerator;
 	static Random minimiseGenerator;
 	
-	public static Grid generate(int k) {
-		generateGenerator = new Random();
-		minimiseGenerator = new Random();
+	public static Grid generate(int k, long seed) {
+		generateGenerator = new Random(seed);
+		minimiseGenerator = new Random(seed+1000);
 		
 		Grid g = randomBoard(k);
+		System.out.println("Solved puzzle is:");
+		System.out.println(g);
 		
+		System.out.println("Legal: " + g.isLegal() + " Solved: " + g.isSolved());
 		minimise(g);
 
 		return g;
@@ -34,8 +37,6 @@ public class PuzzleGenerator {
 		ExecutorService es2 = Executors.newFixedThreadPool(1);
 		
 		Grid g = new Grid(k);
-		
-		int timeout = 100;
 		
 		int randAmount = 0;
 		switch(g.k()) {
@@ -59,6 +60,7 @@ public class PuzzleGenerator {
 		PossibleValuesGrid pGrid = new PossibleValuesGrid(g, pvs, pq);
 		
 		while (!fields.isEmpty()) {
+			int timeout = 100;
 			int field = fields.remove();
 			int[] origPos = Arrays.copyOf(pvs[field].possibilities(), pvs[field].possibilities().length);
 			
@@ -72,27 +74,30 @@ public class PuzzleGenerator {
 				
 				int idx = (int) (generateGenerator.nextDouble()*pvs[field].possible());
 				int val = pvs[field].possibilities()[idx];
+
+				System.out.println("Field: " + field + " trying val: " + val + " Timeout: " + timeout);
 				
 				g.set(field, val);
 				TacticSolver s1 = new TacticSolver(g);
 				SATSolver s2 = new SATSolver(g);
 				
-				Future<Boolean> task1 = es1.submit(new SolvableCallable(s1, timeout));
+//				Future<Boolean> task1 = es1.submit(new SolvableCallable(s1, timeout));
 				Future<Boolean> task2 = es2.submit(new SolvableCallable(s2, timeout));
 				
-				while (!task1.isDone() && !task2.isDone()) {
+				while (/*!task1.isDone() && */!task2.isDone()) {
 				}
 
 				boolean solvable = false;
 				try {
-					solvable = task1.get();
-					if (task1.isDone() && task2.isDone()) {
-						solvable = task1.get() || task2.get();
-					} else if (task1.isDone()) {
-						solvable = task1.get();
-					} else {
-						solvable = task2.get();
-					}
+					solvable = task2.get();
+//					System.out.println(solvable);
+//					if (task1.isDone() && task2.isDone()) {
+//						solvable = task1.get() || task2.get();
+//					} else if (task1.isDone()) {
+//						solvable = task1.get();
+//					} else {
+//						solvable = task2.get();
+//					}
 				} catch (InterruptedException e) {
 					// Shouldn't happen
 					e.printStackTrace();
@@ -100,11 +105,11 @@ public class PuzzleGenerator {
 					// Shouldn't happen
 					e.printStackTrace();
 				}
-				
-				s1.cancel();
-				s2.cancel();
-				task1.cancel(true);
-				task2.cancel(true);
+//				
+//				s1.cancel();
+//				s2.cancel();
+//				task1.cancel(true);
+//				task2.cancel(true);
 				
 				if (solvable) {
 					pGrid.setConnectedImpossible(field, val);
