@@ -6,6 +6,7 @@ public abstract class Solver {
 
 	protected int timeout = 0;
 	protected long start = 0;
+	protected boolean timeoutHappened = false;
 	
 	protected volatile boolean run = true;
 	
@@ -38,7 +39,7 @@ public abstract class Solver {
 				return false;
 			}
 		}
-				
+
 		Grid solved = solve();
 		return solved != null && solved.isSolved();
 	}
@@ -62,6 +63,7 @@ public abstract class Solver {
 	private void startTimeout(int t) {
 		start = System.currentTimeMillis();
 		timeout = t;
+		timeoutHappened = false;
 	}
 	
 	private void endTimeout() {

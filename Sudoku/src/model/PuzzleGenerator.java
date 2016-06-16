@@ -18,9 +18,9 @@ public class PuzzleGenerator {
 	static Random generateGenerator;
 	static Random minimiseGenerator;
 	
-	public static Grid generate(int k, long seed) {
-		generateGenerator = new Random(seed);
-		minimiseGenerator = new Random(seed+1000);
+	public static Grid generate(int k) {
+		generateGenerator = new Random();
+		minimiseGenerator = new Random();
 
 		Grid g = randomBoard(k);
 		minimise(g);
@@ -70,8 +70,6 @@ public class PuzzleGenerator {
 				
 				int idx = (int) (generateGenerator.nextDouble()*pvs[field].possible());
 				int val = pvs[field].possibilities()[idx];
-
-//				System.out.println("Field: " + field + " trying val: " + val + " Timeout: " + timeout);
 				
 				g.set(field, val);
 				TacticSolver s1 = new TacticSolver(g);
@@ -154,7 +152,7 @@ public class PuzzleGenerator {
 			}
 			newG = rG;
 			s = new TacticSolver(rG);
-		} while (!s.solvableWithTimeout(10000));
+		} while (!s.solvable());
 		// TODO: use both SAT and tactics here to determine solvability?
 		
 		return new Pair<Grid, LinkedList<Integer>>(newG, fields);

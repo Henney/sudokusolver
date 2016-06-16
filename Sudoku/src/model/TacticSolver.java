@@ -53,6 +53,7 @@ public class TacticSolver extends Solver {
 	private Grid solveHelper(Grid g) {
 		long ct = System.currentTimeMillis();
 		if (start != 0 && ct-start > timeout) {
+			timeoutHappened = true;
 			return null;
 		}
 		
@@ -153,7 +154,7 @@ public class TacticSolver extends Solver {
 	@Override
 	public boolean unique() {
 		foundSolution = false;
-		boolean ret = solve() == null && foundSolution;
+		boolean ret = solve() == null && foundSolution && !timeoutHappened;
 		foundSolution = true;
 		return ret;
 	}

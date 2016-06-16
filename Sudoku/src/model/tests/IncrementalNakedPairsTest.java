@@ -105,8 +105,8 @@ public class IncrementalNakedPairsTest {
 				"2\n" +
 				"1;.;.;.\n" +
 				".;.;.;.\n" +
-				".;2;.;.\n" +
-				".;.;.;.\n";
+				".;.;.;.\n" +
+				".;2;.;.\n";
 		
 		Grid g = new Grid(input);
 		

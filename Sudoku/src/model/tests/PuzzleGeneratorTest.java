@@ -10,8 +10,8 @@ import model.TacticSolver;
 
 public class PuzzleGeneratorTest {
 
-	public void generalTest(int k, long seed) { // TODO remove seed
-		Grid g = PuzzleGenerator.generate(k, seed);
+	public void generalTest(int k) { // TODO remove seed
+		Grid g = PuzzleGenerator.generate(k);
 		
 		TacticSolver s = new TacticSolver(g);
 		
@@ -24,24 +24,24 @@ public class PuzzleGeneratorTest {
 		assertTrue(s.unique());
 	}
 	
-//	@Test
-//	public void generate2() {
-//		for (int i = 0; i < 100; i++) {
-//			generalTest(2);
-//		}
-//	}
-//	
-//	@Test
-//	public void generate3() {
-//		for (int i = 0; i < 10; i++) {
-//			generalTest(3);
-//		}
-//	}
+	@Test
+	public void generate2() {
+		for (int i = 0; i < 100; i++) {
+			generalTest(2);
+		}
+	}
+	
+	@Test
+	public void generate3() {
+		for (int i = 0; i < 10; i++) {
+			generalTest(3);
+		}
+	}
 	
 	@Test
 	public void generate4() {
-		for (int i = 0; i < 1; i++) {
-			generalTest(4, i+100);
+		for (int i = 0; i < 10; i++) {
+			generalTest(4);
 		}
 	}
 	
