@@ -337,7 +337,7 @@ public class TacticSolverTest {
 		assertFalse(s.unique());
 		
 		s = new TacticSolver(grids[3]);
-		assertTrue(s.unique());		
+		assertTrue(s.unique());
 	}
 	
 	@Test

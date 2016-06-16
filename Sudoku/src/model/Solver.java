@@ -39,7 +39,7 @@ public abstract class Solver {
 				return false;
 			}
 		}
-		
+
 		Grid solved = solve();
 		return solved != null && solved.isSolved();
 	}

@@ -16,7 +16,7 @@ import model.WebScraper;
 
 public class WebScraperTest {
 
-	@Test
+//	@Test
 	public void webscraperk3() throws NotFound, ResponseException, IOException {
 
 		String input = WebScraper.getSudokuFromWeb(4);
