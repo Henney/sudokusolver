@@ -13,10 +13,6 @@ public class PuzzleGeneratorTest {
 	public void generalTest(int k) {
 		Grid g = PuzzleGenerator.generate(k);
 
-		if (g.k() > 3) {
-			System.out.println(g);
-		}
-		
 		TacticSolver s = new TacticSolver(g);
 		
 		assertFalse(g.isSolved());

@@ -60,16 +60,8 @@ public class PuzzleGenerator {
 		while (!fields.isEmpty()) {
 			int timeout = 100;
 			int field = fields.remove();
-			int[] origPos = Arrays.copyOf(pvs[field].possibilities(), pvs[field].possibilities().length);
 
 			while (true) {
-				if (pvs[field].possible() == 0) {
-					for (int p : origPos) {
-						pvs[field].set(p, true);
-					}
-					break;
-				}
-				
 				int idx = (int) (generateGenerator.nextDouble()*pvs[field].possible());
 				int val = pvs[field].possibilities()[idx];
 				
@@ -117,8 +109,8 @@ public class PuzzleGenerator {
 			}
 		}
 		
-		es1.shutdownNow();
-		es2.shutdownNow();
+		es1.shutdown();
+		es2.shutdown();
 		
 		return g;
 	}
@@ -166,10 +158,9 @@ public class PuzzleGenerator {
 					break;
 				}
 			} catch (TimeoutError e) {
-				System.out.println("fillRandom timeout");
+				// Ignore
 			}
 		}
-		// TODO: use both SAT and tactics here to determine solvability?
 
 		return new Pair<Grid, ArrayDeque<Integer>>(newG, fields);
 	}
