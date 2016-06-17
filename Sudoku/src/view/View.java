@@ -78,7 +78,7 @@ public class View extends Application {
 			this.grid = new UserGrid(DEFAULT_K);
 			this.primaryStage = primaryStage;
 			this.primaryStage.setTitle("Sudoku");
-			primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("Smiley_icon.png")));
+			primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("icon.jpg")));
 			this.primaryStage.setMinWidth(MIN_WINDOW_SIZE);
 			this.primaryStage.setMinHeight(MIN_WINDOW_SIZE);
 			initLayout();
