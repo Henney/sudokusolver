@@ -78,7 +78,7 @@ public class View extends Application {
 			this.grid = new UserGrid(DEFAULT_K);
 			this.primaryStage = primaryStage;
 			this.primaryStage.setTitle("Sudoku");
-			primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("Smiley_icon.png")));
+			primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("icon.jpg")));
 			this.primaryStage.setMinWidth(MIN_WINDOW_SIZE);
 			this.primaryStage.setMinHeight(MIN_WINDOW_SIZE);
 			initLayout();
@@ -245,6 +245,7 @@ public class View extends Application {
 					@Override
 					protected UserGrid call() throws Exception {
 						Grid solvedGrid = null;
+						String errMsg = "The given grid configuration is unsolvable.";
 						switch (m) {
 						case Tactic:
 							cSolver = new GuiTacticSolver(new Grid(grid), View.this);
@@ -268,8 +269,8 @@ public class View extends Application {
 							Platform.runLater(new Runnable() {
 					            @Override public void run() {
 				            		createMessageDialog("Error!",
-				            				"The given grid configuration is unsolvable.\n" +
-				            		"If you tried to SAT solve it is possible that Plingeling is not setup correctly.",
+				            				errMsg +
+				            		"\nIf you tried to SAT solve it is possible that Plingeling is not setup correctly.",
 				            				AlertType.ERROR);
 									displayGrid(new UserGrid(cSolver.getGrid()));
 									enableSlider();
