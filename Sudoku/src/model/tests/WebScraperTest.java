@@ -5,8 +5,6 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.io.StringReader;
 
-import org.junit.Test;
-
 import com.jaunt.NotFound;
 import com.jaunt.ResponseException;
 

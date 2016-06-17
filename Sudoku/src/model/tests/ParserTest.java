@@ -12,8 +12,6 @@ import model.Parser;
 import model.util.Pair;
 
 public class ParserTest {
-	
-	// TODO: test exceptions for wrong input
 
 	@Test
 	public void parserk2() throws IOException {

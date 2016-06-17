@@ -39,7 +39,8 @@ public class Writer {
 			try {
 				throw new IOException("The file could not be created. Something went wrong while creating the required folders.");
 			} catch (IOException e) {
-				e.printStackTrace(); // TODO: is this good or how should we handle it?
+				// This could possibly be handled in GUI but it is not necessary.
+				e.printStackTrace();
 			}
 		}
 				
