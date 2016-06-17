@@ -245,6 +245,7 @@ public class View extends Application {
 					@Override
 					protected UserGrid call() throws Exception {
 						Grid solvedGrid = null;
+						String errMsg = "The given grid configuration is unsolvable.";
 						switch (m) {
 						case Tactic:
 							cSolver = new GuiTacticSolver(new Grid(grid), View.this);
@@ -268,8 +269,8 @@ public class View extends Application {
 							Platform.runLater(new Runnable() {
 					            @Override public void run() {
 				            		createMessageDialog("Error!",
-				            				"The given grid configuration is unsolvable.\n" +
-				            		"If you tried to SAT solve it is possible that Plingeling is not setup correctly.",
+				            				errMsg +
+				            		"\nIf you tried to SAT solve it is possible that Plingeling is not setup correctly.",
 				            				AlertType.ERROR);
 									displayGrid(new UserGrid(cSolver.getGrid()));
 									enableSlider();
