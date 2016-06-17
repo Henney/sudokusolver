@@ -14,6 +14,7 @@ import model.Grid;
 import model.PossibleValues;
 import model.Solver;
 import model.TacticSolver;
+import model.TimeoutError;
 
 public class TacticSolverTest {
 
@@ -381,9 +382,21 @@ public class TacticSolverTest {
 		
 		assertFalse(g.isSolved());
 
-		assertNull(s.solveWithTimeout(t));
-		assertFalse(s.uniqueWithTimeout(t));
-		assertFalse(s.solvableWithTimeout(t));
+		try {
+			s.solveWithTimeout(t);
+			fail();
+		} catch (TimeoutError e) {			
+		}
+		try {
+			s.uniqueWithTimeout(t);
+			fail();
+		} catch (TimeoutError e) {			
+		}
+		try {
+			s.solvableWithTimeout(t);
+			fail();
+		} catch (TimeoutError e) {			
+		}
 		
 		g = grids[1];
 		s = new TacticSolver(g);
@@ -405,9 +418,21 @@ public class TacticSolverTest {
 		
 		t = 1;
 		
-		assertNull(s.solveWithTimeout(t));
-		assertFalse(s.uniqueWithTimeout(t));
-		assertFalse(s.solvableWithTimeout(t));
+		try {
+			s.solveWithTimeout(t);
+			fail();
+		} catch (TimeoutError e) {			
+		}
+		try {
+			s.uniqueWithTimeout(t);
+			fail();
+		} catch (TimeoutError e) {			
+		}
+		try {
+			s.solvableWithTimeout(t);
+			fail();
+		} catch (TimeoutError e) {			
+		}
 	}
 	
 }

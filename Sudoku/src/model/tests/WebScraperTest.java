@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.io.StringReader;
 
+import org.junit.Test;
+
 import com.jaunt.NotFound;
 import com.jaunt.ResponseException;
 
@@ -14,7 +16,7 @@ import model.WebScraper;
 
 public class WebScraperTest {
 
-//	@Test
+	@Test
 	public void webscraperk3() throws NotFound, ResponseException, IOException {
 
 		String input = WebScraper.getSudokuFromWeb(4);

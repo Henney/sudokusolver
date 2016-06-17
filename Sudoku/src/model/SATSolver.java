@@ -165,8 +165,6 @@ public class SATSolver extends Solver {
 			if (timeout != 0 && System.currentTimeMillis() - start > timeout) {
 				b.close();
 				throw new TimeoutError();
-//				timeoutHappened = true;
-//				return null;
 			}
 			
 			if (line.startsWith("s")) {

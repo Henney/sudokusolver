@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 import model.SATSolver;
+import model.TimeoutError;
 import model.Grid;
 
 public class SATTest {
@@ -147,36 +148,53 @@ public class SATTest {
 	public void timeouts() throws FileNotFoundException, IOException {
 		Grid[] grids = { new Grid(new FileReader("puzzles/sudoku_norvig_impossible.txt")),
 				new Grid(new FileReader("puzzles/sudoku_norvig_hardest.txt")),
-				new Grid(new FileReader("puzzles/tetradoku1.txt")) };
-
+				new Grid(new FileReader("puzzles/pentadoku1.txt"))
+		};
+		
 		Grid g = grids[0];
 		SATSolver s = new SATSolver(g);
-		int t = 2000;
-
+		int t = 20000;
+		
 		assertFalse(g.isSolved());
-
 		assertNull(s.solveWithTimeout(t));
+		assertFalse(s.uniqueWithTimeout(t));
 		assertFalse(s.solvableWithTimeout(t));
-
+		
 		g = grids[1];
 		s = new SATSolver(g);
-
+		
 		assertFalse(g.isSolved());
-		assertTrue(s.solveWithTimeout(t).isSolved());
-		assertTrue(s.solvableWithTimeout(t));
 
+		assertTrue(s.solveWithTimeout(t).isSolved());
+		assertFalse(s.uniqueWithTimeout(t));
+		assertTrue(s.solvableWithTimeout(t));
+		
 		g = grids[2];
 		s = new SATSolver(g);
-
+		
 		assertFalse(g.isSolved());
 
 		assertTrue(s.solveWithTimeout(t).isSolved());
+		assertTrue(s.uniqueWithTimeout(t));
 		assertTrue(s.solvableWithTimeout(t));
-
+		
 		t = 1;
-
-		assertNull(s.solveWithTimeout(t));
-		assertFalse(s.solvableWithTimeout(t));
+		
+		try {
+			s.solveWithTimeout(t);
+			fail();
+		} catch (TimeoutError e) {			
+		}
+		try {
+			s.uniqueWithTimeout(t);
+			fail();
+		} catch (TimeoutError e) {			
+		}
+		try {
+			s.solvableWithTimeout(t);
+			fail();
+		} catch (TimeoutError e) {			
+		}
 	}
 
 	@Test
