@@ -6,7 +6,6 @@ public abstract class Solver {
 
 	protected int timeout = 0;
 	protected long start = 0;
-	protected boolean timeoutHappened = false;
 	
 	protected volatile boolean run = true;
 	
@@ -18,8 +17,14 @@ public abstract class Solver {
 	
 	public Grid solveWithTimeout(int t) {
 		startTimeout(t);
-		Grid g = solve();
-		endTimeout();
+		
+		Grid g;
+		try {
+			g = solve();
+		} finally {
+			endTimeout();
+		}
+		
 		return g;
 	}
 	
@@ -41,13 +46,17 @@ public abstract class Solver {
 		}
 
 		Grid solved = solve();
-		return solved != null && solved.isSolved();
+		return solved != null;
 	}
 	
 	public boolean solvableWithTimeout(int t) {
 		startTimeout(t);
-		boolean b = solvable();
-		endTimeout();
+		boolean b;
+		try {
+			b = solvable();
+		} finally {
+			endTimeout();
+		}
 		return b;
 	}
 	
@@ -55,15 +64,18 @@ public abstract class Solver {
 	
 	public boolean uniqueWithTimeout(int t) {
 		startTimeout(t);
-		boolean ret = unique();
-		endTimeout();
+		boolean ret;
+		try {
+			ret = unique();
+		} finally {
+			endTimeout();
+		}
 		return ret;
 	}
 	
 	private void startTimeout(int t) {
 		start = System.currentTimeMillis();
 		timeout = t;
-		timeoutHappened = false;
 	}
 	
 	private void endTimeout() {

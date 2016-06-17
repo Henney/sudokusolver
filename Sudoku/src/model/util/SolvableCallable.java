@@ -3,8 +3,9 @@ package model.util;
 import java.util.concurrent.Callable;
 
 import model.Solver;
+import model.TimeoutError;
 
-public class SolvableCallable implements Callable<Boolean> {
+public class SolvableCallable implements Callable<TimeoutBoolean> {
 	
 	private Solver s;
 	private int timeout;
@@ -15,7 +16,14 @@ public class SolvableCallable implements Callable<Boolean> {
 	}
 	
 	@Override
-	public Boolean call() throws Exception {
-		return s.solvableWithTimeout(timeout);
+	public TimeoutBoolean call() throws Exception {
+		boolean b;
+		try {
+			b = s.solvableWithTimeout(timeout);
+		} catch (TimeoutError e) {
+			return TimeoutBoolean.TIMEOUT;
+		}
+		
+		return TimeoutBoolean.fromBoolean(b);
 	}
 }

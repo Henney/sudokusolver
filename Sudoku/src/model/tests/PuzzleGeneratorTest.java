@@ -10,8 +10,12 @@ import model.TacticSolver;
 
 public class PuzzleGeneratorTest {
 
-	public void generalTest(int k) { // TODO remove seed
+	public void generalTest(int k) {
 		Grid g = PuzzleGenerator.generate(k);
+
+		if (g.k() > 3) {
+			System.out.println(g);
+		}
 		
 		TacticSolver s = new TacticSolver(g);
 		
@@ -46,9 +50,9 @@ public class PuzzleGeneratorTest {
 	}
 	
 //	@Test
-//	public void generate5() {
-//		for (int i = 0; i < 1; i++) {
-//			generalTest(5, i+100);
-//		}
-//	}
+	public void generate5() {
+		for (int i = 0; i < 1; i++) {
+			generalTest(5);
+		}
+	}
 }
