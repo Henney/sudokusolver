@@ -1,11 +1,15 @@
-# sudokusolver
+# Sudoku Solver
 
-The Java code in this project handles sudoku solving and generation amongst other things. It was written for a second year project for our bachelor in software engineering. The code is documented with a report in Danish.
+The Java code in this project handles sudoku solving and generation amongst other things.
+It was written for a second year project for our bachelor in software engineering.
+The code is documented with a report in Danish.
 
-The SAT solver Plingeling can be found at http://fmv.jku.at/lingeling/ and should be installed and included in environment variables in order to solve sudokus using SAT.
+The SAT solver Plingeling can be found at http://fmv.jku.at/lingeling/ and should be installed and included in the path environment variable in order to solve sudokus using SAT (the program may need to be run from the command line, at least on macOS).
 Jaunt can be found at http://jaunt-api.com/ and must be updated once a month in order to fetch sudokus online.
 
 The program can run without either.
+
+[Screenshot of the running program](https://raw.githubusercontent.com/Henney/sudokusolver/master/program.png)
 
 Abstract:
 
