@@ -21,6 +21,12 @@ public class FetchHandler<T> extends ButtonHandler<MouseEvent> {
 
 	@Override
 	public void handle(MouseEvent arg0) {
+		view.createMessageDialog("Error!",
+				"Jaunt is not included for license reasons. Please compile the code your self with Jaunt to use this feature.",
+				AlertType.ERROR);
+		
+		// Add Jaunt to use the below to fetch sudokus online
+		/*
 		Optional<String> result = view.createFetchDialog();
 		result.ifPresent(dif -> {
 			int level = 0;
@@ -51,6 +57,7 @@ public class FetchHandler<T> extends ButtonHandler<MouseEvent> {
 				e.printStackTrace();
 			}
 		});
+		*/
 	}
 
 }
