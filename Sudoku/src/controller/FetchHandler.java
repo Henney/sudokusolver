@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Optional;
 
-import com.jaunt.NotFound;
-import com.jaunt.ResponseException;
+//import com.jaunt.NotFound;
+//import com.jaunt.ResponseException;
 
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseEvent;
