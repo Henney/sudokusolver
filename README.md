@@ -9,9 +9,7 @@ Jaunt can be found at http://jaunt-api.com/ and must be updated once a month in 
 
 The program can run without either.
 
-[Screenshot of the running program](https://raw.githubusercontent.com/Henney/sudokusolver/master/program.png)
-
-Abstract:
+## Abstract
 
 This report shows how to solve sudokus of arbitrary size using two different approaches.
 First using our own solver in Java employing constraint propagation through implemented
@@ -28,3 +26,7 @@ arguably difficult classical sudokus. Our tactic solver is faster for smaller pu
 Plingeling has an advantage on larger ones. We also find that puzzle generation is possible
 within reasonable time for smaller puzzle sizes, taking around 10 seconds for puzzles of
 size 16 × 16 and 400 seconds for size 25 × 25.
+
+## Screenshot
+
+![Screenshot of the running program](program.png)
